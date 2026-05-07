@@ -5,6 +5,7 @@
 - Updated GitHub Actions workflow dependencies.
 - Added release verification documentation.
 - Made install instructions version-agnostic to avoid stale release filenames.
+- Added project verification for release versions, docs links, and workflows.
 
 ## 0.1.1
 

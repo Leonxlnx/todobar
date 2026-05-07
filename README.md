@@ -137,6 +137,7 @@ npm run tauri:build
 Validate the project:
 
 ```bash
+npm run verify
 npm run build
 npm run lint
 cargo check --manifest-path src-tauri/Cargo.toml
