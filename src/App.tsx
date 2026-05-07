@@ -211,6 +211,20 @@ function App() {
     todayTasks.length === 0 ? 0 : Math.round((completed / todayTasks.length) * 100)
   const sortedTodayTasks = useMemo(() => sortTasks(todayTasks), [todayTasks])
   const sortedMonthTasks = useMemo(() => sortTasks(monthTasks), [monthTasks])
+  const visibleTodayTasks = useMemo(
+    () =>
+      settings.showCompleted
+        ? sortedTodayTasks
+        : sortedTodayTasks.filter((task) => !task.done),
+    [settings.showCompleted, sortedTodayTasks],
+  )
+  const visibleMonthTasks = useMemo(
+    () =>
+      settings.showCompleted
+        ? sortedMonthTasks
+        : sortedMonthTasks.filter((task) => !task.done),
+    [settings.showCompleted, sortedMonthTasks],
+  )
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
     const availableWidth = Math.max(280, viewportWidth - settings.tabWidth - 8)
@@ -1032,7 +1046,7 @@ function App() {
                 onKeyDown={(event) => onDraftKeyDown(event, 'today')}
               />
               <div className="task-list">
-                {sortedTodayTasks.map((task, index) => (
+                {visibleTodayTasks.map((task, index) => (
                   <TaskRow
                     key={task.id}
                     task={task}
@@ -1085,7 +1099,7 @@ function App() {
                 onKeyDown={(event) => onDraftKeyDown(event, 'month')}
               />
               <div className="task-list month-list">
-                {sortedMonthTasks.map((task, index) => (
+                {visibleMonthTasks.map((task, index) => (
                   <TaskRow
                     key={task.id}
                     task={task}
@@ -1128,6 +1142,9 @@ function App() {
           <div className="custom-list-stack">
             {customLists.map((list) => {
               const sortedTasks = sortTasks(list.tasks)
+              const visibleTasks = settings.showCompleted
+                ? sortedTasks
+                : sortedTasks.filter((task) => !task.done)
 
               return (
                 <section className="custom-list" key={list.id}>
@@ -1180,9 +1197,9 @@ function App() {
                           onCustomDraftKeyDown(event, list.id)
                         }
                       />
-                      {sortedTasks.length > 0 ? (
+                      {visibleTasks.length > 0 ? (
                         <div className="task-list">
-                          {sortedTasks.map((task, index) => (
+                          {visibleTasks.map((task, index) => (
                             <TaskRow
                               key={task.id}
                               task={task}
@@ -1348,6 +1365,11 @@ function SidebarSettingsPanel({
 
       <div className="settings-group">
         <div className="settings-group-title">Tasks</div>
+        <ToggleSetting
+          label="Show completed"
+          checked={settings.showCompleted}
+          onChange={(showCompleted) => onChange({ showCompleted })}
+        />
         <SliderSetting
           label="Row height"
           value={settings.taskRowHeight}

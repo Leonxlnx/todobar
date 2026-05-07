@@ -35,11 +35,12 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Custom task lists
 - Add, complete, prioritize, collapse, and delete tasks
 - Delete custom lists
+- Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark themes
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
-  launch-at-login, and surface opacity
+  completed-task visibility, launch-at-login, and surface opacity
 - Responsive sizing for different monitor heights and widths
 
 ## Platform Status
@@ -140,14 +141,19 @@ Validate the project:
 npm run verify
 npm run build
 npm run lint
+npm run test:smoke
 cargo check --manifest-path src-tauri/Cargo.toml
 ```
+
+`npm run test:smoke` runs a browser smoke test against the Vite preview. If
+Chromium is missing locally, run `npx playwright install chromium` once.
 
 ## Release Builds
 
 The repository includes GitHub Actions workflows:
 
-- `ci.yml` checks TypeScript, linting, and Rust on Windows and macOS.
+- `ci.yml` checks TypeScript, linting, browser smoke tests, and Rust on Windows
+  and macOS.
 - `release.yml` builds release artifacts for:
   - Windows
   - macOS Apple Silicon

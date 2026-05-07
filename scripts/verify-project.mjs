@@ -94,7 +94,12 @@ function listMarkdownFiles(relativeDir) {
 }
 
 function verifyMarkdownLinks() {
-  const markdownFiles = ['README.md', 'CHANGELOG.md', 'CONTRIBUTING.md', 'SECURITY.md']
+  const markdownFiles = [
+    'README.md',
+    'CHANGELOG.md',
+    'CONTRIBUTING.md',
+    'SECURITY.md',
+  ]
 
   if (existsSync(join(root, 'docs'))) {
     markdownFiles.push(...listMarkdownFiles('docs'))
@@ -139,6 +144,16 @@ function verifyMarkdownLinks() {
   }
 }
 
+function verifyScripts() {
+  const packageJson = readJson('package.json')
+
+  for (const script of ['verify', 'build', 'lint', 'test:smoke', 'tauri:build']) {
+    if (!packageJson.scripts?.[script]) {
+      fail(`package.json: missing ${script} script`)
+    }
+  }
+}
+
 function verifyWorkflows() {
   const ci = read('.github/workflows/ci.yml')
   const release = read('.github/workflows/release.yml')
@@ -156,6 +171,14 @@ function verifyWorkflows() {
     }
   }
 
+  if (!ci.includes('npx playwright install chromium')) {
+    fail('ci.yml: missing Playwright browser install')
+  }
+
+  if (!ci.includes('npm run test:smoke')) {
+    fail('ci.yml: missing sidebar smoke test')
+  }
+
   for (const platform of ['Windows', 'macOS Apple Silicon', 'macOS Intel']) {
     if (!release.includes(`name: ${platform}`)) {
       fail(`release.yml: missing ${platform} build`)
@@ -165,6 +188,7 @@ function verifyWorkflows() {
 
 verifyVersions()
 verifyMarkdownLinks()
+verifyScripts()
 verifyWorkflows()
 
 if (failures.length > 0) {

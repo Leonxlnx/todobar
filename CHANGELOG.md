@@ -7,6 +7,9 @@
 - Made install instructions version-agnostic to avoid stale release filenames.
 - Added project verification for release versions, docs links, and workflows.
 - Linked release gaps to public GitHub Issues.
+- Added a setting to show or hide completed tasks without deleting them.
+- Added a Playwright smoke test for the sidebar and task visibility setting.
+- Runs the sidebar smoke test in CI on Windows and macOS.
 
 ## 0.1.1
 

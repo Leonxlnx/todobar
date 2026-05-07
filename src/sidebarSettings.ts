@@ -15,6 +15,7 @@ export type SidebarSettings = {
   taskRowHeight: number
   taskGap: number
   taskTextSize: number
+  showCompleted: boolean
   launchAtLogin: boolean
   theme: ThemeMode
 }
@@ -30,6 +31,7 @@ export const defaultSidebarSettings: SidebarSettings = {
   taskRowHeight: 44,
   taskGap: 7,
   taskTextSize: 12.5,
+  showCompleted: true,
   launchAtLogin: true,
   theme: 'light',
 }
@@ -73,6 +75,8 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       11,
       14,
     ),
+    showCompleted:
+      value.showCompleted ?? defaultSidebarSettings.showCompleted,
     launchAtLogin:
       value.launchAtLogin ?? defaultSidebarSettings.launchAtLogin,
     theme: value.theme === 'dark' ? 'dark' : 'light',

@@ -13,6 +13,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:smoke": "playwright test",
     "verify": "node scripts/verify-project.mjs",
     "preview": "vite preview",
     "tauri": "tauri",
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.59.1",
     "@tauri-apps/cli": "^2.11.1",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",

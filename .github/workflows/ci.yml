@@ -47,5 +47,11 @@ jobs:
       - name: ESLint
         run: npm run lint
 
+      - name: Install Playwright browser
+        run: npx playwright install chromium
+
+      - name: Sidebar smoke test
+        run: npm run test:smoke
+
       - name: Rust check
         run: cargo check --manifest-path src-tauri/Cargo.toml
