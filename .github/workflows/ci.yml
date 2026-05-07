@@ -55,3 +55,6 @@ jobs:
 
       - name: Rust check
         run: cargo check --manifest-path src-tauri/Cargo.toml
+
+      - name: Native Tauri build smoke
+        run: npm run test:native

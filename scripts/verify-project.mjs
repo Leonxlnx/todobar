@@ -147,7 +147,14 @@ function verifyMarkdownLinks() {
 function verifyScripts() {
   const packageJson = readJson('package.json')
 
-  for (const script of ['verify', 'build', 'lint', 'test:smoke', 'tauri:build']) {
+  for (const script of [
+    'verify',
+    'build',
+    'lint',
+    'test:smoke',
+    'test:native',
+    'tauri:build',
+  ]) {
     if (!packageJson.scripts?.[script]) {
       fail(`package.json: missing ${script} script`)
     }
@@ -177,6 +184,10 @@ function verifyWorkflows() {
 
   if (!ci.includes('npm run test:smoke')) {
     fail('ci.yml: missing sidebar smoke test')
+  }
+
+  if (!ci.includes('npm run test:native')) {
+    fail('ci.yml: missing native Tauri build smoke test')
   }
 
   for (const platform of ['Windows', 'macOS Apple Silicon', 'macOS Intel']) {

@@ -10,6 +10,7 @@
 - Added a setting to show or hide completed tasks without deleting them.
 - Added a Playwright smoke test for the sidebar and task visibility setting.
 - Runs the sidebar smoke test in CI on Windows and macOS.
+- Added a no-bundle native Tauri build smoke test for Windows and macOS CI.
 
 ## 0.1.1
 

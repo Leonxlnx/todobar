@@ -142,18 +142,22 @@ npm run verify
 npm run build
 npm run lint
 npm run test:smoke
+npm run test:native
 cargo check --manifest-path src-tauri/Cargo.toml
 ```
 
 `npm run test:smoke` runs a browser smoke test against the Vite preview. If
 Chromium is missing locally, run `npx playwright install chromium` once.
 
+`npm run test:native` runs a no-bundle Tauri release build. It validates the
+native desktop shell without creating installers.
+
 ## Release Builds
 
 The repository includes GitHub Actions workflows:
 
-- `ci.yml` checks TypeScript, linting, browser smoke tests, and Rust on Windows
-  and macOS.
+- `ci.yml` checks TypeScript, linting, browser smoke tests, Rust, and no-bundle
+  native Tauri builds on Windows and macOS.
 - `release.yml` builds release artifacts for:
   - Windows
   - macOS Apple Silicon

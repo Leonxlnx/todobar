@@ -13,6 +13,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "test:native": "tauri build --ci --no-bundle",
     "test:smoke": "playwright test",
     "verify": "node scripts/verify-project.mjs",
     "preview": "vite preview",
