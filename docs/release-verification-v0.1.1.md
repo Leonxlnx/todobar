@@ -77,9 +77,14 @@ The release workflow produced platform artifacts for:
 
 ## Known Gaps
 
-- macOS artifacts are CI-built but not tested on a physical Mac in this pass.
-- macOS artifacts are unsigned and not notarized.
-- Windows artifacts are unsigned.
-- Auto-update is not configured yet.
+- macOS artifacts are CI-built but not tested on a physical Mac in this pass:
+  [#1](https://github.com/Leonxlnx/todobar/issues/1)
+- macOS artifacts are unsigned and not notarized:
+  [#2](https://github.com/Leonxlnx/todobar/issues/2)
+- Windows artifacts are unsigned:
+  [#2](https://github.com/Leonxlnx/todobar/issues/2)
+- Auto-update is not configured yet:
+  [#3](https://github.com/Leonxlnx/todobar/issues/3)
+- Keyboard and accessibility flow needs hardening:
+  [#4](https://github.com/Leonxlnx/todobar/issues/4)
 - Tray/menu bar controls are not implemented yet.
-
