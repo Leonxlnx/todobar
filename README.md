@@ -68,15 +68,17 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
+Current stable release: `v0.1.1`.
+
 Windows:
 
-- Prefer `Todobar_0.1.0_x64-setup.exe` for a normal installer.
-- Use `Todobar_0.1.0_x64_en-US.msi` for MSI-based install flows.
+- Prefer `Todobar_<version>_x64-setup.exe` for a normal installer.
+- Use `Todobar_<version>_x64_en-US.msi` for MSI-based install flows.
 
 macOS:
 
-- Use `Todobar_0.1.0_aarch64.dmg` on Apple Silicon Macs.
-- Use `Todobar_0.1.0_x64.dmg` on Intel Macs.
+- Use `Todobar_<version>_aarch64.dmg` on Apple Silicon Macs.
+- Use `Todobar_<version>_x64.dmg` on Intel Macs.
 
 macOS builds from public CI are currently unsigned until code signing and
 notarization certificates are configured. You may need to right-click the app and
@@ -153,8 +155,8 @@ The repository includes GitHub Actions workflows:
 Create a release by pushing a version tag:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag vX.Y.Z
+git push origin vX.Y.Z
 ```
 
 The Tauri release workflow uploads the platform installers to GitHub Releases.
@@ -209,6 +211,7 @@ Useful starting points:
 
 - [Architecture](docs/architecture.md)
 - [Platform support](docs/platform-support.md)
+- [Release verification](docs/release-verification-v0.1.1.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Updated GitHub Actions workflow dependencies.
+- Added release verification documentation.
+- Made install instructions version-agnostic to avoid stale release filenames.
+
 ## 0.1.1
 
 - Added launch-at-login control in settings.
