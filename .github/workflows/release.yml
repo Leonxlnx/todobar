@@ -61,5 +61,5 @@ jobs:
             macOS artifacts are currently unsigned until Apple Developer signing
             and notarization are configured.
           releaseDraft: false
-          prerelease: true
+          prerelease: false
           args: ${{ matrix.args }}
