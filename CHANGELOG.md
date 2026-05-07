@@ -16,6 +16,11 @@
   default shortcut is taken by another app.
 - Extended project verification so native shortcut registration remains covered.
 
+### Verified
+
+- `v0.1.5` artifacts were published for Windows, macOS Apple Silicon, and
+  macOS Intel, with release digests recorded in the verification notes.
+
 ## 0.1.4 - Desktop Control and Product Vision
 
 ### Added

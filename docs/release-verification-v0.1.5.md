@@ -6,18 +6,26 @@ fix release.
 ## Release
 
 - Repository: `Leonxlnx/todobar`
-- Planned release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.5
-- CI workflow run for release commit: pending until the `v0.1.5` tag is pushed.
-- Release workflow run: pending until the `v0.1.5` tag is pushed.
+- Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.5
+- CI workflow run for release commit:
+  https://github.com/Leonxlnx/todobar/actions/runs/25524903615
+- Release workflow run:
+  https://github.com/Leonxlnx/todobar/actions/runs/25525264541
 
-Expected published assets:
+Published assets:
 
 - `Todobar_0.1.5_x64-setup.exe`
+  `sha256:7083ce035027e3464589d28e67afff6866570d1b9a3e2e59dedd1a5339f18abf`
 - `Todobar_0.1.5_x64_en-US.msi`
+  `sha256:116cb83a8c226098a3dadf61758198befadb0ca1eb9e443cad58200763b1f571`
 - `Todobar_0.1.5_aarch64.dmg`
+  `sha256:04fe367ad86b3934ee8614bf99cc4d0c4987a898f83f8487cf1812701cbc75a7`
 - `Todobar_0.1.5_x64.dmg`
+  `sha256:bc4bb3188e9737bab17a92799c8499296619b26050fd080163ea7d8edf5b4ab4`
 - `Todobar_aarch64.app.tar.gz`
+  `sha256:8edf533d8c3d8ef62241960b979d5dd8d53aa533c9a7caccb5d79366cbf3dee4`
 - `Todobar_x64.app.tar.gz`
+  `sha256:3c5b24d616d59713a23e4a38dd3ae92a4a6d77e4a0bfe91d436a9dafd1d2c57e`
 
 ## Fix Scope
 
