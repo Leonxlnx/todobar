@@ -17,6 +17,8 @@
 ### Verified
 
 - Browser smoke tests now cover the task flow plus responsive sidebar bounds.
+- `v0.1.3` artifacts were published for Windows, macOS Apple Silicon, and
+  macOS Intel, with release digests recorded in the verification notes.
 
 ## 0.1.2 - Reliability and Open Source Polish
 

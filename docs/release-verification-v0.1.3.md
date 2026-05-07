@@ -6,11 +6,13 @@ edge-polish release.
 ## Release
 
 - Repository: `Leonxlnx/todobar`
-- Planned release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.3
-- CI workflow run for release commit: pending until the `v0.1.3` tag is pushed.
-- Release workflow run: pending until the `v0.1.3` tag is pushed.
+- Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.3
+- CI workflow run for release commit:
+  https://github.com/Leonxlnx/todobar/actions/runs/25513255581
+- Release workflow run:
+  https://github.com/Leonxlnx/todobar/actions/runs/25513703604
 
-Expected published assets:
+Published assets:
 
 - `Todobar_0.1.3_x64-setup.exe`
 - `Todobar_0.1.3_x64_en-US.msi`
@@ -18,6 +20,21 @@ Expected published assets:
 - `Todobar_0.1.3_x64.dmg`
 - `Todobar_aarch64.app.tar.gz`
 - `Todobar_x64.app.tar.gz`
+
+Asset digests:
+
+- `Todobar_0.1.3_x64-setup.exe`:
+  `sha256:be10e5a074555d5c023aa187db3754498760df07368bba3c1f2c32c4058eec53`
+- `Todobar_0.1.3_x64_en-US.msi`:
+  `sha256:7a9e33f596d9c49ce5d37790b1fb8f40206da2e41c80de4465e0032b01db26bf`
+- `Todobar_0.1.3_aarch64.dmg`:
+  `sha256:8e86b7476def3e48bf77c42cc4ce0f126874d6156534dcd8f388cca204a90faa`
+- `Todobar_0.1.3_x64.dmg`:
+  `sha256:431c6f2379f39c82469b6f56d3f3f16d41687927864391a5396bd4e3510d1464`
+- `Todobar_aarch64.app.tar.gz`:
+  `sha256:4a80f6e1244a66de3ad40a6790eba512220ccc79e2da0f8933d81f632c6e0d64`
+- `Todobar_x64.app.tar.gz`:
+  `sha256:b5a7dc58fc81a247a8aafd2142a7af359a2424dd4fc711b709de7abcba9b22d1`
 
 ## Local Windows Verification
 
