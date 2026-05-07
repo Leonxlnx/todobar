@@ -50,19 +50,13 @@ Expected desktop behavior:
 - single-instance process behavior
 - responsive panel sizing based on monitor work area
 
-## Known Gaps
+## Known Follow-Ups
 
-- No signed Windows certificate yet:
-  [#2](https://github.com/Leonxlnx/todobar/issues/2)
-- No Apple Developer signing or notarization yet:
-  [#2](https://github.com/Leonxlnx/todobar/issues/2)
-- Physical macOS QA is still needed:
-  [#1](https://github.com/Leonxlnx/todobar/issues/1)
-- No auto-update channel yet:
-  [#3](https://github.com/Leonxlnx/todobar/issues/3)
-- Keyboard and accessibility flow needs hardening:
-  [#4](https://github.com/Leonxlnx/todobar/issues/4)
-- No tray/menu bar controls yet.
+- No signed Windows certificate yet.
+- No Apple Developer signing or notarization yet.
+- Physical macOS QA is still needed.
+- No auto-update channel yet.
+- Keyboard and accessibility flow needs hardening.
 - No multi-monitor position memory yet.
 
 ## Release Confidence

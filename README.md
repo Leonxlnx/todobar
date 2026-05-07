@@ -246,12 +246,13 @@ can stay portable while desktop capabilities remain explicit and permissioned.
 
 Todobar is licensed under the Apache License 2.0.
 
-Current release gates are tracked in GitHub Issues:
+Roadmap and release follow-ups are kept in the docs so the public issue tracker
+stays focused on real user reports:
 
-- [Physical macOS QA](https://github.com/Leonxlnx/todobar/issues/1)
-- [Windows signing and macOS notarization](https://github.com/Leonxlnx/todobar/issues/2)
-- [Signed auto-update channel](https://github.com/Leonxlnx/todobar/issues/3)
-- [Keyboard and accessibility flow](https://github.com/Leonxlnx/todobar/issues/4)
+- physical macOS QA
+- Windows signing and macOS notarization
+- signed auto-update channel
+- keyboard and accessibility hardening
 
 Contributions are welcome, especially around:
 
