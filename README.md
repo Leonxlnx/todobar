@@ -69,7 +69,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.1`.
+Current stable release: `v0.1.2`.
 
 Windows:
 
@@ -233,7 +233,7 @@ Useful starting points:
 
 - [Architecture](docs/architecture.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.1.md)
+- [Release verification](docs/release-verification-v0.1.2.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)
