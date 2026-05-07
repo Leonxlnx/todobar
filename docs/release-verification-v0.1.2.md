@@ -1,15 +1,16 @@
 # Release Verification v0.1.2
 
-This page records what was checked while preparing the `v0.1.2` release.
+This page records what was checked while preparing and publishing the `v0.1.2`
+release.
 
 ## Release
 
 - Repository: `Leonxlnx/todobar`
-- Planned release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.2
-- CI workflow run for release commit: pending until the `v0.1.2` tag is pushed.
-- Release workflow run: pending until the `v0.1.2` tag is pushed.
+- Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.2
+- CI workflow run for release commit: `25511520319`
+- Release workflow run: `25512070832`
 
-Expected published assets:
+Published assets:
 
 - `Todobar_0.1.2_x64-setup.exe`
 - `Todobar_0.1.2_x64_en-US.msi`
