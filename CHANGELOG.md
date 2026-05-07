@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.1
+
+- Added launch-at-login control in settings.
+- Added task row height, row gap, and text size customization.
+- Improved narrow viewport task action spacing.
+- Clarified Windows and macOS installation docs.
+- Added platform support documentation.
+- Added GitHub issue and pull request templates.
+
 ## 0.1.0
 
 - Added native right-edge sidebar shell.
