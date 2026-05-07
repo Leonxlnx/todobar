@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+## 0.1.5 - Native Shortcut Fix
+
+### Fixed
+
+- Moved the toggle shortcut registration from the focused React webview into the
+  native Tauri layer, so `Ctrl/Cmd + Shift + T` can open Todobar from another
+  app without clicking the sidebar first.
+
+### Added
+
+- Added `Ctrl/Cmd + Alt + T` as a fallback global toggle shortcut when the
+  default shortcut is taken by another app.
+- Extended project verification so native shortcut registration remains covered.
+
 ## 0.1.4 - Desktop Control and Product Vision
 
 ### Added

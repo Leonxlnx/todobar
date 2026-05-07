@@ -209,6 +209,11 @@ function verifyNativeDesktopSurface() {
 
   for (const token of [
     'TrayIconBuilder',
+    'setup_global_shortcuts',
+    '.global_shortcut()',
+    '.on_shortcut(shortcut',
+    'CommandOrControl+Shift+T',
+    'CommandOrControl+Alt+T',
     'todobar-tray-toggle',
     'todobar-tray-settings',
     'show_menu_on_left_click(false)',

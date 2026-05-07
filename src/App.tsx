@@ -352,42 +352,6 @@ function App() {
   }, [customLists])
 
   useEffect(() => {
-    let unregisterShortcut: (() => void) | undefined
-
-    const setupNativeShortcut = async () => {
-      if (!isTauriRuntime()) {
-        return
-      }
-
-      try {
-        const { register, unregister } = await import(
-          '@tauri-apps/plugin-global-shortcut'
-        )
-        const shortcut = 'CommandOrControl+Shift+T'
-
-        await register(shortcut, (event) => {
-          if (event.state === 'Pressed') {
-            setIsOpen((current) => !current)
-          }
-        })
-
-        unregisterShortcut = () => {
-          void unregister(shortcut)
-        }
-
-      } catch {
-        // Shortcut registration can fail when another app owns the chord.
-      }
-    }
-
-    void setupNativeShortcut()
-
-    return () => {
-      unregisterShortcut?.()
-    }
-  }, [])
-
-  useEffect(() => {
     if (!isNative) {
       return
     }

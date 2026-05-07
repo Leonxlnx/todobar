@@ -30,6 +30,7 @@ Desktop/native:
 - [Native test matrix](native-test-matrix.md)
 - [Distribution plan](distribution-plan.md)
 - [Release checklist](release-checklist.md)
+- [Release verification v0.1.5](release-verification-v0.1.5.md)
 - [Release verification v0.1.4](release-verification-v0.1.4.md)
 - [Release verification v0.1.3](release-verification-v0.1.3.md)
 - [Release verification v0.1.2](release-verification-v0.1.2.md)

@@ -25,7 +25,8 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 
 - Right-edge native sidebar for Windows and macOS
 - Small draggable handle that opens and closes the panel
-- Global shortcut: `Ctrl/Cmd + Shift + T`
+- Global shortcuts: `Ctrl/Cmd + Shift + T`, with `Ctrl/Cmd + Alt + T` as a
+  fallback
 - Native tray/menu-bar control for open, settings, and quit
 - Autostart on system login
 - Single-instance desktop behavior
@@ -100,7 +101,7 @@ The detailed plan lives in [Product vision](docs/product-vision.md) and
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.4`.
+Current stable release: `v0.1.5`.
 
 Windows:
 
@@ -120,7 +121,9 @@ choose Open.
 
 - Click the right-edge handle to open or close Todobar.
 - Drag the handle up or down to change its vertical position.
-- Press `Ctrl + Shift + T` on Windows or `Cmd + Shift + T` on macOS to toggle it.
+- Press `Ctrl + Shift + T` on Windows or `Cmd + Shift + T` on macOS to toggle it
+  from any app.
+- If that shortcut is taken by another app, use `Ctrl/Cmd + Alt + T`.
 - Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
 - Use the settings button to adjust appearance, desktop startup, window size,
@@ -268,7 +271,7 @@ Useful starting points:
 - [Architecture](docs/architecture.md)
 - [Product vision](docs/product-vision.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.4.md)
+- [Release verification](docs/release-verification-v0.1.5.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)

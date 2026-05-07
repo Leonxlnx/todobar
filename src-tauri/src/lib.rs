@@ -3,6 +3,7 @@ use tauri::{
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     Emitter, Manager,
 };
+use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
 const TRAY_TOGGLE_EVENT: &str = "todobar-tray-toggle";
 const TRAY_SETTINGS_EVENT: &str = "todobar-tray-settings";
@@ -64,6 +65,22 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
     Ok(())
 }
 
+fn setup_global_shortcuts(app: &tauri::App) {
+    for shortcut in ["CommandOrControl+Shift+T", "CommandOrControl+Alt+T"] {
+        let result = app
+            .global_shortcut()
+            .on_shortcut(shortcut, move |app, _shortcut, event| {
+                if event.state() == ShortcutState::Pressed {
+                    emit_to_main(app, TRAY_TOGGLE_EVENT);
+                }
+            });
+
+        if let Err(error) = result {
+            eprintln!("failed to register global shortcut {shortcut}: {error}");
+        }
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -78,6 +95,7 @@ pub fn run() {
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
             setup_tray(app)?;
+            setup_global_shortcuts(app);
 
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_decorations(false);
