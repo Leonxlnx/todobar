@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.1.4 - Desktop Control and Product Vision
+
+### Added
+
+- Native tray/menu-bar control for opening Todobar, opening settings, and
+  quitting the app while the sidebar stays out of the taskbar.
+- Product vision documentation covering Version 0, planner upgrades,
+  notifications, AI assistant direction, MCP/Gmail/context connectors, and the
+  future companion manager surface.
+
 ## 0.1.3 - Responsive Edge Polish
 
 ### Fixed

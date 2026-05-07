@@ -392,6 +392,38 @@ function App() {
       return
     }
 
+    let unlistenToggle: (() => void) | undefined
+    let unlistenSettings: (() => void) | undefined
+
+    const setupTrayListeners = async () => {
+      try {
+        const { listen } = await import('@tauri-apps/api/event')
+
+        unlistenToggle = await listen('todobar-tray-toggle', () => {
+          setIsOpen((current) => !current)
+        })
+        unlistenSettings = await listen('todobar-tray-settings', () => {
+          setIsOpen(true)
+          setIsSettingsOpen(true)
+        })
+      } catch {
+        // Tray events are only available in the native desktop shell.
+      }
+    }
+
+    void setupTrayListeners()
+
+    return () => {
+      unlistenToggle?.()
+      unlistenSettings?.()
+    }
+  }, [isNative])
+
+  useEffect(() => {
+    if (!isNative) {
+      return
+    }
+
     const enableAutostart = async () => {
       try {
         const { disable, enable, isEnabled } = await import(

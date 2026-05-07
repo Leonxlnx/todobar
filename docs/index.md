@@ -6,6 +6,7 @@ Start here:
 - [Projektplan Kurzfassung DE](projektplan-kurz-de.md)
 - [Research notes](research-2026-05-02.md)
 - [Roadmap](roadmap.md)
+- [Product vision](product-vision.md)
 - [Backlog](backlog.md)
 - [Product spec V0](product-spec-v0.md)
 
@@ -29,6 +30,7 @@ Desktop/native:
 - [Native test matrix](native-test-matrix.md)
 - [Distribution plan](distribution-plan.md)
 - [Release checklist](release-checklist.md)
+- [Release verification v0.1.4](release-verification-v0.1.4.md)
 - [Release verification v0.1.3](release-verification-v0.1.3.md)
 - [Release verification v0.1.2](release-verification-v0.1.2.md)
 - [Release verification v0.1.1](release-verification-v0.1.1.md)

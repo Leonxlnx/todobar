@@ -81,6 +81,9 @@ Goal: make Todobar useful every day without AI.
 - Quick Capture
 - Command Mode
 - Keyboard navigation
+- Editable tasks
+- Local notifications and reminders
+- Recurring tasks
 - Natural-language date parsing
 - Priority markers
 - Defer/snooze
@@ -128,6 +131,7 @@ First connector targets:
 
 - local Markdown/files
 - GitHub issues and PRs
+- Gmail inbox summaries
 - calendar day context
 - Notion/docs
 - Linear/Jira style issue trackers
@@ -152,6 +156,25 @@ Goal: make it installable and trustworthy.
 - Privacy policy.
 - Contributor guide.
 - Public license.
+
+## Milestone 7 - Companion Manager
+
+Goal: keep the sidebar compact while giving power users a larger planning
+surface.
+
+- Add a second Tauri window for project/list management.
+- Move connector setup and AI provider configuration out of the sidebar.
+- Add bulk task editing.
+- Add notification rule management.
+- Add import/export and backup controls.
+- Add assistant audit log review.
+
+Exit criteria:
+
+- Sidebar stays fast and focused.
+- Larger planning and settings workflows have room to breathe.
+- Users can manage connectors, notifications, and data without cluttering the
+  edge panel.
 
 Open-source default:
 

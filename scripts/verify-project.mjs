@@ -197,10 +197,68 @@ function verifyWorkflows() {
   }
 }
 
+function verifyNativeDesktopSurface() {
+  const cargoToml = read('src-tauri/Cargo.toml')
+  const nativeShell = read('src-tauri/src/lib.rs')
+  const app = read('src/App.tsx')
+  const readme = read('README.md')
+
+  if (!cargoToml.includes('tray-icon')) {
+    fail('src-tauri/Cargo.toml: missing tray-icon feature')
+  }
+
+  for (const token of [
+    'TrayIconBuilder',
+    'todobar-tray-toggle',
+    'todobar-tray-settings',
+    'show_menu_on_left_click(false)',
+  ]) {
+    if (!nativeShell.includes(token) && !app.includes(token)) {
+      fail(`desktop tray control: missing ${token}`)
+    }
+  }
+
+  if (!readme.includes('Native tray/menu-bar control')) {
+    fail('README.md: missing tray/menu-bar feature documentation')
+  }
+}
+
+function verifyProductVision() {
+  const readme = read('README.md')
+  const visionPath = 'docs/product-vision.md'
+  const roadmap = read('docs/roadmap.md')
+
+  if (!existsSync(join(root, visionPath))) {
+    fail(`${visionPath}: missing product vision document`)
+    return
+  }
+
+  const vision = read(visionPath)
+
+  for (const phrase of [
+    'Version 0 - Edge Planner',
+    'Version 1 - Better Planner',
+    'Version 2 - Assistant Layer',
+    'Version 3 - MCP and Context Connectors',
+    'Gmail inbox summaries',
+    'Companion Manager App',
+  ]) {
+    if (!vision.includes(phrase) && !roadmap.includes(phrase)) {
+      fail(`product roadmap: missing ${phrase}`)
+    }
+  }
+
+  if (!readme.includes('Product vision')) {
+    fail('README.md: missing Product vision link')
+  }
+}
+
 verifyVersions()
 verifyMarkdownLinks()
 verifyScripts()
 verifyWorkflows()
+verifyNativeDesktopSurface()
+verifyProductVision()
 
 if (failures.length > 0) {
   console.error('Project verification failed:')

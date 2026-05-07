@@ -1,4 +1,68 @@
-use tauri::Manager;
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
+    Emitter, Manager,
+};
+
+const TRAY_TOGGLE_EVENT: &str = "todobar-tray-toggle";
+const TRAY_SETTINGS_EVENT: &str = "todobar-tray-settings";
+
+fn focus_main_window(app: &tauri::AppHandle) {
+    if let Some(window) = app.get_webview_window("main") {
+        let _ = window.set_always_on_top(true);
+        let _ = window.unminimize();
+        let _ = window.set_focus();
+    }
+}
+
+fn emit_to_main(app: &tauri::AppHandle, event: &str) {
+    focus_main_window(app);
+    let _ = app.emit_to("main", event, ());
+}
+
+fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
+    let toggle = MenuItem::with_id(
+        app,
+        "toggle",
+        "Open / Close Todobar",
+        true,
+        Some("CmdOrCtrl+Shift+T"),
+    )?;
+    let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
+    let quit = MenuItem::with_id(app, "quit", "Quit Todobar", true, None::<&str>)?;
+    let menu = Menu::with_items(app, &[&toggle, &settings, &quit])?;
+    let icon = app.default_window_icon().cloned();
+
+    let mut tray = TrayIconBuilder::with_id("todobar")
+        .tooltip("Todobar")
+        .menu(&menu)
+        .show_menu_on_left_click(false)
+        .on_menu_event(|app, event| match event.id().as_ref() {
+            "toggle" => emit_to_main(app, TRAY_TOGGLE_EVENT),
+            "settings" => emit_to_main(app, TRAY_SETTINGS_EVENT),
+            "quit" => app.exit(0),
+            _ => {}
+        })
+        .on_tray_icon_event(|tray, event| {
+            if matches!(
+                event,
+                TrayIconEvent::Click {
+                    button: MouseButton::Left,
+                    button_state: MouseButtonState::Up,
+                    ..
+                }
+            ) {
+                emit_to_main(tray.app_handle(), TRAY_TOGGLE_EVENT);
+            }
+        });
+
+    if let Some(icon) = icon {
+        tray = tray.icon(icon);
+    }
+
+    tray.build(app)?;
+    Ok(())
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -13,6 +77,8 @@ pub fn run() {
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
         .setup(|app| {
+            setup_tray(app)?;
+
             if let Some(window) = app.get_webview_window("main") {
                 let _ = window.set_decorations(false);
                 let _ = window.set_resizable(false);

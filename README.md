@@ -26,6 +26,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Right-edge native sidebar for Windows and macOS
 - Small draggable handle that opens and closes the panel
 - Global shortcut: `Ctrl/Cmd + Shift + T`
+- Native tray/menu-bar control for open, settings, and quit
 - Autostart on system login
 - Single-instance desktop behavior
 - Always-on-top frameless window
@@ -75,23 +76,31 @@ What is not fully verified yet:
 
 ## Roadmap
 
-- Undo after delete
-- Task editing and keyboard navigation
-- Tray/menu bar controls
-- SQLite-backed local database
-- Import/export
-- Multi-monitor position memory
-- Signed installers
-- Auto-update
-- MCP connectors for local files, GitHub, calendars, Notion, and Linear
-- Optional AI planning actions with explicit permission scopes
+Todobar is planned in product layers:
+
+- Version 0: right-edge planner with local Today, Month Plan, custom lists,
+  launch-at-login, global shortcut, tray/menu-bar control, and responsive native
+  shell.
+- Version 1: better planner with editable tasks, undo, reminders,
+  notifications, recurring tasks, keyboard-first triage, SQLite storage, and
+  import/export.
+- Version 2: assistant layer with AI suggestions, task splitting, Today
+  planning, source/confidence display, approval flow, and audit log.
+- Version 3: MCP/context connectors for local files, GitHub, Gmail, calendar,
+  Notion/docs, and issue trackers.
+- Companion manager: a larger settings/planning window for connectors,
+  notification rules, provider setup, bulk editing, backups, and assistant
+  history.
+
+The detailed plan lives in [Product vision](docs/product-vision.md) and
+[Roadmap](docs/roadmap.md).
 
 ## Install
 
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.3`.
+Current stable release: `v0.1.4`.
 
 Windows:
 
@@ -112,6 +121,7 @@ choose Open.
 - Click the right-edge handle to open or close Todobar.
 - Drag the handle up or down to change its vertical position.
 - Press `Ctrl + Shift + T` on Windows or `Cmd + Shift + T` on macOS to toggle it.
+- Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
 - Use the settings button to adjust appearance, desktop startup, window size,
   handle shape, task density, motion, radius, and opacity.
@@ -214,6 +224,8 @@ Todobar uses:
 - Tauri v2 for native desktop APIs
 - `@tauri-apps/plugin-global-shortcut` for the open/close shortcut
 - `@tauri-apps/plugin-autostart` for launch-at-login
+- Tauri tray/menu-bar APIs for desktop control while the window is skipped from
+  the taskbar
 - `tauri-plugin-single-instance` to prevent duplicate sidebars
 - local browser storage for the current prototype task store
 
@@ -254,8 +266,9 @@ Planning and research notes live in [`docs/`](docs/).
 Useful starting points:
 
 - [Architecture](docs/architecture.md)
+- [Product vision](docs/product-vision.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.3.md)
+- [Release verification](docs/release-verification-v0.1.4.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)
