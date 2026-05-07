@@ -1,0 +1,45 @@
+name: Bug report
+description: Report something broken in Todobar.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - Windows
+        - macOS Apple Silicon
+        - macOS Intel
+        - Web preview
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Todobar version
+      placeholder: v0.1.0
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the visible behavior and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open Todobar
+        2. Click ...
+        3. See ...
+    validations:
+      required: true
+  - type: textarea
+    id: notes
+    attributes:
+      label: Logs, screenshots, or notes
