@@ -8,6 +8,12 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   validate:
     name: Validate (${{ matrix.platform }})
