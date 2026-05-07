@@ -51,6 +51,28 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 | macOS Apple Silicon | Built in CI | Release includes `.dmg`. Unsigned until Apple signing is configured. |
 | macOS Intel | Built in CI | Release includes `.dmg`. Unsigned until Apple signing is configured. |
 
+## Verification Status
+
+The current `main` branch is checked by GitHub Actions on Windows and macOS.
+The release process publishes platform artifacts only after those workflows pass.
+
+What is verified:
+
+- TypeScript and Vite production build
+- ESLint
+- Project consistency checks for versions, docs links, scripts, and workflows
+- Playwright sidebar smoke test
+- Responsive sidebar layout checks for desktop, narrow, and short viewports
+- Rust check
+- Tauri no-bundle native build smoke test
+
+What is not fully verified yet:
+
+- Physical macOS QA on real hardware
+- Windows certificate signing and Apple notarization
+- Signed auto-update
+- Full keyboard/accessibility pass
+
 ## Roadmap
 
 - Undo after delete
@@ -69,7 +91,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.2`.
+Current stable release: `v0.1.3`.
 
 Windows:
 
@@ -233,7 +255,7 @@ Useful starting points:
 
 - [Architecture](docs/architecture.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.2.md)
+- [Release verification](docs/release-verification-v0.1.3.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)

@@ -2,17 +2,47 @@
 
 ## Unreleased
 
-## 0.1.2
+## 0.1.3 - Responsive Edge Polish
+
+### Fixed
+
+- Fixed a 2px handle clipping issue in narrow open-sidebar browser preview
+  layouts.
+
+### Added
+
+- Responsive Playwright checks for desktop, narrow, and short viewports.
+- Release verification documentation for the responsive edge-polish release.
+
+### Verified
+
+- Browser smoke tests now cover the task flow plus responsive sidebar bounds.
+
+## 0.1.2 - Reliability and Open Source Polish
+
+### Added
+
+- Completed-task visibility setting so finished tasks can be hidden without
+  deleting them.
+- Playwright smoke test for the sidebar, settings drawer, and completed-task
+  visibility flow.
+- No-bundle native Tauri build smoke test for Windows and macOS CI.
+- Release verification documentation for the stable release.
+
+### Changed
 
 - Updated GitHub Actions workflow dependencies.
-- Added release verification documentation.
 - Made install instructions version-agnostic to avoid stale release filenames.
-- Added project verification for release versions, docs links, and workflows.
 - Linked release gaps to public GitHub Issues.
-- Added a setting to show or hide completed tasks without deleting them.
-- Added a Playwright smoke test for the sidebar and task visibility setting.
-- Runs the sidebar smoke test in CI on Windows and macOS.
-- Added a no-bundle native Tauri build smoke test for Windows and macOS CI.
+- Expanded project verification to guard scripts, docs links, release versions,
+  and workflow expectations.
+
+### Verified
+
+- CI runs project verification, TypeScript/Vite build, ESLint, Playwright smoke
+  tests, Rust check, and native Tauri build smoke on Windows and macOS.
+- `v0.1.2` release artifacts were published for Windows, macOS Apple Silicon,
+  and macOS Intel.
 
 ## 0.1.1
 

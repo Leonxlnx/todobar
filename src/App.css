@@ -1470,7 +1470,7 @@ kbd {
   }
 
   .edge-handle.is-open {
-    right: calc(100vw - 40px);
+    right: calc(100vw - var(--tab-width));
   }
 
   .task-row {
