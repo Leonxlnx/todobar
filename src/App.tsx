@@ -380,10 +380,18 @@ function App() {
 
     const enableAutostart = async () => {
       try {
-        const { enable, isEnabled } = await import('@tauri-apps/plugin-autostart')
+        const { disable, enable, isEnabled } = await import(
+          '@tauri-apps/plugin-autostart'
+        )
+        const enabled = await isEnabled()
 
-        if (!(await isEnabled())) {
+        if (settings.launchAtLogin && !enabled) {
           await enable()
+          return
+        }
+
+        if (!settings.launchAtLogin && enabled) {
+          await disable()
         }
       } catch {
         // Autostart is best-effort; the UI stays usable if the OS denies it.
@@ -391,7 +399,7 @@ function App() {
     }
 
     void enableAutostart()
-  }, [isNative])
+  }, [isNative, settings.launchAtLogin])
 
   useEffect(() => {
     if (!isNative) {
@@ -845,6 +853,10 @@ function App() {
     '--motion-ms': `${settings.motionMs}ms`,
     '--panel-radius': `${settings.panelRadius}px`,
     '--surface-alpha': `${settings.surfaceAlpha / 100}`,
+    '--task-row-height': `${settings.taskRowHeight}px`,
+    '--task-gap': `${settings.taskGap}px`,
+    '--task-title-size': `${settings.taskTextSize}px`,
+    '--task-meta-size': `${Math.max(10, settings.taskTextSize - 1.5)}px`,
   } as CSSProperties
 
   return (
@@ -1282,6 +1294,15 @@ function SidebarSettingsPanel({
       </div>
 
       <div className="settings-group">
+        <div className="settings-group-title">Desktop</div>
+        <ToggleSetting
+          label="Launch at login"
+          checked={settings.launchAtLogin}
+          onChange={(launchAtLogin) => onChange({ launchAtLogin })}
+        />
+      </div>
+
+      <div className="settings-group">
         <div className="settings-group-title">Window</div>
         <SliderSetting
           label="Panel width"
@@ -1326,6 +1347,37 @@ function SidebarSettingsPanel({
       </div>
 
       <div className="settings-group">
+        <div className="settings-group-title">Tasks</div>
+        <SliderSetting
+          label="Row height"
+          value={settings.taskRowHeight}
+          min={40}
+          max={62}
+          step={1}
+          suffix="px"
+          onChange={(taskRowHeight) => onChange({ taskRowHeight })}
+        />
+        <SliderSetting
+          label="Row gap"
+          value={settings.taskGap}
+          min={4}
+          max={14}
+          step={1}
+          suffix="px"
+          onChange={(taskGap) => onChange({ taskGap })}
+        />
+        <SliderSetting
+          label="Text size"
+          value={settings.taskTextSize}
+          min={11}
+          max={14}
+          step={0.5}
+          suffix="px"
+          onChange={(taskTextSize) => onChange({ taskTextSize })}
+        />
+      </div>
+
+      <div className="settings-group">
         <div className="settings-group-title">Feel</div>
         <SliderSetting
           label="Motion"
@@ -1356,6 +1408,30 @@ function SidebarSettingsPanel({
         />
       </div>
     </section>
+  )
+}
+
+function ToggleSetting({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string
+  checked: boolean
+  onChange: (checked: boolean) => void
+}) {
+  return (
+    <label className="toggle-setting">
+      <span>
+        <strong>{label}</strong>
+      </span>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+      />
+      <em aria-hidden="true" />
+    </label>
   )
 }
 

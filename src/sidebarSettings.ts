@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v17'
+const STORAGE_KEY = 'todobar.sidebar.settings.v18'
 
 export type ThemeMode = 'light' | 'dark'
 
@@ -12,6 +12,10 @@ export type SidebarSettings = {
   motionMs: number
   panelRadius: number
   surfaceAlpha: number
+  taskRowHeight: number
+  taskGap: number
+  taskTextSize: number
+  launchAtLogin: boolean
   theme: ThemeMode
 }
 
@@ -23,6 +27,10 @@ export const defaultSidebarSettings: SidebarSettings = {
   motionMs: 230,
   panelRadius: 18,
   surfaceAlpha: 96,
+  taskRowHeight: 44,
+  taskGap: 7,
+  taskTextSize: 12.5,
+  launchAtLogin: true,
   theme: 'light',
 }
 
@@ -54,6 +62,19 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       86,
       100,
     ),
+    taskRowHeight: clamp(
+      value.taskRowHeight ?? defaultSidebarSettings.taskRowHeight,
+      40,
+      62,
+    ),
+    taskGap: clamp(value.taskGap ?? defaultSidebarSettings.taskGap, 4, 14),
+    taskTextSize: clamp(
+      value.taskTextSize ?? defaultSidebarSettings.taskTextSize,
+      11,
+      14,
+    ),
+    launchAtLogin:
+      value.launchAtLogin ?? defaultSidebarSettings.launchAtLogin,
     theme: value.theme === 'dark' ? 'dark' : 'light',
   }
 }
