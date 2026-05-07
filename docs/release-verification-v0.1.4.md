@@ -6,11 +6,13 @@ and product-vision release.
 ## Release
 
 - Repository: `Leonxlnx/todobar`
-- Planned release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.4
-- CI workflow run for release commit: pending until the `v0.1.4` tag is pushed.
-- Release workflow run: pending until the `v0.1.4` tag is pushed.
+- Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.4
+- CI workflow run for release commit:
+  https://github.com/Leonxlnx/todobar/actions/runs/25515795904
+- Release workflow run:
+  https://github.com/Leonxlnx/todobar/actions/runs/25516231870
 
-Expected published assets:
+Published assets:
 
 - `Todobar_0.1.4_x64-setup.exe`
 - `Todobar_0.1.4_x64_en-US.msi`
@@ -18,6 +20,21 @@ Expected published assets:
 - `Todobar_0.1.4_x64.dmg`
 - `Todobar_aarch64.app.tar.gz`
 - `Todobar_x64.app.tar.gz`
+
+Asset digests:
+
+- `Todobar_0.1.4_x64-setup.exe`:
+  `sha256:52f26f2736ed3e844b5ad42935e628b28649cfd665cc788c97c0f1f9dee7d9bc`
+- `Todobar_0.1.4_x64_en-US.msi`:
+  `sha256:3e53df35d4a8b17bd509d96249067bbea5ee2c6fc7344c9b45bb5186ad4fa749`
+- `Todobar_0.1.4_aarch64.dmg`:
+  `sha256:0d6985d906c980823cd99296bb64f40f73bf9b7d82a452c37db7ce3a8e22213e`
+- `Todobar_0.1.4_x64.dmg`:
+  `sha256:64fb0040db7ef0387d671f2d668a1b0fe4ef9eae2022e2c3fab02e98b1a43e52`
+- `Todobar_aarch64.app.tar.gz`:
+  `sha256:ed86a8fc861e26e35f390b421fc7ce2be11aacdd47ef6ef1a48eb749531a8f0c`
+- `Todobar_x64.app.tar.gz`:
+  `sha256:8ce4ba2414fac9e8cbafdce88ad3f98a9e094a1d2e92ef21011d9cac3e001334`
 
 ## Local Windows Verification
 

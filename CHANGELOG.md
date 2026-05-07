@@ -12,6 +12,11 @@
   notifications, AI assistant direction, MCP/Gmail/context connectors, and the
   future companion manager surface.
 
+### Verified
+
+- `v0.1.4` artifacts were published for Windows, macOS Apple Silicon, and
+  macOS Intel, with release digests recorded in the verification notes.
+
 ## 0.1.3 - Responsive Edge Polish
 
 ### Fixed
