@@ -159,6 +159,10 @@ git tag vX.Y.Z
 git push origin vX.Y.Z
 ```
 
+Before tagging, bump the version in `package.json`, `package-lock.json`,
+`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, and
+`src-tauri/tauri.conf.json`.
+
 The Tauri release workflow uploads the platform installers to GitHub Releases.
 
 Current release workflow output:
