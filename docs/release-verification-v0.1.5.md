@@ -34,11 +34,12 @@ practice. This meant the shortcut could work after clicking Todobar, but not
 reliably from another app.
 
 `v0.1.5` moved shortcut handling into the native Tauri layer. The current
-toggle shortcut is:
+toggle shortcuts are:
 
+- `Alt+T`
 - `CommandOrControl+Alt+T`
 
-The shortcut emits the same internal toggle event used by the tray/menu-bar
+Both shortcuts emit the same internal toggle event used by the tray/menu-bar
 control. Browser tab-restore shortcut chords are intentionally not used.
 
 ## Local Windows Verification

@@ -30,7 +30,7 @@ The product should let users tune the sidebar to their workspace:
 - completed-task visibility
 - section order
 - light/dark mode
-- Minimal, Glass, Skeuo, and Brutal surface styles
+- Codex, Aero, Terminal, and Blueprint theme presets
 
 ## Guardrails
 

@@ -39,7 +39,7 @@ Goal: prove that Tauri can deliver the required native UX.
 
 Exit criteria:
 
-- `Cmd/Ctrl + Alt + T` opens Todobar from another app.
+- `Alt + T` opens Todobar from another app.
 - Window appears on the correct monitor.
 - Sidebar hides without leaving focus weirdness.
 - App can run from tray/menu bar.

@@ -6,8 +6,8 @@
 
 - Added a redesigned sidebar shell with a right-side command rail, compact
   planning status strip, and an in-panel upcoming reminders section.
-- Added Minimal, Glass, Skeuo, and Brutal surface style presets on top of light
-  and dark color modes.
+- Added a real theme picker with Codex, Aero, Terminal, and Blueprint presets on
+  top of light and dark color modes.
 - Added reminder capture controls, quick reminder cycling on task rows, and
   native Tauri notification support with browser preview fallback.
 - Added section ordering controls so Today, Month Plan, and Lists can be
@@ -15,8 +15,8 @@
 
 ### Changed
 
-- Removed the browser tab-restore shortcut chord as a default. `Ctrl/Cmd + Alt
-  + T` is now the only built-in toggle shortcut.
+- Removed the browser tab-restore shortcut chord as a default. `Alt + T` is now
+  the primary toggle shortcut, with `Ctrl/Cmd + Alt + T` as a fallback.
 - Reworked task sections from stacked cards into calmer command rows with
   subtler action chrome and no hover lift.
 - Increased the default sidebar width for a less cramped open-source first-run
@@ -36,7 +36,7 @@
 
 ### Added
 
-- Added `Ctrl/Cmd + Alt + T` as a global toggle shortcut.
+- Added `Ctrl/Cmd + Alt + T` as a global toggle fallback.
 - Extended project verification so native shortcut registration remains covered.
 
 ### Verified

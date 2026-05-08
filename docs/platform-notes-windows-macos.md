@@ -53,7 +53,8 @@ Recommended approach:
 
 Candidate defaults:
 
-- toggle sidebar: `CommandOrControl+Alt+T`
+- toggle sidebar: `Alt+T`
+- fallback toggle: `CommandOrControl+Alt+T`
 - quick capture: `CommandOrControl+Shift+Space`
 - command palette inside app: `CommandOrControl+K`
 

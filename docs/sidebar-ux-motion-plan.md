@@ -64,7 +64,7 @@ Important behavior:
 
 ## Keyboard Rules
 
-- `CommandOrControl+Alt+T`: toggle sidebar
+- `Alt+T`: toggle sidebar
 - `CommandOrControl+Shift+Space`: quick capture candidate
 - `CommandOrControl+K`: command palette while sidebar is open
 - `Escape`: close current overlay/state

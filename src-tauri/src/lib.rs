@@ -27,7 +27,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
         "toggle",
         "Open / Close Todobar",
         true,
-        Some("CmdOrCtrl+Alt+T"),
+        Some("Alt+T"),
     )?;
     let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Todobar", true, None::<&str>)?;
@@ -66,7 +66,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
 }
 
 fn setup_global_shortcuts(app: &tauri::App) {
-    for shortcut in ["CommandOrControl+Alt+T"] {
+    for shortcut in ["Alt+T", "CommandOrControl+Alt+T"] {
         let result = app
             .global_shortcut()
             .on_shortcut(shortcut, move |app, _shortcut, event| {
@@ -109,7 +109,7 @@ pub fn run() {
                     let monitor_size = monitor.size();
                     let monitor_position = monitor.position();
                     let scale_factor = monitor.scale_factor();
-                    let window_width = (382.0_f64 * scale_factor).round() as u32;
+                    let window_width = (442.0_f64 * scale_factor).round() as u32;
                     let tab_width = (42.0_f64 * scale_factor).round() as u32;
                     let closed_offset = (2.0_f64 * scale_factor).round() as i32;
 

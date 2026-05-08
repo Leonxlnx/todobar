@@ -39,7 +39,8 @@ Optional later:
 
 | Test | Expected result |
 | --- | --- |
-| Default shortcut registers | `CommandOrControl+Alt+T` works. |
+| Default shortcut registers | `Alt+T` works. |
+| Fallback shortcut registers | `CommandOrControl+Alt+T` works if the primary shortcut is unavailable. |
 | Shortcut collision | App shows failure and offers edit. |
 | Shortcut changed in settings | New shortcut persists after restart. |
 | Quick capture shortcut | Opens capture state directly. |
