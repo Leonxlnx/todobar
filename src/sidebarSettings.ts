@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v18'
+const STORAGE_KEY = 'todobar.sidebar.settings.v19'
 
 export type ThemeMode = 'light' | 'dark'
+export type VisualStyle = 'minimal' | 'glass' | 'brutal' | 'skeuo'
 
 export type SidebarSettings = {
   panelWidth: number
@@ -17,7 +18,9 @@ export type SidebarSettings = {
   taskTextSize: number
   showCompleted: boolean
   launchAtLogin: boolean
+  notificationsEnabled: boolean
   theme: ThemeMode
+  visualStyle: VisualStyle
 }
 
 export const defaultSidebarSettings: SidebarSettings = {
@@ -33,7 +36,9 @@ export const defaultSidebarSettings: SidebarSettings = {
   taskTextSize: 12.5,
   showCompleted: true,
   launchAtLogin: true,
+  notificationsEnabled: true,
   theme: 'light',
+  visualStyle: 'minimal',
 }
 
 const clamp = (value: number, min: number, max: number) =>
@@ -75,11 +80,18 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       11,
       14,
     ),
-    showCompleted:
-      value.showCompleted ?? defaultSidebarSettings.showCompleted,
+    showCompleted: value.showCompleted ?? defaultSidebarSettings.showCompleted,
     launchAtLogin:
       value.launchAtLogin ?? defaultSidebarSettings.launchAtLogin,
+    notificationsEnabled:
+      value.notificationsEnabled ??
+      defaultSidebarSettings.notificationsEnabled,
     theme: value.theme === 'dark' ? 'dark' : 'light',
+    visualStyle: ['minimal', 'glass', 'brutal', 'skeuo'].includes(
+      value.visualStyle ?? '',
+    )
+      ? (value.visualStyle as VisualStyle)
+      : defaultSidebarSettings.visualStyle,
   }
 }
 

@@ -10,6 +10,7 @@
   ],
   "permissions": [
     "global-shortcut:default",
-    "autostart:default"
+    "autostart:default",
+    "notification:default"
   ]
 }

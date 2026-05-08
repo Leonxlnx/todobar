@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+### Added
+
+- Added Minimal, Glass, Skeuo, and Brutal surface style presets on top of light
+  and dark color modes.
+- Added reminder capture controls, quick reminder cycling on task rows, and
+  native Tauri notification support with browser preview fallback.
+
+### Changed
+
+- Made task and quick-add hover states calmer so controls no longer float upward
+  during normal pointer movement.
+- Memoized task rows and added lightweight rendering containment for long task
+  lists.
+
 ## 0.1.5 - Native Shortcut Fix
 
 ### Fixed

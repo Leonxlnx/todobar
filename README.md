@@ -8,8 +8,8 @@ of the way as a small docked handle, opens into a clean task panel, and is built
 for fast capture while you work in other apps.
 
 The app is early, but the foundation is real: Tauri v2, React, local persisted
-tasks, global shortcuts, autostart, single-instance behavior, and release
-automation for Windows and macOS.
+tasks, reminders, native notifications, global shortcuts, autostart,
+single-instance behavior, and release automation for Windows and macOS.
 
 ## Why
 
@@ -37,9 +37,13 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Custom task lists
 - Add, complete, prioritize, collapse, and delete tasks
 - Delete custom lists
+- Add reminder times while capturing tasks
+- Quick reminder cycling on existing tasks
+- Native notification plugin support with browser fallback in preview
 - Optional completed-task visibility
 - Local persistence through browser storage
-- Light and dark themes
+- Light and dark modes
+- Minimal, Glass, Skeuo, and Brutal surface styles
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
   completed-task visibility, launch-at-login, and surface opacity

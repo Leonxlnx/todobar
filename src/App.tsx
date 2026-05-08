@@ -1,4 +1,6 @@
 import {
+  Bell,
+  BellRing,
   CalendarDays,
   Check,
   Circle,
@@ -15,7 +17,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
 import { useSidebarSettings } from './sidebarSettings'
@@ -30,6 +32,7 @@ const TASK_STORAGE_KEYS = {
   month: 'todobar.month.v1',
 } as const
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
+const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
 const PRIORITY_ORDER: Record<Task['priority'], number> = {
   focus: 0,
   normal: 1,
@@ -38,6 +41,7 @@ const PRIORITY_ORDER: Record<Task['priority'], number> = {
 
 type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
+type ReminderDrafts = Record<TaskListId, string>
 type CollapsedSections = Record<TaskListId, boolean>
 type CustomTaskList = {
   id: string
@@ -101,12 +105,69 @@ function nextPriority(priority: Task['priority']): Task['priority'] {
   return 'normal'
 }
 
-function createTask(title: string, meta: string): Task {
+function createTask(title: string, meta: string, reminderAt?: string): Task {
   return {
     id: Date.now(),
     title,
     meta,
     priority: 'normal',
+    reminderAt: reminderAt || undefined,
+  }
+}
+
+function toLocalDateTimeValue(date: Date) {
+  const offsetDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+
+  return offsetDate.toISOString().slice(0, 16)
+}
+
+function nextQuickReminder(current?: string) {
+  if (!current) {
+    const next = new Date()
+    next.setMinutes(next.getMinutes() + 30)
+    next.setSeconds(0, 0)
+    return toLocalDateTimeValue(next)
+  }
+
+  const next = new Date()
+  next.setDate(next.getDate() + 1)
+  next.setHours(9, 0, 0, 0)
+
+  const currentTime = new Date(current).getTime()
+  const tomorrowTime = next.getTime()
+
+  return Number.isFinite(currentTime) && currentTime < tomorrowTime
+    ? toLocalDateTimeValue(next)
+    : undefined
+}
+
+function formatReminder(reminderAt?: string) {
+  if (!reminderAt) {
+    return ''
+  }
+
+  const date = new Date(reminderAt)
+
+  if (Number.isNaN(date.getTime())) {
+    return ''
+  }
+
+  return new Intl.DateTimeFormat(undefined, {
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    month: 'short',
+  }).format(date)
+}
+
+function loadNotifiedReminderKeys() {
+  try {
+    const stored = window.localStorage.getItem(NOTIFIED_REMINDERS_STORAGE_KEY)
+    const parsed = stored ? (JSON.parse(stored) as Record<string, boolean>) : {}
+
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
   }
 }
 
@@ -196,8 +257,18 @@ function App() {
   )
   const [customLists, setCustomLists] = useState<CustomTaskList[]>(loadCustomLists)
   const [drafts, setDrafts] = useState<TaskDrafts>({ today: '', month: '' })
+  const [reminderDrafts, setReminderDrafts] = useState<ReminderDrafts>({
+    today: '',
+    month: '',
+  })
   const [customDrafts, setCustomDrafts] = useState<Record<string, string>>({})
+  const [customReminderDrafts, setCustomReminderDrafts] = useState<
+    Record<string, string>
+  >({})
   const [newListDraft, setNewListDraft] = useState('')
+  const notifiedReminderKeys = useRef<Record<string, boolean>>(
+    loadNotifiedReminderKeys(),
+  )
   const [collapsedSections, setCollapsedSections] =
     useState<CollapsedSections>({
       today: false,
@@ -224,6 +295,16 @@ function App() {
         ? sortedMonthTasks
         : sortedMonthTasks.filter((task) => !task.done),
     [settings.showCompleted, sortedMonthTasks],
+  )
+  const reminderTasks = useMemo(
+    () => [
+      ...todayTasks.map((task) => ({ listTitle: 'Today', task })),
+      ...monthTasks.map((task) => ({ listTitle: 'Month Plan', task })),
+      ...customLists.flatMap((list) =>
+        list.tasks.map((task) => ({ listTitle: list.title, task })),
+      ),
+    ],
+    [customLists, monthTasks, todayTasks],
   )
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
@@ -350,6 +431,97 @@ function App() {
       // Desktop builds can move custom lists into the same local store as tasks.
     }
   }, [customLists])
+
+  useEffect(() => {
+    if (!settings.notificationsEnabled) {
+      return
+    }
+
+    let cancelled = false
+
+    const notify = async (task: Task, listTitle: string) => {
+      const body = `${listTitle} · ${task.meta}`
+
+      try {
+        if (isNative) {
+          const {
+            isPermissionGranted,
+            requestPermission,
+            sendNotification,
+          } = await import('@tauri-apps/plugin-notification')
+
+          let permissionGranted = await isPermissionGranted()
+
+          if (!permissionGranted) {
+            permissionGranted = (await requestPermission()) === 'granted'
+          }
+
+          if (permissionGranted && !cancelled) {
+            sendNotification({ body, title: task.title })
+            return true
+          }
+
+          return false
+        }
+
+        if (!('Notification' in window)) {
+          return false
+        }
+
+        let permission = Notification.permission
+
+        if (permission === 'default') {
+          permission = await Notification.requestPermission()
+        }
+
+        if (permission === 'granted' && !cancelled) {
+          new Notification(task.title, { body })
+          return true
+        }
+      } catch {
+        // Notifications are best-effort; tasks and reminders stay usable.
+      }
+
+      return false
+    }
+
+    const checkReminders = () => {
+      const now = Date.now()
+
+      for (const { listTitle, task } of reminderTasks) {
+        if (!task.reminderAt || task.done) {
+          continue
+        }
+
+        const dueTime = new Date(task.reminderAt).getTime()
+
+        if (!Number.isFinite(dueTime) || dueTime > now) {
+          continue
+        }
+
+        const key = `${task.id}:${task.reminderAt}`
+
+        if (notifiedReminderKeys.current[key]) {
+          continue
+        }
+
+        notifiedReminderKeys.current[key] = true
+        window.localStorage.setItem(
+          NOTIFIED_REMINDERS_STORAGE_KEY,
+          JSON.stringify(notifiedReminderKeys.current),
+        )
+        void notify(task, listTitle)
+      }
+    }
+
+    checkReminders()
+    const interval = window.setInterval(checkReminders, 30000)
+
+    return () => {
+      cancelled = true
+      window.clearInterval(interval)
+    }
+  }, [isNative, reminderTasks, settings.notificationsEnabled])
 
   useEffect(() => {
     if (!isNative) {
@@ -600,6 +772,10 @@ function App() {
     setDrafts((current) => ({ ...current, [listId]: value }))
   }
 
+  const updateReminderDraft = (listId: TaskListId, value: string) => {
+    setReminderDrafts((current) => ({ ...current, [listId]: value }))
+  }
+
   const updateTasks = (
     listId: TaskListId,
     updater: (tasks: Task[]) => Task[],
@@ -617,10 +793,15 @@ function App() {
     }
 
     updateTasks(listId, (tasks) => [
-      createTask(title, listId === 'today' ? 'Today' : 'Month Plan'),
+      createTask(
+        title,
+        listId === 'today' ? 'Today' : 'Month Plan',
+        reminderDrafts[listId],
+      ),
       ...tasks,
     ])
     setDrafts((current) => ({ ...current, [listId]: '' }))
+    setReminderDrafts((current) => ({ ...current, [listId]: '' }))
     setCollapsedSections((current) => ({ ...current, [listId]: false }))
     setIsOpen(true)
   }
@@ -647,6 +828,16 @@ function App() {
       tasks.map((task) =>
         task.id === id
           ? { ...task, priority: nextPriority(task.priority) }
+          : task,
+      ),
+    )
+  }
+
+  const cycleTaskReminder = (listId: TaskListId, id: number) => {
+    updateTasks(listId, (tasks) =>
+      tasks.map((task) =>
+        task.id === id
+          ? { ...task, reminderAt: nextQuickReminder(task.reminderAt) }
           : task,
       ),
     )
@@ -695,6 +886,10 @@ function App() {
     setCustomDrafts((current) => ({ ...current, [listId]: value }))
   }
 
+  const updateCustomReminderDraft = (listId: string, value: string) => {
+    setCustomReminderDrafts((current) => ({ ...current, [listId]: value }))
+  }
+
   const updateCustomListTasks = (
     listId: string,
     updater: (tasks: Task[]) => Task[],
@@ -715,10 +910,11 @@ function App() {
     }
 
     updateCustomListTasks(listId, (tasks) => [
-      createTask(title, list.title),
+      createTask(title, list.title, customReminderDrafts[listId]),
       ...tasks,
     ])
     setCustomDrafts((current) => ({ ...current, [listId]: '' }))
+    setCustomReminderDrafts((current) => ({ ...current, [listId]: '' }))
     setCustomLists((lists) =>
       lists.map((item) =>
         item.id === listId ? { ...item, collapsed: false } : item,
@@ -753,6 +949,16 @@ function App() {
     )
   }
 
+  const cycleCustomTaskReminder = (listId: string, taskId: number) => {
+    updateCustomListTasks(listId, (tasks) =>
+      tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, reminderAt: nextQuickReminder(task.reminderAt) }
+          : task,
+      ),
+    )
+  }
+
   const deleteCustomTask = (listId: string, taskId: number) => {
     updateCustomListTasks(listId, (tasks) =>
       tasks.filter((task) => task.id !== taskId),
@@ -770,6 +976,11 @@ function App() {
   const deleteCustomList = (listId: string) => {
     setCustomLists((lists) => lists.filter((list) => list.id !== listId))
     setCustomDrafts((current) => {
+      const next = { ...current }
+      delete next[listId]
+      return next
+    })
+    setCustomReminderDrafts((current) => {
       const next = { ...current }
       delete next[listId]
       return next
@@ -873,7 +1084,7 @@ function App() {
     <main
       className={`workspace ${isNative ? 'is-native' : 'is-web-preview'} ${
         isOpen ? 'is-sidebar-open' : 'is-sidebar-closed'
-      } theme-${settings.theme}`}
+      } theme-${settings.theme} style-${settings.visualStyle}`}
       style={appStyle}
     >
       <section
@@ -1036,8 +1247,10 @@ function App() {
               <QuickAdd
                 ariaLabel="Add a task to Today"
                 value={drafts.today}
+                reminderValue={reminderDrafts.today}
                 placeholder="Add task..."
                 onChange={(value) => updateDraft('today', value)}
+                onReminderChange={(value) => updateReminderDraft('today', value)}
                 onSubmit={() => addTask('today')}
                 onKeyDown={(event) => onDraftKeyDown(event, 'today')}
               />
@@ -1049,6 +1262,7 @@ function App() {
                     index={index}
                     onToggle={(id) => toggleTask('today', id)}
                     onPriority={(id) => cycleTaskPriority('today', id)}
+                    onReminder={(id) => cycleTaskReminder('today', id)}
                     onDelete={(id) => deleteTask('today', id)}
                   />
                 ))}
@@ -1089,8 +1303,10 @@ function App() {
               <QuickAdd
                 ariaLabel="Add a task to Month Plan"
                 value={drafts.month}
+                reminderValue={reminderDrafts.month}
                 placeholder="Add month task..."
                 onChange={(value) => updateDraft('month', value)}
+                onReminderChange={(value) => updateReminderDraft('month', value)}
                 onSubmit={() => addTask('month')}
                 onKeyDown={(event) => onDraftKeyDown(event, 'month')}
               />
@@ -1102,6 +1318,7 @@ function App() {
                     index={index}
                     onToggle={(id) => toggleTask('month', id)}
                     onPriority={(id) => cycleTaskPriority('month', id)}
+                    onReminder={(id) => cycleTaskReminder('month', id)}
                     onDelete={(id) => deleteTask('month', id)}
                   />
                 ))}
@@ -1186,8 +1403,12 @@ function App() {
                       <QuickAdd
                         ariaLabel={`Add a task to ${list.title}`}
                         value={customDrafts[list.id] ?? ''}
+                        reminderValue={customReminderDrafts[list.id] ?? ''}
                         placeholder="Add task..."
                         onChange={(value) => updateCustomDraft(list.id, value)}
+                        onReminderChange={(value) =>
+                          updateCustomReminderDraft(list.id, value)
+                        }
                         onSubmit={() => addCustomTask(list.id)}
                         onKeyDown={(event) =>
                           onCustomDraftKeyDown(event, list.id)
@@ -1203,6 +1424,9 @@ function App() {
                               onToggle={(id) => toggleCustomTask(list.id, id)}
                               onPriority={(id) =>
                                 cycleCustomTaskPriority(list.id, id)
+                              }
+                              onReminder={(id) =>
+                                cycleCustomTaskReminder(list.id, id)
                               }
                               onDelete={(id) => deleteCustomTask(list.id, id)}
                             />
@@ -1226,20 +1450,31 @@ function App() {
 function QuickAdd({
   ariaLabel,
   value,
+  reminderValue,
   placeholder,
   onChange,
+  onReminderChange,
   onSubmit,
   onKeyDown,
 }: {
   ariaLabel: string
   value: string
+  reminderValue: string
   placeholder: string
   onChange: (value: string) => void
+  onReminderChange: (value: string) => void
   onSubmit: () => void
   onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void
 }) {
+  const [isReminderOpen, setIsReminderOpen] = useState(false)
+  const hasReminder = Boolean(reminderValue)
+
   return (
-    <div className="quick-add">
+    <div
+      className={`quick-add ${isReminderOpen ? 'is-reminder-open' : ''} ${
+        hasReminder ? 'has-reminder' : ''
+      }`}
+    >
       <Inbox size={16} />
       <input
         aria-label={ariaLabel}
@@ -1250,11 +1485,43 @@ function QuickAdd({
       />
       <button
         type="button"
+        className="reminder-toggle"
+        aria-label={hasReminder ? 'Edit reminder time' : 'Add reminder time'}
+        aria-pressed={hasReminder}
+        onClick={() => setIsReminderOpen((current) => !current)}
+      >
+        {hasReminder ? <BellRing size={15} /> : <Bell size={15} />}
+      </button>
+      <button
+        type="button"
+        className="submit-task"
         aria-label="Add task"
         onClick={onSubmit}
       >
         <Plus size={16} />
       </button>
+      {isReminderOpen ? (
+        <div className="reminder-popover">
+          <label>
+            <span>Remind</span>
+            <input
+              aria-label="Reminder time"
+              type="datetime-local"
+              value={reminderValue}
+              onChange={(event) => onReminderChange(event.target.value)}
+            />
+          </label>
+          {hasReminder ? (
+            <button
+              type="button"
+              aria-label="Clear reminder"
+              onClick={() => onReminderChange('')}
+            >
+              <X size={13} />
+            </button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -1287,8 +1554,8 @@ function SidebarSettingsPanel({
       </div>
 
       <div className="settings-group settings-appearance">
-        <div className="settings-group-title">Appearance</div>
-        <div className="segmented-control" aria-label="Appearance">
+        <div className="settings-group-title">Mode</div>
+        <div className="segmented-control" aria-label="Color mode">
           <button
             type="button"
             className={settings.theme === 'light' ? 'is-selected' : ''}
@@ -1306,12 +1573,37 @@ function SidebarSettingsPanel({
         </div>
       </div>
 
+      <div className="settings-group settings-appearance">
+        <div className="settings-group-title">Surface</div>
+        <div className="segmented-control segmented-control-four" aria-label="Surface style">
+          {(['minimal', 'glass', 'skeuo', 'brutal'] as const).map((style) => (
+            <button
+              type="button"
+              key={style}
+              className={settings.visualStyle === style ? 'is-selected' : ''}
+              onClick={() => onChange({ visualStyle: style })}
+            >
+              {style === 'skeuo'
+                ? 'Skeuo'
+                : style === 'brutal'
+                  ? 'Brutal'
+                  : style[0].toUpperCase() + style.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="settings-group">
         <div className="settings-group-title">Desktop</div>
         <ToggleSetting
           label="Launch at login"
           checked={settings.launchAtLogin}
           onChange={(launchAtLogin) => onChange({ launchAtLogin })}
+        />
+        <ToggleSetting
+          label="Notifications"
+          checked={settings.notificationsEnabled}
+          onChange={(notificationsEnabled) => onChange({ notificationsEnabled })}
         />
       </div>
 
@@ -1491,17 +1783,19 @@ function SliderSetting({
   )
 }
 
-function TaskRow({
+const TaskRow = memo(function TaskRow({
   task,
   index = 0,
   onToggle,
   onPriority,
+  onReminder,
   onDelete,
 }: {
   task: Task
   index?: number
   onToggle?: (id: number) => void
   onPriority?: (id: number) => void
+  onReminder?: (id: number) => void
   onDelete?: (id: number) => void
 }) {
   const priorityLabel =
@@ -1510,6 +1804,7 @@ function TaskRow({
       : task.priority === 'later'
         ? 'Later'
         : 'Task'
+  const reminderLabel = formatReminder(task.reminderAt)
 
   return (
     <article
@@ -1528,7 +1823,15 @@ function TaskRow({
       </button>
       <div className="task-body">
         <strong className={task.done ? 'is-done' : ''}>{task.title}</strong>
-        <span>{task.meta}</span>
+        <span>
+          {task.meta}
+          {reminderLabel ? (
+            <em className="task-reminder">
+              <Bell size={10} />
+              {reminderLabel}
+            </em>
+          ) : null}
+        </span>
       </div>
       <div className="row-actions">
         <button
@@ -1541,6 +1844,18 @@ function TaskRow({
         </button>
         <button
           type="button"
+          className={`reminder-button ${task.reminderAt ? 'is-set' : ''}`}
+          aria-label={
+            task.reminderAt
+              ? `Reminder set for ${reminderLabel}. Click to change`
+              : `Add reminder for ${task.title}`
+          }
+          onClick={() => onReminder?.(task.id)}
+        >
+          {task.reminderAt ? <BellRing size={13} /> : <Bell size={13} />}
+        </button>
+        <button
+          type="button"
           className="delete-button"
           aria-label={`Delete ${task.title}`}
           onClick={() => onDelete?.(task.id)}
@@ -1550,6 +1865,19 @@ function TaskRow({
       </div>
     </article>
   )
+}, areTaskRowsEqual)
+
+function areTaskRowsEqual(
+  previous: {
+    task: Task
+    index?: number
+  },
+  next: {
+    task: Task
+    index?: number
+  },
+) {
+  return previous.task === next.task && previous.index === next.index
 }
 
 export default App

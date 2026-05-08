@@ -12,6 +12,9 @@
   --task-gap: 7px;
   --task-title-size: 12.5px;
   --task-meta-size: 11px;
+  --workspace-bg:
+    radial-gradient(circle at 18% 16%, rgba(24, 26, 32, 0.055), transparent 28%),
+    linear-gradient(145deg, #f7f7f6 0%, #eff1f2 48%, #e6e9ec 100%);
   --ink: #111318;
   --muted: #69707a;
   --line: rgba(24, 26, 32, 0.12);
@@ -30,8 +33,12 @@
   --range-thumb: #202228;
   --range-thumb-border: rgba(255, 255, 255, 0.9);
   --surface-hover: #f0f2f4;
+  --row-hover-bg: #fff;
+  --row-hover-border: rgba(31, 33, 38, 0.16);
+  --control-radius: 9px;
+  --task-radius: 9px;
   --row-shadow: 0 1px 0 rgba(24, 26, 32, 0.025);
-  --row-shadow-hover: 0 10px 26px rgba(24, 26, 32, 0.075);
+  --row-shadow-hover: 0 7px 18px rgba(24, 26, 32, 0.055);
   --codex-black: #0d0d0e;
   --codex-slate: #18181b;
   --codex-muted: #8a8f98;
@@ -44,12 +51,13 @@
   position: relative;
   overflow: hidden;
   color: var(--ink);
-  background:
-    radial-gradient(circle at 18% 16%, rgba(24, 26, 32, 0.055), transparent 28%),
-    linear-gradient(145deg, #f7f7f6 0%, #eff1f2 48%, #e6e9ec 100%);
+  background: var(--workspace-bg);
 }
 
 .workspace.theme-dark {
+  --workspace-bg:
+    radial-gradient(circle at 18% 16%, rgba(244, 244, 245, 0.045), transparent 28%),
+    linear-gradient(145deg, #0d0d0e 0%, #121216 48%, #18181b 100%);
   --ink: #f4f4f5;
   --muted: #9b9ca3;
   --line: rgba(255, 255, 255, 0.075);
@@ -68,12 +76,97 @@
   --range-thumb: #f4f4f5;
   --range-thumb-border: rgba(255, 255, 255, 0.2);
   --surface-hover: #1c1c1f;
+  --row-hover-bg: #18181b;
+  --row-hover-border: rgba(255, 255, 255, 0.12);
   --row-shadow: none;
   --row-shadow-hover: none;
   --handle-bg:
     linear-gradient(180deg, #26262b 0%, #151518 100%);
   --handle-hover-bg:
     linear-gradient(180deg, #303036 0%, #19191d 100%);
+}
+
+.workspace.style-glass {
+  --sidebar-bg: rgba(255, 255, 255, calc(var(--surface-alpha) * 0.76));
+  --sidebar-solid-bg: rgba(250, 250, 249, 0.86);
+  --control-bg: rgba(255, 255, 255, 0.56);
+  --task-bg: rgba(255, 255, 255, 0.68);
+  --settings-surface: rgba(250, 250, 249, 0.9);
+  --surface-hover: rgba(255, 255, 255, 0.74);
+  --row-hover-bg: rgba(255, 255, 255, 0.82);
+  --line: rgba(24, 26, 32, 0.11);
+  --task-border: rgba(24, 26, 32, 0.105);
+  --row-shadow: 0 14px 42px rgba(31, 41, 55, 0.075);
+  --row-shadow-hover: 0 18px 50px rgba(31, 41, 55, 0.095);
+}
+
+.workspace.theme-dark.style-glass {
+  --sidebar-bg: rgba(16, 16, 18, calc(var(--surface-alpha) * 0.8));
+  --sidebar-solid-bg: rgba(13, 13, 14, 0.9);
+  --control-bg: rgba(255, 255, 255, 0.055);
+  --task-bg: rgba(255, 255, 255, 0.07);
+  --settings-surface: rgba(13, 13, 14, 0.94);
+  --surface-hover: rgba(255, 255, 255, 0.085);
+  --row-hover-bg: rgba(255, 255, 255, 0.09);
+  --task-border: rgba(255, 255, 255, 0.11);
+}
+
+.workspace.style-brutal {
+  --workspace-bg: #f7f4ee;
+  --sidebar-border: #111318;
+  --task-border: #111318;
+  --line: rgba(17, 19, 24, 0.42);
+  --control-bg: #fffaf1;
+  --task-bg: #fffdf7;
+  --surface-hover: #f2eadf;
+  --row-hover-bg: #fff8dc;
+  --control-radius: 4px;
+  --task-radius: 4px;
+  --row-shadow: 3px 3px 0 #111318;
+  --row-shadow-hover: 3px 3px 0 #111318;
+  --handle-bg: linear-gradient(180deg, #fffef8 0%, #f0eadf 100%);
+}
+
+.workspace.theme-dark.style-brutal {
+  --workspace-bg: #090909;
+  --sidebar-border: #f4f4f5;
+  --task-border: rgba(244, 244, 245, 0.8);
+  --line: rgba(244, 244, 245, 0.28);
+  --control-bg: #101012;
+  --task-bg: #141416;
+  --surface-hover: #1e1e22;
+  --row-hover-bg: #1a1a1e;
+  --row-shadow: 3px 3px 0 rgba(244, 244, 245, 0.92);
+  --row-shadow-hover: 3px 3px 0 rgba(244, 244, 245, 0.92);
+}
+
+.workspace.style-skeuo {
+  --workspace-bg:
+    linear-gradient(145deg, #f4f1ea 0%, #e9edf0 52%, #dfe5ea 100%);
+  --sidebar-bg: rgba(250, 248, 242, var(--surface-alpha));
+  --sidebar-solid-bg: #faf8f2;
+  --control-bg: #ece8df;
+  --task-bg: #fffdf8;
+  --task-border: rgba(92, 78, 57, 0.18);
+  --surface-hover: #f6f1e8;
+  --row-hover-bg: #fffaf0;
+  --control-radius: 12px;
+  --task-radius: 12px;
+  --row-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.78) inset,
+    0 8px 18px rgba(83, 70, 48, 0.08);
+  --row-shadow-hover:
+    0 1px 0 rgba(255, 255, 255, 0.86) inset,
+    0 10px 22px rgba(83, 70, 48, 0.1);
+}
+
+.workspace.theme-dark.style-skeuo {
+  --workspace-bg: linear-gradient(145deg, #0b0b0c 0%, #141313 100%);
+  --control-bg: #171616;
+  --task-bg: #1b1a18;
+  --task-border: rgba(255, 255, 255, 0.1);
+  --surface-hover: #24221f;
+  --row-hover-bg: #211f1d;
 }
 
 .workspace.theme-dark .native-dock-surface path {
@@ -251,6 +344,7 @@ button {
 .quick-add button,
 .check-button,
 .priority-button,
+.reminder-button,
 .delete-button,
 .custom-list-toggle {
   width: 30px;
@@ -276,6 +370,7 @@ button {
 .quick-add button:hover,
 .check-button:hover,
 .priority-button:hover,
+.reminder-button:hover,
 .delete-button:hover,
 .custom-list-toggle:hover {
   color: var(--ink);
@@ -290,6 +385,7 @@ button {
 .workspace.theme-dark .quick-add button:hover,
 .workspace.theme-dark .check-button:hover,
 .workspace.theme-dark .priority-button:hover,
+.workspace.theme-dark .reminder-button:hover,
 .workspace.theme-dark .delete-button:hover,
 .workspace.theme-dark .custom-list-toggle:hover {
   color: var(--ink);
@@ -305,6 +401,7 @@ button {
 .check-button:focus-visible,
 .edge-handle:focus-visible,
 .priority-button:focus-visible,
+.reminder-button:focus-visible,
 .delete-button:focus-visible,
 .custom-list-title:focus-visible,
 .custom-list-toggle:focus-visible {
@@ -320,6 +417,7 @@ button {
 .workspace.theme-dark .check-button:focus-visible,
 .workspace.theme-dark .edge-handle:focus-visible,
 .workspace.theme-dark .priority-button:focus-visible,
+.workspace.theme-dark .reminder-button:focus-visible,
 .workspace.theme-dark .delete-button:focus-visible,
 .workspace.theme-dark .custom-list-title:focus-visible,
 .workspace.theme-dark .custom-list-toggle:focus-visible {
@@ -691,26 +789,27 @@ kbd {
 }
 
 .quick-add {
+  position: relative;
   min-height: 37px;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 8px;
   padding: 4px 5px 4px 10px;
   color: var(--muted);
   border: 1px solid var(--task-border);
-  border-radius: 9px;
+  border-radius: var(--control-radius);
   background: var(--control-bg);
   box-shadow: none;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
-    background 160ms ease,
-    transform 160ms ease;
+    background 160ms ease;
 }
 
 .quick-add:hover {
-  transform: translateY(-1px);
+  border-color: var(--row-hover-border);
+  background: var(--surface-hover);
 }
 
 .quick-add input {
@@ -731,6 +830,53 @@ kbd {
   border-color: rgba(31, 33, 38, 0.24);
   background: var(--task-bg);
   box-shadow: 0 0 0 3px rgba(31, 33, 38, 0.045);
+}
+
+.quick-add.has-reminder .reminder-toggle {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.reminder-popover {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 10px;
+  right: 5px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--task-border);
+  border-radius: var(--control-radius);
+  background: var(--task-bg);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.reminder-popover label {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.reminder-popover span {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 720;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.reminder-popover input {
+  width: 100%;
+  height: 30px;
+  padding: 0 8px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--control-bg);
 }
 
 .settings-panel {
@@ -985,6 +1131,10 @@ kbd {
   background: transparent;
 }
 
+.segmented-control-four {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
 .segmented-control button {
   height: 33px;
   color: var(--muted);
@@ -1121,6 +1271,7 @@ kbd {
 
 .list-create {
   min-height: 36px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .custom-list-stack {
@@ -1216,23 +1367,23 @@ kbd {
   gap: 9px;
   padding: 7px 8px 7px 7px;
   border: 1px solid var(--task-border);
-  border-radius: 9px;
+  border-radius: var(--task-radius);
   background: var(--task-bg);
   box-shadow: var(--row-shadow);
   animation: task-row-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
   animation-delay: var(--row-delay, 0ms);
-  will-change: transform;
+  content-visibility: auto;
+  contain-intrinsic-size: var(--task-row-height);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
-    background 180ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    background 180ms ease;
 }
 
 .task-row:hover {
-  border-color: rgba(31, 33, 38, 0.16);
+  border-color: var(--row-hover-border);
+  background: var(--row-hover-bg);
   box-shadow: var(--row-shadow-hover);
-  transform: translateY(-1px) scale(1.004);
 }
 
 .workspace.theme-dark .task-row:hover {
@@ -1249,6 +1400,7 @@ kbd {
 
 .check-button svg,
 .priority-dot,
+.reminder-button svg,
 .delete-button svg {
   transition:
     opacity 160ms ease,
@@ -1259,6 +1411,7 @@ kbd {
 
 .check-button:active,
 .priority-button:active,
+.reminder-button:active,
 .delete-button:active,
 .quick-add button:active,
 .section-heading button:active {
@@ -1288,9 +1441,25 @@ kbd {
 
 .task-body span {
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: var(--muted);
   font-size: var(--task-meta-size);
   line-height: 1.3;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-reminder {
+  max-width: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  overflow: hidden;
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1301,11 +1470,23 @@ kbd {
   border-radius: 7px;
 }
 
+.reminder-button {
+  width: 25px;
+  height: 25px;
+  color: #7d8b9a;
+  border-radius: 7px;
+}
+
+.reminder-button.is-set {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .row-actions {
   display: flex;
   align-items: center;
   gap: 1px;
-  min-width: 51px;
+  min-width: 76px;
   justify-content: flex-end;
 }
 
@@ -1410,6 +1591,18 @@ kbd {
 
   to {
     transform: translateX(0);
+  }
+}
+
+@keyframes reminder-popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

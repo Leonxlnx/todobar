@@ -35,11 +35,28 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
+  await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
+
+  await page.getByText('Glass', { exact: true }).click()
+  await expect(page.locator('.workspace')).toHaveClass(/style-glass/)
 
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
+
+  await page.getByLabel('Add a task to Today').fill('Reminder smoke')
+  await page
+    .locator('section[aria-labelledby="today-heading"] .quick-add .reminder-toggle')
+    .click()
+  await page
+    .getByRole('textbox', { name: 'Reminder time' })
+    .fill('2026-05-09T09:30')
+  await page
+    .locator('section[aria-labelledby="today-heading"] .quick-add .submit-task')
+    .click()
+  await expect(page.getByText('Reminder smoke', { exact: true })).toBeVisible()
+  await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await page.getByText('Show completed', { exact: true }).click()
