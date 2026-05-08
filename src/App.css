@@ -1329,6 +1329,42 @@ kbd {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
+.segmented-control-four button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.segmented-control-four button::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f8f8f7;
+}
+
+.segmented-control-four button:nth-child(2)::before {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(116, 168, 255, 0.35)),
+    #f9fbff;
+}
+
+.segmented-control-four button:nth-child(3)::before {
+  background:
+    linear-gradient(135deg, #f3eadb, #c9b894),
+    #e6d8be;
+}
+
+.segmented-control-four button:nth-child(4)::before {
+  border-radius: 2px;
+  background:
+    linear-gradient(135deg, #111318 0 48%, #fff8dc 50%),
+    #111318;
+}
+
 .segmented-control button {
   height: 34px;
   color: var(--muted);
