@@ -9,7 +9,8 @@ and premium.
 - One visible edge handle opens the right-side utility panel.
 - The open panel uses a compact command rail for navigation instead of a large
   top navigation bar.
-- Today, Month Plan, Lists, and Reminders are separate planning zones.
+- Today, Month Plan, and Lists are the visible planning zones; reminders stay
+  inline on tasks instead of taking over a panel section.
 - Task rows should behave like command rows, not floating cards.
 - Hover states should clarify affordance without shifting layout.
 - Motion should explain open, close, collapse, completion, and task insertion.
@@ -30,7 +31,8 @@ The product should let users tune the sidebar to their workspace:
 - completed-task visibility
 - section order
 - light/dark mode
-- Codex, Quartz, Graphite, and Blueprint theme presets
+- Codex, Quartz Glass, Frost, Paper, Graphite, Midnight, Clay, and Blueprint
+  theme presets
 
 ## Guardrails
 

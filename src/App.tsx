@@ -26,7 +26,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
 import { useSidebarSettings } from './sidebarSettings'
-import type { SectionId, SidebarSettings } from './sidebarSettings'
+import type { SectionId, SidebarSettings, ThemePreset } from './sidebarSettings'
 import { initialToday, monthPlan } from './tasks'
 import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
@@ -56,8 +56,18 @@ const THEME_PRESETS = [
   },
   {
     id: 'quartz',
-    label: 'Quartz',
-    note: 'Soft glass',
+    label: 'Quartz Glass',
+    note: 'Clear light',
+  },
+  {
+    id: 'frost',
+    label: 'Frost',
+    note: 'Blue glass',
+  },
+  {
+    id: 'paper',
+    label: 'Paper',
+    note: 'Warm light',
   },
   {
     id: 'graphite',
@@ -65,11 +75,25 @@ const THEME_PRESETS = [
     note: 'Deep focus',
   },
   {
+    id: 'midnight',
+    label: 'Midnight',
+    note: 'Blue dark',
+  },
+  {
+    id: 'clay',
+    label: 'Clay',
+    note: 'Muted color',
+  },
+  {
     id: 'blueprint',
     label: 'Blueprint',
     note: 'Grid',
   },
-] as const
+] as const satisfies Array<{
+  id: ThemePreset
+  label: string
+  note: string
+}>
 
 type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
@@ -294,6 +318,9 @@ function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(
     () => new URLSearchParams(window.location.search).get('settings') === '1',
   )
+  const [activeRailSection, setActiveRailSection] = useState<SectionId>('today')
+  const [pendingFocusSection, setPendingFocusSection] =
+    useState<SectionId | null>(null)
   const [settings, updateSettings, resetSettings] = useSidebarSettings()
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
@@ -361,24 +388,11 @@ function App() {
     ],
     [customLists, monthTasks, todayTasks],
   )
-  const upcomingReminders = useMemo(
-    () =>
-      reminderTasks
-        .filter(({ task }) => task.reminderAt && !task.done)
-        .sort(
-          (a, b) =>
-            new Date(a.task.reminderAt ?? '').getTime() -
-            new Date(b.task.reminderAt ?? '').getTime(),
-        )
-        .slice(0, 4),
-    [reminderTasks],
-  )
   const totalOpenTasks = useMemo(
     () =>
       reminderTasks.filter(({ task }) => !task.done).length,
     [reminderTasks],
   )
-  const nextReminderLabel = formatReminder(upcomingReminders[0]?.task.reminderAt)
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
     const availableWidth = Math.max(280, viewportWidth - settings.tabWidth - 8)
@@ -1060,15 +1074,35 @@ function App() {
     })
   }
 
-  const focusSection = (section: SectionId | 'reminders') => {
+  const focusSection = (section: SectionId) => {
+    setActiveRailSection(section)
     setIsSettingsOpen(false)
     setIsOpen(true)
+    setPendingFocusSection(section)
+  }
 
-    window.requestAnimationFrame(() => {
-      const target = document.getElementById(`${section}-section`)
+  useEffect(() => {
+    if (!isOpen || isSettingsOpen || !pendingFocusSection) {
+      return
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      const target = document.getElementById(`${pendingFocusSection}-section`)
 
       target?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+      setPendingFocusSection(null)
     })
+
+    return () => window.cancelAnimationFrame(frame)
+  }, [isOpen, isSettingsOpen, pendingFocusSection])
+
+  const openSettings = () => {
+    setIsOpen(true)
+    setIsSettingsOpen(true)
+  }
+
+  const closeSettings = () => {
+    setIsSettingsOpen(false)
   }
 
   const onHandlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
@@ -1269,7 +1303,7 @@ function App() {
               settings={settings}
               onChange={updateSettings}
               onReset={resetSettings}
-              onClose={() => setIsSettingsOpen(false)}
+              onClose={closeSettings}
             />
           </div>
         ) : (
@@ -1295,8 +1329,8 @@ function App() {
                 <span>open</span>
               </div>
               <div>
-                <strong>{nextReminderLabel || 'None'}</strong>
-                <span>next</span>
+                <strong>{customLists.length}</strong>
+                <span>lists</span>
               </div>
             </section>
 
@@ -1543,17 +1577,14 @@ function App() {
             })}
           </div>
         </section>
-            <UpcomingReminders
-              reminders={upcomingReminders}
-              onOpenSettings={() => setIsSettingsOpen(true)}
-            />
           </div>
         )}
         <SidebarRail
+          activeSection={activeRailSection}
           isSettingsOpen={isSettingsOpen}
           sectionOrder={settings.sectionOrder}
           onFocusSection={focusSection}
-          onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenSettings={openSettings}
         />
       </aside>
     </main>
@@ -1561,14 +1592,16 @@ function App() {
 }
 
 function SidebarRail({
+  activeSection,
   isSettingsOpen,
   sectionOrder,
   onFocusSection,
   onOpenSettings,
 }: {
+  activeSection: SectionId
   isSettingsOpen: boolean
   sectionOrder: SectionId[]
-  onFocusSection: (section: SectionId | 'reminders') => void
+  onFocusSection: (section: SectionId) => void
   onOpenSettings: () => void
 }) {
   return (
@@ -1578,7 +1611,9 @@ function SidebarRail({
           <button
             type="button"
             key={section}
+            className={activeSection === section && !isSettingsOpen ? 'is-active' : ''}
             aria-label={`Jump to ${SECTION_LABELS[section]}`}
+            aria-current={activeSection === section && !isSettingsOpen ? 'true' : undefined}
             onClick={() => onFocusSection(section)}
           >
             {section === 'today' ? <Clock3 size={16} /> : null}
@@ -1587,14 +1622,6 @@ function SidebarRail({
             <span>{SECTION_LABELS[section].split(' ')[0]}</span>
           </button>
         ))}
-        <button
-          type="button"
-          aria-label="Jump to Reminders"
-          onClick={() => onFocusSection('reminders')}
-        >
-          <Bell size={16} />
-          <span>Due</span>
-        </button>
       </div>
       <button
         type="button"
@@ -1607,59 +1634,6 @@ function SidebarRail({
         <span>Setup</span>
       </button>
     </nav>
-  )
-}
-
-function UpcomingReminders({
-  reminders,
-  onOpenSettings,
-}: {
-  reminders: Array<{ listTitle: string; task: Task }>
-  onOpenSettings: () => void
-}) {
-  return (
-    <section
-      className="panel-section reminder-section"
-      aria-labelledby="reminders-heading"
-      id="reminders-section"
-      style={{ order: 10 }}
-    >
-      <div className="section-heading">
-        <div>
-          <span id="reminders-heading">
-            <BellRing size={15} />
-            Reminders
-            <em>{reminders.length || 'No'} upcoming</em>
-          </span>
-        </div>
-        <button
-          type="button"
-          aria-label="Open notification settings"
-          onClick={onOpenSettings}
-        >
-          <Settings size={15} />
-        </button>
-      </div>
-      <div className="reminder-list">
-        {reminders.length > 0 ? (
-          reminders.map(({ listTitle, task }) => (
-            <article className="reminder-row" key={`${task.id}:${task.reminderAt}`}>
-              <span>{formatReminder(task.reminderAt)}</span>
-              <div>
-                <strong>{task.title}</strong>
-                <em>{listTitle}</em>
-              </div>
-              <Bell size={13} />
-            </article>
-          ))
-        ) : (
-          <div className="reminder-empty">
-            <Bell size={14} />
-            <span>No timed reminders yet</span>
-          </div>
-        )}
-      </div>
-    </section>
   )
 }
 
@@ -1753,6 +1727,10 @@ function SidebarSettingsPanel({
   onReset: () => void
   onClose: () => void
 }) {
+  const selectedTheme =
+    THEME_PRESETS.find((preset) => preset.id === settings.visualStyle) ??
+    THEME_PRESETS[0]
+
   return (
     <section className="settings-panel" aria-label="Sidebar settings">
       <div className="settings-panel-header">
@@ -1786,39 +1764,32 @@ function SidebarSettingsPanel({
           <Palette size={12} />
           Theme
         </div>
-        <div className="theme-picker" aria-label="Theme picker">
-          {THEME_PRESETS.map((preset) => (
-            <button
-              type="button"
-              key={preset.id}
-              className={`theme-option theme-option-${preset.id} ${
-                settings.visualStyle === preset.id ? 'is-selected' : ''
-              }`}
-              onClick={() => onChange({ visualStyle: preset.id })}
+        <div className="theme-select-panel">
+          <label className="theme-select-field">
+            <span>Preset</span>
+            <select
+              aria-label="Theme preset"
+              value={settings.visualStyle}
+              onChange={(event) =>
+                onChange({ visualStyle: event.target.value as ThemePreset })
+              }
             >
-              <span
-                className={`theme-preview theme-preview-${preset.id}`}
-                aria-hidden="true"
-              >
-                <i />
-                <i />
-                <i />
-              </span>
-              <span className="theme-label">
-                <strong>{preset.label}</strong>
-                <em>{preset.note}</em>
-              </span>
-              {settings.visualStyle === preset.id ? (
-                <Check
-                  className="theme-selected-icon"
-                  size={14}
-                  aria-hidden="true"
-                />
-              ) : (
-                <span className="theme-selected-spacer" aria-hidden="true" />
-              )}
-            </button>
-          ))}
+              {THEME_PRESETS.map((preset) => (
+                <option key={preset.id} value={preset.id}>
+                  {preset.label} - {preset.note}
+                </option>
+              ))}
+            </select>
+          </label>
+          <div
+            className={`theme-select-preview theme-preview-${selectedTheme.id}`}
+            aria-hidden="true"
+          >
+            <i />
+            <i />
+            <i />
+          </div>
+          <p>{selectedTheme.note}</p>
         </div>
       </div>
 

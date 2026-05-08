@@ -31,10 +31,8 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Single-instance desktop behavior
 - Always-on-top frameless window
 - Click-through transparent area outside the handle and open panel
-- Compact right-side command rail for Today, Month Plan, Lists, Reminders, and
-  setup
-- Planning status strip with today's progress, open task count, and the next
-  reminder
+- Compact right-side command rail for Today, Month Plan, Lists, and setup
+- Planning status strip with today's progress, open task count, and list count
 - Today tasks
 - Month Plan tasks
 - Custom task lists
@@ -42,12 +40,13 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Delete custom lists
 - Add reminder times while capturing tasks
 - Quick reminder cycling on existing tasks
-- Upcoming reminders section inside the sidebar
+- Clean right-side rail for Today, Month Plan, Lists, and Settings
 - Native notification plugin support with browser fallback in preview
 - Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark modes
-- Theme picker with Codex, Quartz, Graphite, and Blueprint presets
+- Theme dropdown with Codex, Quartz Glass, Frost, Paper, Graphite, Midnight,
+  Clay, and Blueprint presets
 - Rearrange Today, Month Plan, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
@@ -134,8 +133,8 @@ choose Open.
 - If that shortcut is already owned by another app, use `Ctrl/Cmd + Alt + T`.
 - Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
-- Use the command rail to jump between Today, Month Plan, Lists, Reminders, and
-  setup without turning the sidebar into a full dashboard.
+- Use the command rail to jump between Today, Month Plan, Lists, and setup
+  without turning the sidebar into a full dashboard.
 - Use the settings button to adjust appearance, desktop startup, window size,
   handle shape, task density, motion, radius, and opacity.
 

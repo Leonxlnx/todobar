@@ -37,7 +37,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
 
-  await page.getByText('Graphite', { exact: true }).click()
+  await page.getByLabel('Theme preset').selectOption('graphite')
   await expect(page.locator('.workspace')).toHaveClass(/style-graphite/)
   await page.getByRole('button', { name: 'Move Month Plan up' }).click()
 
@@ -70,12 +70,19 @@ test('sidebar opens and completed-task visibility is configurable', async ({
       .locator('section[aria-labelledby="today-heading"]')
       .getByText('Reminder smoke', { exact: true }),
   ).toBeVisible()
-  await expect(
-    page
-      .locator('section[aria-labelledby="reminders-heading"]')
-      .getByText('Reminder smoke', { exact: true }),
-  ).toBeVisible()
+  await expect(page.locator('#reminders-section')).toHaveCount(0)
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Jump to Month Plan' }).click()
+  await expect(page.getByRole('button', { name: 'Jump to Month Plan' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
+  await page.getByRole('button', { name: 'Jump to Lists' }).click()
+  await expect(page.getByRole('button', { name: 'Jump to Lists' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await page.getByText('Show completed', { exact: true }).click()
