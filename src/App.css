@@ -2114,6 +2114,15 @@ kbd {
     padding: 12px 6px;
   }
 
+  .sidebar-rail button {
+    height: 43px;
+    grid-template-rows: 1fr;
+  }
+
+  .sidebar-rail button span {
+    display: none;
+  }
+
   .edge-handle.is-open {
     right: calc(100vw - var(--tab-width));
   }
