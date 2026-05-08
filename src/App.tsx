@@ -436,7 +436,7 @@ function App() {
   useEffect(() => {
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       const shortcut =
-        event.shiftKey &&
+        event.altKey &&
         event.key.toLowerCase() === 't' &&
         (event.metaKey || event.ctrlKey)
 
@@ -1185,7 +1185,7 @@ function App() {
             <div className="shortcut-row" aria-label="Keyboard shortcut">
               <kbd>Cmd</kbd>
               <kbd>Ctrl</kbd>
-              <kbd>Shift</kbd>
+              <kbd>Alt</kbd>
               <kbd>T</kbd>
             </div>
           </div>

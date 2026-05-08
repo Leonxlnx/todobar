@@ -27,7 +27,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
         "toggle",
         "Open / Close Todobar",
         true,
-        Some("CmdOrCtrl+Shift+T"),
+        Some("CmdOrCtrl+Alt+T"),
     )?;
     let settings = MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Quit Todobar", true, None::<&str>)?;
@@ -66,7 +66,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
 }
 
 fn setup_global_shortcuts(app: &tauri::App) {
-    for shortcut in ["CommandOrControl+Shift+T", "CommandOrControl+Alt+T"] {
+    for shortcut in ["CommandOrControl+Alt+T"] {
         let result = app
             .global_shortcut()
             .on_shortcut(shortcut, move |app, _shortcut, event| {

@@ -39,7 +39,7 @@ Optional later:
 
 | Test | Expected result |
 | --- | --- |
-| Default shortcut registers | `CommandOrControl+Shift+T` works. |
+| Default shortcut registers | `CommandOrControl+Alt+T` works. |
 | Shortcut collision | App shows failure and offers edit. |
 | Shortcut changed in settings | New shortcut persists after restart. |
 | Quick capture shortcut | Opens capture state directly. |
@@ -85,4 +85,3 @@ Optional later:
 | Code signing | Public beta builds avoid avoidable trust warnings. |
 | Update check | Reports no update or installs signed update. |
 | Offline startup | App works without network. |
-

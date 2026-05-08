@@ -53,7 +53,7 @@ Recommended approach:
 
 Candidate defaults:
 
-- toggle sidebar: `CommandOrControl+Shift+T`
+- toggle sidebar: `CommandOrControl+Alt+T`
 - quick capture: `CommandOrControl+Shift+Space`
 - command palette inside app: `CommandOrControl+K`
 
@@ -80,4 +80,3 @@ macOS:
 Windows Widgets and macOS WidgetKit are later platform extensions. They should
 read a small snapshot and deep-link into Todobar instead of owning the full task
 model.
-

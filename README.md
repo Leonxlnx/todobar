@@ -25,8 +25,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 
 - Right-edge native sidebar for Windows and macOS
 - Small draggable handle that opens and closes the panel
-- Global shortcuts: `Ctrl/Cmd + Shift + T`, with `Ctrl/Cmd + Alt + T` as a
-  fallback
+- Global shortcut: `Ctrl/Cmd + Alt + T`
 - Native tray/menu-bar control for open, settings, and quit
 - Autostart on system login
 - Single-instance desktop behavior
@@ -131,9 +130,8 @@ choose Open.
 
 - Click the right-edge handle to open or close Todobar.
 - Drag the handle up or down to change its vertical position.
-- Press `Ctrl + Shift + T` on Windows or `Cmd + Shift + T` on macOS to toggle it
+- Press `Ctrl + Alt + T` on Windows or `Cmd + Alt + T` on macOS to toggle it
   from any app.
-- If that shortcut is taken by another app, use `Ctrl/Cmd + Alt + T`.
 - Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
 - Use the command rail to jump between Today, Month Plan, Lists, Reminders, and

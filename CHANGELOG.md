@@ -15,6 +15,8 @@
 
 ### Changed
 
+- Removed the browser tab-restore shortcut chord as a default. `Ctrl/Cmd + Alt
+  + T` is now the only built-in toggle shortcut.
 - Reworked task sections from stacked cards into calmer command rows with
   subtler action chrome and no hover lift.
 - Increased the default sidebar width for a less cramped open-source first-run
@@ -29,13 +31,12 @@
 ### Fixed
 
 - Moved the toggle shortcut registration from the focused React webview into the
-  native Tauri layer, so `Ctrl/Cmd + Shift + T` can open Todobar from another
-  app without clicking the sidebar first.
+  native Tauri layer, so the global toggle can open Todobar from another app
+  without clicking the sidebar first.
 
 ### Added
 
-- Added `Ctrl/Cmd + Alt + T` as a fallback global toggle shortcut when the
-  default shortcut is taken by another app.
+- Added `Ctrl/Cmd + Alt + T` as a global toggle shortcut.
 - Extended project verification so native shortcut registration remains covered.
 
 ### Verified

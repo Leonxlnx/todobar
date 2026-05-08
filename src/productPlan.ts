@@ -29,7 +29,7 @@ export const platformNotes: ProductNote[] = [
   {
     icon: Command,
     title: 'Global control',
-    text: 'Desktop builds register Cmd/Ctrl + Shift + T natively, while the web preview keeps the same shortcut for development.',
+    text: 'Desktop builds register Cmd/Ctrl + Alt + T natively, while the web preview keeps the same shortcut for development.',
   },
 ]
 

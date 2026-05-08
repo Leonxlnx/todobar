@@ -64,7 +64,7 @@ Important behavior:
 
 ## Keyboard Rules
 
-- `CommandOrControl+Shift+T`: toggle sidebar
+- `CommandOrControl+Alt+T`: toggle sidebar
 - `CommandOrControl+Shift+Space`: quick capture candidate
 - `CommandOrControl+K`: command palette while sidebar is open
 - `Escape`: close current overlay/state
@@ -101,4 +101,3 @@ Avoid:
 - Focus state is always visible.
 - Animation does not hide task loss or delayed persistence.
 - Reduced-motion mode still feels clean.
-
