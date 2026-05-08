@@ -1258,7 +1258,6 @@ function App() {
                 </span>
                 <div>
                   <strong>Todobar</strong>
-                  <span>Plan Console</span>
                 </div>
               </div>
               <div className="icon-cluster">
@@ -1276,15 +1275,15 @@ function App() {
             <section className="focus-strip" aria-label="Planning status">
               <div>
                 <strong>{progressPercent}%</strong>
-                <span>today complete</span>
+                <span>today</span>
               </div>
               <div>
                 <strong>{totalOpenTasks}</strong>
-                <span>open tasks</span>
+                <span>open</span>
               </div>
               <div>
                 <strong>{nextReminderLabel || 'None'}</strong>
-                <span>next reminder</span>
+                <span>next</span>
               </div>
             </section>
 
@@ -1581,7 +1580,7 @@ function SidebarRail({
           onClick={() => onFocusSection('reminders')}
         >
           <Bell size={16} />
-          <span>Remind</span>
+          <span>Due</span>
         </button>
       </div>
       <button

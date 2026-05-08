@@ -911,7 +911,7 @@ kbd {
 
 .app-lockup div {
   display: grid;
-  gap: 3px;
+  gap: 0;
 }
 
 .app-lockup span:not(.app-icon) {
@@ -954,7 +954,7 @@ kbd {
 .focus-strip strong {
   overflow: hidden;
   color: var(--ink);
-  font-size: 12px;
+  font-size: 12.5px;
   line-height: 1.1;
   font-weight: 760;
   text-overflow: ellipsis;
@@ -964,7 +964,7 @@ kbd {
 .focus-strip span {
   overflow: hidden;
   color: var(--muted);
-  font-size: 9.7px;
+  font-size: 9.5px;
   line-height: 1.1;
   font-weight: 700;
   text-overflow: ellipsis;
@@ -1776,6 +1776,13 @@ kbd {
   gap: 1px;
   min-width: 72px;
   justify-content: flex-end;
+  opacity: 0.54;
+  transition: opacity 160ms ease;
+}
+
+.task-row:hover .row-actions,
+.task-row:focus-within .row-actions {
+  opacity: 1;
 }
 
 .task-row .delete-button {
