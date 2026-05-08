@@ -1832,8 +1832,8 @@ function SidebarSettingsPanel({
         <SliderSetting
           label="Panel width"
           value={settings.panelWidth}
-          min={300}
-          max={500}
+          min={320}
+          max={560}
           step={4}
           suffix="px"
           onChange={(panelWidth) => onChange({ panelWidth })}

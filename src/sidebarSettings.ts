@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v20'
+const STORAGE_KEY = 'todobar.sidebar.settings.v21'
 
 export type ThemeMode = 'light' | 'dark'
 export type VisualStyle = 'minimal' | 'glass' | 'brutal' | 'skeuo'
@@ -26,7 +26,7 @@ export type SidebarSettings = {
 }
 
 export const defaultSidebarSettings: SidebarSettings = {
-  panelWidth: 340,
+  panelWidth: 400,
   tabWidth: 42,
   handleHeight: 84,
   handleY: 50,
@@ -66,8 +66,8 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
   return {
     panelWidth: clamp(
       value.panelWidth ?? defaultSidebarSettings.panelWidth,
-      300,
-      500,
+      320,
+      560,
     ),
     tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 34, 62),
     handleHeight: clamp(
