@@ -18,7 +18,10 @@ import {
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
-import { useSidebarSettings } from './sidebarSettings'
+import {
+  translucencyToSurfaceAlpha,
+  useSidebarSettings,
+} from './sidebarSettings'
 import type { SidebarSettings } from './sidebarSettings'
 import { initialToday, monthPlan } from './tasks'
 import type { Task } from './tasks'
@@ -862,7 +865,7 @@ function App() {
     '--native-handle-y-px': `${nativeHandleCenter}px`,
     '--motion-ms': `${settings.motionMs}ms`,
     '--panel-radius': `${settings.panelRadius}px`,
-    '--surface-alpha': `${settings.surfaceAlpha / 100}`,
+    '--surface-alpha': `${translucencyToSurfaceAlpha(settings.translucency)}`,
     '--task-row-height': `${settings.taskRowHeight}px`,
     '--task-gap': `${settings.taskGap}px`,
     '--task-title-size': `${settings.taskTextSize}px`,
@@ -1303,7 +1306,23 @@ function SidebarSettingsPanel({
           >
             Dark
           </button>
+          <button
+            type="button"
+            className={settings.theme === 'glass' ? 'is-selected' : ''}
+            onClick={() => onChange({ theme: 'glass' })}
+          >
+            Glass
+          </button>
         </div>
+        <SliderSetting
+          label="Translucency"
+          value={settings.translucency}
+          min={0}
+          max={100}
+          step={1}
+          suffix="%"
+          onChange={(translucency) => onChange({ translucency })}
+        />
       </div>
 
       <div className="settings-group">
@@ -1414,15 +1433,6 @@ function SidebarSettingsPanel({
           step={1}
           suffix="px"
           onChange={(panelRadius) => onChange({ panelRadius })}
-        />
-        <SliderSetting
-          label="Surface"
-          value={settings.surfaceAlpha}
-          min={86}
-          max={100}
-          step={1}
-          suffix="%"
-          onChange={(surfaceAlpha) => onChange({ surfaceAlpha })}
         />
       </div>
     </section>

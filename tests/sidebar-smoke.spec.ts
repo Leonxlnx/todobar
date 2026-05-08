@@ -35,6 +35,24 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Glass' })).toBeVisible()
+  await expect(page.getByLabel('Translucency')).toBeVisible()
+
+  await page.getByRole('button', { name: 'Glass' }).click()
+  await page.getByLabel('Translucency').evaluate((input) => {
+    const range = input as HTMLInputElement
+    range.value = '76'
+    range.dispatchEvent(new Event('input', { bubbles: true }))
+    range.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+  await expect(page.locator('.workspace')).toHaveClass(/theme-glass/)
+  await expect.poll(async () =>
+    page
+      .locator('.workspace')
+      .evaluate((element) =>
+        getComputedStyle(element).getPropertyValue('--surface-alpha').trim(),
+      ),
+  ).toBe('0.278')
 
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
