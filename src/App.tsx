@@ -52,22 +52,22 @@ const THEME_PRESETS = [
   {
     id: 'codex',
     label: 'Codex',
-    note: 'Clean mono',
+    note: 'Neutral',
   },
   {
-    id: 'aero',
-    label: 'Aero',
-    note: 'Translucent',
+    id: 'quartz',
+    label: 'Quartz',
+    note: 'Soft glass',
   },
   {
-    id: 'terminal',
-    label: 'Terminal',
-    note: 'High contrast',
+    id: 'graphite',
+    label: 'Graphite',
+    note: 'Deep focus',
   },
   {
     id: 'blueprint',
     label: 'Blueprint',
-    note: 'Planning grid',
+    note: 'Grid',
   },
 ] as const
 
@@ -1791,14 +1791,32 @@ function SidebarSettingsPanel({
             <button
               type="button"
               key={preset.id}
-              className={settings.visualStyle === preset.id ? 'is-selected' : ''}
+              className={`theme-option theme-option-${preset.id} ${
+                settings.visualStyle === preset.id ? 'is-selected' : ''
+              }`}
               onClick={() => onChange({ visualStyle: preset.id })}
             >
-              <span className={`theme-swatch theme-swatch-${preset.id}`} />
-              <span>
+              <span
+                className={`theme-preview theme-preview-${preset.id}`}
+                aria-hidden="true"
+              >
+                <i />
+                <i />
+                <i />
+              </span>
+              <span className="theme-label">
                 <strong>{preset.label}</strong>
                 <em>{preset.note}</em>
               </span>
+              {settings.visualStyle === preset.id ? (
+                <Check
+                  className="theme-selected-icon"
+                  size={14}
+                  aria-hidden="true"
+                />
+              ) : (
+                <span className="theme-selected-spacer" aria-hidden="true" />
+              )}
             </button>
           ))}
         </div>
@@ -1877,13 +1895,27 @@ function SidebarSettingsPanel({
           onChange={(handleY) => onChange({ handleY })}
         />
         <div className="position-presets" aria-label="Handle position presets">
-          <button type="button" onClick={() => onChange({ handleY: 10 })}>
+          <button
+            type="button"
+            className={settings.handleY <= 25 ? 'is-selected' : ''}
+            onClick={() => onChange({ handleY: 10 })}
+          >
             Top
           </button>
-          <button type="button" onClick={() => onChange({ handleY: 50 })}>
+          <button
+            type="button"
+            className={
+              settings.handleY > 25 && settings.handleY < 75 ? 'is-selected' : ''
+            }
+            onClick={() => onChange({ handleY: 50 })}
+          >
             Middle
           </button>
-          <button type="button" onClick={() => onChange({ handleY: 90 })}>
+          <button
+            type="button"
+            className={settings.handleY >= 75 ? 'is-selected' : ''}
+            onClick={() => onChange({ handleY: 90 })}
+          >
             Bottom
           </button>
         </div>

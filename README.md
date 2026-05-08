@@ -47,7 +47,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark modes
-- Theme picker with Codex, Aero, Terminal, and Blueprint presets
+- Theme picker with Codex, Quartz, Graphite, and Blueprint presets
 - Rearrange Today, Month Plan, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,

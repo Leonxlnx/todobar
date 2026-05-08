@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 const STORAGE_KEY = 'todobar.sidebar.settings.v22'
 
 export type ThemeMode = 'light' | 'dark'
-export type ThemePreset = 'codex' | 'aero' | 'terminal' | 'blueprint'
+export type ThemePreset = 'codex' | 'quartz' | 'graphite' | 'blueprint'
 export type SectionId = 'today' | 'month' | 'lists'
 
 export type SidebarSettings = {
@@ -105,7 +105,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       value.notificationsEnabled ??
       defaultSidebarSettings.notificationsEnabled,
     theme: value.theme === 'dark' ? 'dark' : 'light',
-    visualStyle: ['codex', 'aero', 'terminal', 'blueprint'].includes(
+    visualStyle: ['codex', 'quartz', 'graphite', 'blueprint'].includes(
       value.visualStyle ?? '',
     )
       ? (value.visualStyle as ThemePreset)

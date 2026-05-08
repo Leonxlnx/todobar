@@ -6,7 +6,7 @@
 
 - Added a redesigned sidebar shell with a right-side command rail, compact
   planning status strip, and an in-panel upcoming reminders section.
-- Added a real theme picker with Codex, Aero, Terminal, and Blueprint presets on
+- Added a real theme picker with Codex, Quartz, Graphite, and Blueprint presets on
   top of light and dark color modes.
 - Added reminder capture controls, quick reminder cycling on task rows, and
   native Tauri notification support with browser preview fallback.
