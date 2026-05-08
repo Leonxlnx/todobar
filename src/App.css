@@ -939,6 +939,7 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 13px;
   background: var(--line);
+  animation: panel-piece-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .focus-strip div {
@@ -1434,6 +1435,19 @@ kbd {
     linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 42px),
     var(--section-bg);
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.5) inset;
+  animation: panel-piece-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.panel-section:nth-of-type(2) {
+  animation-delay: 28ms;
+}
+
+.panel-section:nth-of-type(3) {
+  animation-delay: 56ms;
+}
+
+.panel-section:nth-of-type(4) {
+  animation-delay: 84ms;
 }
 
 .section-heading {
@@ -1941,12 +1955,24 @@ kbd {
 @keyframes task-row-in {
   from {
     opacity: 0;
-    transform: translateY(7px) scale(0.988);
+    transform: translateY(5px);
   }
 
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translateY(0);
+  }
+}
+
+@keyframes panel-piece-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
