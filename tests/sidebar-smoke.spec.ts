@@ -37,8 +37,8 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
 
-  await page.getByText('Glass', { exact: true }).click()
-  await expect(page.locator('.workspace')).toHaveClass(/style-glass/)
+  await page.getByText('Terminal', { exact: true }).click()
+  await expect(page.locator('.workspace')).toHaveClass(/style-terminal/)
   await page.getByRole('button', { name: 'Move Month Plan up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()

@@ -98,108 +98,113 @@
     linear-gradient(180deg, #303036 0%, #19191d 100%);
 }
 
-.workspace.style-glass {
-  --sidebar-bg: rgba(255, 255, 255, calc(var(--surface-alpha) * 0.76));
-  --sidebar-solid-bg: rgba(250, 250, 249, 0.86);
-  --control-bg: rgba(255, 255, 255, 0.56);
-  --task-bg: rgba(255, 255, 255, 0.68);
-  --section-bg: rgba(255, 255, 255, 0.48);
-  --rail-bg: rgba(255, 255, 255, 0.36);
-  --settings-surface: rgba(250, 250, 249, 0.9);
-  --surface-hover: rgba(255, 255, 255, 0.74);
-  --row-hover-bg: rgba(255, 255, 255, 0.82);
-  --line: rgba(24, 26, 32, 0.11);
-  --task-border: rgba(24, 26, 32, 0.105);
-  --row-shadow: 0 14px 42px rgba(31, 41, 55, 0.075);
-  --row-shadow-hover: 0 18px 50px rgba(31, 41, 55, 0.095);
-}
-
-.workspace.theme-dark.style-glass {
-  --sidebar-bg: rgba(16, 16, 18, calc(var(--surface-alpha) * 0.8));
-  --sidebar-solid-bg: rgba(13, 13, 14, 0.9);
-  --control-bg: rgba(255, 255, 255, 0.055);
-  --task-bg: rgba(255, 255, 255, 0.07);
-  --section-bg: rgba(255, 255, 255, 0.062);
-  --rail-bg: rgba(255, 255, 255, 0.044);
-  --settings-surface: rgba(13, 13, 14, 0.94);
-  --surface-hover: rgba(255, 255, 255, 0.085);
-  --row-hover-bg: rgba(255, 255, 255, 0.09);
-  --task-border: rgba(255, 255, 255, 0.11);
-}
-
-.workspace.style-brutal {
-  --workspace-bg: #f7f4ee;
-  --sidebar-border: #111318;
-  --task-border: #111318;
-  --line: rgba(17, 19, 24, 0.42);
-  --control-bg: #fffaf1;
-  --task-bg: #fffdf7;
-  --section-bg: #fffdf7;
-  --rail-bg: #f1eadf;
-  --surface-hover: #f2eadf;
-  --row-hover-bg: #fff8dc;
-  --control-radius: 4px;
-  --task-radius: 4px;
-  --row-shadow: 3px 3px 0 #111318;
-  --row-shadow-hover: 3px 3px 0 #111318;
-  --handle-bg: linear-gradient(180deg, #fffef8 0%, #f0eadf 100%);
-}
-
-.workspace.theme-dark.style-brutal {
-  --workspace-bg: #090909;
-  --sidebar-border: #f4f4f5;
-  --task-border: rgba(244, 244, 245, 0.8);
-  --line: rgba(244, 244, 245, 0.28);
-  --control-bg: #101012;
-  --task-bg: #141416;
-  --section-bg: #141416;
-  --rail-bg: #101012;
-  --surface-hover: #1e1e22;
-  --row-hover-bg: #1a1a1e;
-  --row-shadow: 3px 3px 0 rgba(244, 244, 245, 0.92);
-  --row-shadow-hover: 3px 3px 0 rgba(244, 244, 245, 0.92);
-}
-
-.workspace.style-skeuo {
+.workspace.style-aero {
   --workspace-bg:
-    linear-gradient(145deg, #f4f1ea 0%, #e9edf0 52%, #dfe5ea 100%);
-  --sidebar-bg: rgba(250, 248, 242, var(--surface-alpha));
-  --sidebar-solid-bg: #faf8f2;
-  --control-bg: #ece8df;
-  --task-bg: #fffdf8;
-  --section-bg: rgba(255, 253, 248, 0.72);
-  --rail-bg: rgba(236, 232, 223, 0.82);
-  --task-border: rgba(92, 78, 57, 0.18);
-  --surface-hover: #f6f1e8;
-  --row-hover-bg: #fffaf0;
-  --control-radius: 12px;
-  --task-radius: 12px;
-  --row-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.78) inset,
-    0 8px 18px rgba(83, 70, 48, 0.08);
-  --row-shadow-hover:
-    0 1px 0 rgba(255, 255, 255, 0.86) inset,
-    0 10px 22px rgba(83, 70, 48, 0.1);
+    radial-gradient(circle at 68% 12%, rgba(78, 129, 255, 0.28), transparent 34%),
+    radial-gradient(circle at 34% 86%, rgba(255, 255, 255, 0.8), transparent 34%),
+    linear-gradient(145deg, #edf5ff 0%, #f8fbff 46%, #dbe8f8 100%);
+  --sidebar-bg: rgba(255, 255, 255, calc(var(--surface-alpha) * 0.72));
+  --sidebar-solid-bg: rgba(252, 254, 255, 0.9);
+  --control-bg: rgba(255, 255, 255, 0.56);
+  --task-bg: rgba(255, 255, 255, 0.72);
+  --section-bg: rgba(255, 255, 255, 0.52);
+  --rail-bg: rgba(244, 249, 255, 0.48);
+  --settings-surface: rgba(252, 254, 255, 0.92);
+  --surface-hover: rgba(255, 255, 255, 0.82);
+  --row-hover-bg: rgba(37, 99, 235, 0.09);
+  --line: rgba(42, 72, 110, 0.14);
+  --accent: #3b82f6;
+  --accent-line: rgba(59, 130, 246, 0.32);
+  --panel-shadow: -30px 0 90px rgba(64, 102, 150, 0.22);
+  --handle-bg: linear-gradient(180deg, #ffffff 0%, #eaf3ff 100%);
 }
 
-.workspace.theme-dark.style-skeuo {
-  --workspace-bg: linear-gradient(145deg, #0b0b0c 0%, #141313 100%);
-  --control-bg: #171616;
-  --task-bg: #1b1a18;
-  --section-bg: rgba(255, 255, 255, 0.055);
-  --rail-bg: rgba(255, 255, 255, 0.04);
-  --task-border: rgba(255, 255, 255, 0.1);
-  --surface-hover: #24221f;
-  --row-hover-bg: #211f1d;
+.workspace.theme-dark.style-aero {
+  --workspace-bg:
+    radial-gradient(circle at 70% 12%, rgba(59, 130, 246, 0.24), transparent 34%),
+    linear-gradient(145deg, #08111f 0%, #0b1220 48%, #132136 100%);
+  --sidebar-bg: rgba(10, 18, 30, calc(var(--surface-alpha) * 0.82));
+  --sidebar-solid-bg: rgba(8, 15, 25, 0.94);
+  --control-bg: rgba(255, 255, 255, 0.065);
+  --task-bg: rgba(255, 255, 255, 0.07);
+  --section-bg: rgba(255, 255, 255, 0.064);
+  --rail-bg: rgba(255, 255, 255, 0.045);
+  --settings-surface: rgba(8, 15, 25, 0.96);
+}
+
+.workspace.style-terminal,
+.workspace.theme-dark.style-terminal {
+  --workspace-bg:
+    radial-gradient(circle at 16% 20%, rgba(91, 255, 150, 0.13), transparent 30%),
+    linear-gradient(145deg, #020604 0%, #050b08 52%, #09120d 100%);
+  --ink: #edfff3;
+  --muted: #8fb69c;
+  --line: rgba(102, 255, 156, 0.18);
+  --sidebar-bg: rgba(2, 8, 5, calc(var(--surface-alpha) * 0.96));
+  --sidebar-solid-bg: #020805;
+  --sidebar-border: rgba(102, 255, 156, 0.18);
+  --control-bg: #07120c;
+  --task-bg: #07120c;
+  --section-bg: rgba(7, 18, 12, 0.84);
+  --rail-bg: rgba(1, 6, 4, 0.92);
+  --settings-surface: #020805;
+  --surface-hover: rgba(91, 255, 150, 0.12);
+  --row-hover-bg: rgba(91, 255, 150, 0.08);
+  --accent: #58ff96;
+  --accent-strong: #ddffe9;
+  --accent-soft: rgba(88, 255, 150, 0.13);
+  --accent-line: rgba(88, 255, 150, 0.32);
+  --amber: #d7ff65;
+  --amber-soft: rgba(215, 255, 101, 0.1);
+  --range-thumb: #58ff96;
+  --range-track: rgba(88, 255, 150, 0.2);
+  --panel-shadow: -34px 0 80px rgba(0, 0, 0, 0.58);
+  --handle-bg: linear-gradient(180deg, #eafff1 0%, #a8ffca 100%);
+}
+
+.workspace.style-blueprint {
+  --workspace-bg:
+    linear-gradient(rgba(43, 89, 160, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(43, 89, 160, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 28% 18%, rgba(37, 99, 235, 0.14), transparent 30%),
+    linear-gradient(145deg, #f6f9ff 0%, #e9f0fb 52%, #dfeafa 100%);
+  --sidebar-bg: rgba(244, 248, 255, var(--surface-alpha));
+  --sidebar-solid-bg: #f4f8ff;
+  --control-bg: #eaf1fb;
+  --task-bg: #f9fbff;
+  --section-bg: rgba(250, 252, 255, 0.78);
+  --rail-bg: rgba(230, 239, 252, 0.9);
+  --line: rgba(35, 79, 147, 0.18);
+  --accent: #1d4ed8;
+  --accent-line: rgba(29, 78, 216, 0.3);
+  --row-hover-bg: rgba(29, 78, 216, 0.065);
+  --settings-surface: #f4f8ff;
+  --panel-shadow: -28px 0 86px rgba(39, 78, 130, 0.2);
+  background-size: 24px 24px, 24px 24px, auto, auto;
+}
+
+.workspace.theme-dark.style-blueprint {
+  --workspace-bg:
+    linear-gradient(rgba(116, 168, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(116, 168, 255, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 28% 18%, rgba(59, 130, 246, 0.18), transparent 30%),
+    linear-gradient(145deg, #07101e 0%, #0a1322 52%, #101b30 100%);
+  --sidebar-bg: rgba(8, 17, 31, var(--surface-alpha));
+  --sidebar-solid-bg: #08111f;
+  --control-bg: rgba(116, 168, 255, 0.07);
+  --task-bg: rgba(116, 168, 255, 0.065);
+  --section-bg: rgba(116, 168, 255, 0.06);
+  --rail-bg: rgba(116, 168, 255, 0.045);
+  --settings-surface: #08111f;
 }
 
 .workspace.theme-dark .native-dock-surface path {
-  fill: #0d0d0e;
+  fill: var(--sidebar-solid-bg);
   stroke: rgba(255, 255, 255, 0.08);
 }
 
 .workspace.theme-dark .todo-sidebar {
-  background: #0d0d0e;
+  background: var(--sidebar-bg);
 }
 
 .workspace.theme-dark .quick-add {
@@ -1132,6 +1137,9 @@ kbd {
 
 .settings-group-title {
   margin: 0 0 1px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
   color: var(--muted);
   font-size: 9.5px;
   line-height: 1.2;
@@ -1163,6 +1171,117 @@ kbd {
 
 .settings-appearance {
   gap: 9px;
+}
+
+.mode-toggle {
+  color: var(--ink) !important;
+  background: var(--accent-soft) !important;
+}
+
+.theme-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.theme-picker button {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  align-items: center;
+  gap: 9px;
+  min-height: 54px;
+  padding: 8px;
+  color: var(--muted);
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--control-bg);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.theme-picker button:hover {
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: var(--surface-hover);
+}
+
+.theme-picker button.is-selected {
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  box-shadow: inset 0 0 0 1px var(--accent-line);
+}
+
+.theme-picker button:active {
+  transform: scale(0.985);
+}
+
+.theme-picker button > span:last-child {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.theme-picker strong,
+.theme-picker em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme-picker strong {
+  color: var(--ink);
+  font-size: 12px;
+  line-height: 1.05;
+  font-weight: 760;
+}
+
+.theme-picker em {
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 650;
+}
+
+.theme-swatch {
+  width: 34px;
+  height: 34px;
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.theme-swatch-codex {
+  background:
+    linear-gradient(135deg, #111318 0 48%, #f7f7f6 50%),
+    #f7f7f6;
+}
+
+.theme-swatch-aero {
+  background:
+    radial-gradient(circle at 28% 24%, #fff 0 22%, transparent 24%),
+    linear-gradient(135deg, #dff0ff, #6aa9ff);
+}
+
+.theme-swatch-terminal {
+  background:
+    linear-gradient(135deg, #020805 0 45%, #58ff96 46% 52%, #07120c 54%),
+    #020805;
+}
+
+.theme-swatch-blueprint {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.18) 1px, transparent 1px),
+    #1d4ed8;
+  background-size: 8px 8px;
 }
 
 .slider-setting {
@@ -1315,63 +1434,20 @@ kbd {
   outline-offset: 2px;
 }
 
-.segmented-control {
+.position-presets {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 7px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 2px;
 }
 
-.segmented-control-four {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
-
-.segmented-control-four button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-}
-
-.segmented-control-four button::before {
-  content: '';
-  width: 8px;
-  height: 8px;
-  display: block;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #f8f8f7;
-}
-
-.segmented-control-four button:nth-child(2)::before {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.8), rgba(116, 168, 255, 0.35)),
-    #f9fbff;
-}
-
-.segmented-control-four button:nth-child(3)::before {
-  background:
-    linear-gradient(135deg, #f3eadb, #c9b894),
-    #e6d8be;
-}
-
-.segmented-control-four button:nth-child(4)::before {
-  border-radius: 2px;
-  background:
-    linear-gradient(135deg, #111318 0 48%, #fff8dc 50%),
-    #111318;
-}
-
-.segmented-control button {
-  height: 34px;
+.position-presets button {
+  height: 31px;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 680;
+  font-size: 10.5px;
+  font-weight: 720;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 9px;
   background: var(--control-bg);
   cursor: pointer;
   transition:
@@ -1380,30 +1456,10 @@ kbd {
     color 160ms ease;
 }
 
-.segmented-control button:hover {
+.position-presets button:hover {
   color: var(--ink);
-  border-color: rgba(31, 33, 38, 0.16);
-  background: var(--surface-hover);
-}
-
-.segmented-control button.is-selected {
-  color: #fff;
-  border-color: rgba(21, 22, 26, 0.92);
-  background: #15161a;
-  box-shadow: none;
-}
-
-.workspace.theme-dark .segmented-control button:hover,
-.workspace.theme-dark .segmented-control button.is-selected {
-  color: var(--ink);
-  border-color: rgba(255, 255, 255, 0.12);
-  background: #1b1b1f;
-}
-
-.workspace.theme-dark .segmented-control button.is-selected {
-  color: #f4f8ff;
   border-color: var(--accent-line);
-  background: rgba(116, 168, 255, 0.18);
+  background: var(--surface-hover);
 }
 
 .section-order-list {

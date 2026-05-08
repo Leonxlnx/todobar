@@ -9,13 +9,16 @@ import {
   Clock3,
   Inbox,
   ListTodo,
+  Moon,
   Minus,
+  Palette,
   RotateCcw,
   PanelRightClose,
   PanelRightOpen,
   Plus,
   Search,
   Settings,
+  Sun,
   Trash2,
   X,
 } from 'lucide-react'
@@ -45,6 +48,28 @@ const SECTION_LABELS: Record<SectionId, string> = {
   month: 'Month Plan',
   today: 'Today',
 }
+const THEME_PRESETS = [
+  {
+    id: 'codex',
+    label: 'Codex',
+    note: 'Clean mono',
+  },
+  {
+    id: 'aero',
+    label: 'Aero',
+    note: 'Translucent',
+  },
+  {
+    id: 'terminal',
+    label: 'Terminal',
+    note: 'High contrast',
+  },
+  {
+    id: 'blueprint',
+    label: 'Blueprint',
+    note: 'Planning grid',
+  },
+] as const
 
 type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
@@ -438,7 +463,7 @@ function App() {
       const shortcut =
         event.altKey &&
         event.key.toLowerCase() === 't' &&
-        (event.metaKey || event.ctrlKey)
+        !event.shiftKey
 
       if (shortcut || event.key === 'Escape') {
         event.preventDefault()
@@ -1183,8 +1208,6 @@ function App() {
               MCP connectors, and AI planning.
             </p>
             <div className="shortcut-row" aria-label="Keyboard shortcut">
-              <kbd>Cmd</kbd>
-              <kbd>Ctrl</kbd>
               <kbd>Alt</kbd>
               <kbd>T</kbd>
             </div>
@@ -1259,16 +1282,6 @@ function App() {
                 <div>
                   <strong>Todobar</strong>
                 </div>
-              </div>
-              <div className="icon-cluster">
-                <button
-                  type="button"
-                  aria-label="Sidebar settings"
-                  aria-pressed={isSettingsOpen}
-                  onClick={() => setIsSettingsOpen((current) => !current)}
-                >
-                  <Settings size={16} />
-                </button>
               </div>
             </header>
 
@@ -1586,7 +1599,7 @@ function SidebarRail({
       <button
         type="button"
         className={isSettingsOpen ? 'is-active' : ''}
-        aria-label="Open setup from rail"
+        aria-label="Sidebar settings"
         aria-pressed={isSettingsOpen}
         onClick={onOpenSettings}
       >
@@ -1747,6 +1760,18 @@ function SidebarSettingsPanel({
           <strong>Todo settings</strong>
         </div>
         <div className="settings-actions">
+          <button
+            type="button"
+            className="mode-toggle"
+            aria-label={
+              settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+            }
+            onClick={() =>
+              onChange({ theme: settings.theme === 'dark' ? 'light' : 'dark' })
+            }
+          >
+            {settings.theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
           <button type="button" aria-label="Reset settings" onClick={onReset}>
             <RotateCcw size={15} />
           </button>
@@ -1757,40 +1782,23 @@ function SidebarSettingsPanel({
       </div>
 
       <div className="settings-group settings-appearance">
-        <div className="settings-group-title">Mode</div>
-        <div className="segmented-control" aria-label="Color mode">
-          <button
-            type="button"
-            className={settings.theme === 'light' ? 'is-selected' : ''}
-            onClick={() => onChange({ theme: 'light' })}
-          >
-            Light
-          </button>
-          <button
-            type="button"
-            className={settings.theme === 'dark' ? 'is-selected' : ''}
-            onClick={() => onChange({ theme: 'dark' })}
-          >
-            Dark
-          </button>
+        <div className="settings-group-title">
+          <Palette size={12} />
+          Theme
         </div>
-      </div>
-
-      <div className="settings-group settings-appearance">
-        <div className="settings-group-title">Surface</div>
-        <div className="segmented-control segmented-control-four" aria-label="Surface style">
-          {(['minimal', 'glass', 'skeuo', 'brutal'] as const).map((style) => (
+        <div className="theme-picker" aria-label="Theme picker">
+          {THEME_PRESETS.map((preset) => (
             <button
               type="button"
-              key={style}
-              className={settings.visualStyle === style ? 'is-selected' : ''}
-              onClick={() => onChange({ visualStyle: style })}
+              key={preset.id}
+              className={settings.visualStyle === preset.id ? 'is-selected' : ''}
+              onClick={() => onChange({ visualStyle: preset.id })}
             >
-              {style === 'skeuo'
-                ? 'Skeuo'
-                : style === 'brutal'
-                  ? 'Brutal'
-                  : style[0].toUpperCase() + style.slice(1)}
+              <span className={`theme-swatch theme-swatch-${preset.id}`} />
+              <span>
+                <strong>{preset.label}</strong>
+                <em>{preset.note}</em>
+              </span>
             </button>
           ))}
         </div>
@@ -1868,6 +1876,17 @@ function SidebarSettingsPanel({
           suffix="%"
           onChange={(handleY) => onChange({ handleY })}
         />
+        <div className="position-presets" aria-label="Handle position presets">
+          <button type="button" onClick={() => onChange({ handleY: 10 })}>
+            Top
+          </button>
+          <button type="button" onClick={() => onChange({ handleY: 50 })}>
+            Middle
+          </button>
+          <button type="button" onClick={() => onChange({ handleY: 90 })}>
+            Bottom
+          </button>
+        </div>
       </div>
 
       <div className="settings-group">
