@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added a redesigned sidebar shell with a right-side command rail, compact
+  planning status strip, and an in-panel upcoming reminders section.
 - Added Minimal, Glass, Skeuo, and Brutal surface style presets on top of light
   and dark color modes.
 - Added reminder capture controls, quick reminder cycling on task rows, and
@@ -13,6 +15,10 @@
 
 ### Changed
 
+- Reworked task sections from stacked cards into calmer command rows with
+  subtler action chrome and no hover lift.
+- Increased the default sidebar width for a less cramped open-source first-run
+  experience while keeping panel width configurable.
 - Made task and quick-add hover states calmer so controls no longer float upward
   during normal pointer movement.
 - Memoized task rows and added lightweight rendering containment for long task

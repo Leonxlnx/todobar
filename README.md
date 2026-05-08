@@ -32,6 +32,10 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Single-instance desktop behavior
 - Always-on-top frameless window
 - Click-through transparent area outside the handle and open panel
+- Compact right-side command rail for Today, Month Plan, Lists, Reminders, and
+  setup
+- Planning status strip with today's progress, open task count, and the next
+  reminder
 - Today tasks
 - Month Plan tasks
 - Custom task lists
@@ -39,6 +43,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Delete custom lists
 - Add reminder times while capturing tasks
 - Quick reminder cycling on existing tasks
+- Upcoming reminders section inside the sidebar
 - Native notification plugin support with browser fallback in preview
 - Optional completed-task visibility
 - Local persistence through browser storage
@@ -47,7 +52,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Rearrange Today, Month Plan, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
-  completed-task visibility, launch-at-login, and surface opacity
+  completed-task visibility, launch-at-login, notifications, and surface opacity
 - Responsive sizing for different monitor heights and widths
 
 ## Platform Status
@@ -131,6 +136,8 @@ choose Open.
 - If that shortcut is taken by another app, use `Ctrl/Cmd + Alt + T`.
 - Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
+- Use the command rail to jump between Today, Month Plan, Lists, Reminders, and
+  setup without turning the sidebar into a full dashboard.
 - Use the settings button to adjust appearance, desktop startup, window size,
   handle shape, task density, motion, radius, and opacity.
 
@@ -276,6 +283,7 @@ Useful starting points:
 
 - [Architecture](docs/architecture.md)
 - [Product vision](docs/product-vision.md)
+- [UI direction](docs/ui-direction.md)
 - [Platform support](docs/platform-support.md)
 - [Release verification](docs/release-verification-v0.1.5.md)
 - [Roadmap](docs/roadmap.md)
