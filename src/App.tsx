@@ -1,4 +1,6 @@
 import {
+  ArrowDown,
+  ArrowUp,
   Bell,
   BellRing,
   CalendarDays,
@@ -21,7 +23,7 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
 import { useSidebarSettings } from './sidebarSettings'
-import type { SidebarSettings } from './sidebarSettings'
+import type { SectionId, SidebarSettings } from './sidebarSettings'
 import { initialToday, monthPlan } from './tasks'
 import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
@@ -169,6 +171,29 @@ function loadNotifiedReminderKeys() {
   } catch {
     return {}
   }
+}
+
+function moveSectionOrder(
+  sections: SectionId[],
+  section: SectionId,
+  direction: -1 | 1,
+) {
+  const currentIndex = sections.indexOf(section)
+  const nextIndex = currentIndex + direction
+
+  if (
+    currentIndex < 0 ||
+    nextIndex < 0 ||
+    nextIndex >= sections.length
+  ) {
+    return sections
+  }
+
+  const next = [...sections]
+  const [item] = next.splice(currentIndex, 1)
+  next.splice(nextIndex, 0, item)
+
+  return next
 }
 
 function loadCustomLists() {
@@ -1212,7 +1237,11 @@ function App() {
           </div>
         </header>
 
-        <section className="panel-section" aria-labelledby="today-heading">
+        <section
+          className="panel-section"
+          aria-labelledby="today-heading"
+          style={{ order: settings.sectionOrder.indexOf('today') + 1 }}
+        >
           <div className="section-heading">
             <div>
               <span id="today-heading">
@@ -1271,7 +1300,11 @@ function App() {
           </div>
         </section>
 
-        <section className="panel-section" aria-labelledby="month-heading">
+        <section
+          className="panel-section"
+          aria-labelledby="month-heading"
+          style={{ order: settings.sectionOrder.indexOf('month') + 1 }}
+        >
           <div className="section-heading">
             <div>
               <span id="month-heading">
@@ -1327,7 +1360,11 @@ function App() {
           </div>
         </section>
 
-        <section className="panel-section list-section" aria-labelledby="lists-heading">
+        <section
+          className="panel-section list-section"
+          aria-labelledby="lists-heading"
+          style={{ order: settings.sectionOrder.indexOf('lists') + 1 }}
+        >
           <div className="section-heading">
             <div>
               <span id="lists-heading">
@@ -1594,6 +1631,22 @@ function SidebarSettingsPanel({
       </div>
 
       <div className="settings-group">
+        <div className="settings-group-title">Layout</div>
+        <SectionOrderSetting
+          order={settings.sectionOrder}
+          onMove={(section, direction) =>
+            onChange({
+              sectionOrder: moveSectionOrder(
+                settings.sectionOrder,
+                section,
+                direction,
+              ),
+            })
+          }
+        />
+      </div>
+
+      <div className="settings-group">
         <div className="settings-group-title">Desktop</div>
         <ToggleSetting
           label="Launch at login"
@@ -1718,6 +1771,48 @@ function SidebarSettingsPanel({
         />
       </div>
     </section>
+  )
+}
+
+function SectionOrderSetting({
+  order,
+  onMove,
+}: {
+  order: SectionId[]
+  onMove: (section: SectionId, direction: -1 | 1) => void
+}) {
+  const labels: Record<SectionId, string> = {
+    lists: 'Lists',
+    month: 'Month Plan',
+    today: 'Today',
+  }
+
+  return (
+    <div className="section-order-list" aria-label="Section order">
+      {order.map((section, index) => (
+        <div className="section-order-row" key={section}>
+          <span>{labels[section]}</span>
+          <div>
+            <button
+              type="button"
+              aria-label={`Move ${labels[section]} up`}
+              disabled={index === 0}
+              onClick={() => onMove(section, -1)}
+            >
+              <ArrowUp size={13} />
+            </button>
+            <button
+              type="button"
+              aria-label={`Move ${labels[section]} down`}
+              disabled={index === order.length - 1}
+              onClick={() => onMove(section, 1)}
+            >
+              <ArrowDown size={13} />
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
   )
 }
 

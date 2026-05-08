@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v19'
+const STORAGE_KEY = 'todobar.sidebar.settings.v20'
 
 export type ThemeMode = 'light' | 'dark'
 export type VisualStyle = 'minimal' | 'glass' | 'brutal' | 'skeuo'
+export type SectionId = 'today' | 'month' | 'lists'
 
 export type SidebarSettings = {
   panelWidth: number
@@ -21,6 +22,7 @@ export type SidebarSettings = {
   notificationsEnabled: boolean
   theme: ThemeMode
   visualStyle: VisualStyle
+  sectionOrder: SectionId[]
 }
 
 export const defaultSidebarSettings: SidebarSettings = {
@@ -39,10 +41,26 @@ export const defaultSidebarSettings: SidebarSettings = {
   notificationsEnabled: true,
   theme: 'light',
   visualStyle: 'minimal',
+  sectionOrder: ['today', 'month', 'lists'],
 }
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
+
+const validSectionIds: SectionId[] = ['today', 'month', 'lists']
+
+function sanitizeSectionOrder(value?: SectionId[]) {
+  const incoming = Array.isArray(value) ? value : []
+  const unique = incoming.filter(
+    (section, index) =>
+      validSectionIds.includes(section) && incoming.indexOf(section) === index,
+  )
+
+  return [
+    ...unique,
+    ...validSectionIds.filter((section) => !unique.includes(section)),
+  ]
+}
 
 function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
   return {
@@ -92,6 +110,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
     )
       ? (value.visualStyle as VisualStyle)
       : defaultSidebarSettings.visualStyle,
+    sectionOrder: sanitizeSectionOrder(value.sectionOrder),
   }
 }
 

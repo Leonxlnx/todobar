@@ -44,6 +44,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Local persistence through browser storage
 - Light and dark modes
 - Minimal, Glass, Skeuo, and Brutal surface styles
+- Rearrange Today, Month Plan, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
   completed-task visibility, launch-at-login, and surface opacity

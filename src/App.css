@@ -1176,6 +1176,61 @@ kbd {
   background: #f4f4f5;
 }
 
+.section-order-list {
+  display: grid;
+  gap: 6px;
+}
+
+.section-order-row {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 5px 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: var(--control-bg);
+}
+
+.section-order-row span {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-order-row div {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.section-order-row button {
+  width: 25px;
+  height: 25px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.section-order-row button:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--line);
+  background: var(--surface-hover);
+}
+
+.section-order-row button:disabled {
+  cursor: default;
+  opacity: 0.32;
+}
+
 .panel-section {
   display: grid;
   gap: 9px;

@@ -8,6 +8,8 @@
   and dark color modes.
 - Added reminder capture controls, quick reminder cycling on task rows, and
   native Tauri notification support with browser preview fallback.
+- Added section ordering controls so Today, Month Plan, and Lists can be
+  rearranged from settings.
 
 ### Changed
 

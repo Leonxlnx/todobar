@@ -39,11 +39,21 @@ test('sidebar opens and completed-task visibility is configurable', async ({
 
   await page.getByText('Glass', { exact: true }).click()
   await expect(page.locator('.workspace')).toHaveClass(/style-glass/)
+  await page.getByRole('button', { name: 'Move Month Plan up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
+
+  const monthBox = await page
+    .locator('section[aria-labelledby="month-heading"]')
+    .boundingBox()
+  const todayBox = await page
+    .locator('section[aria-labelledby="today-heading"]')
+    .boundingBox()
+
+  expect(monthBox?.y).toBeLessThan(todayBox?.y ?? 0)
 
   await page.getByLabel('Add a task to Today').fill('Reminder smoke')
   await page
