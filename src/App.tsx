@@ -1586,7 +1586,7 @@ function SidebarRail({
       <button
         type="button"
         className={isSettingsOpen ? 'is-active' : ''}
-        aria-label="Sidebar settings"
+        aria-label="Open setup from rail"
         aria-pressed={isSettingsOpen}
         onClick={onOpenSettings}
       >

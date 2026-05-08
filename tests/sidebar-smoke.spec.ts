@@ -65,7 +65,16 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page
     .locator('section[aria-labelledby="today-heading"] .quick-add .submit-task')
     .click()
-  await expect(page.getByText('Reminder smoke', { exact: true })).toBeVisible()
+  await expect(
+    page
+      .locator('section[aria-labelledby="today-heading"]')
+      .getByText('Reminder smoke', { exact: true }),
+  ).toBeVisible()
+  await expect(
+    page
+      .locator('section[aria-labelledby="reminders-heading"]')
+      .getByText('Reminder smoke', { exact: true }),
+  ).toBeVisible()
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
