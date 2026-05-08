@@ -40,6 +40,11 @@ const PRIORITY_ORDER: Record<Task['priority'], number> = {
   normal: 1,
   later: 2,
 }
+const SECTION_LABELS: Record<SectionId, string> = {
+  lists: 'Lists',
+  month: 'Month Plan',
+  today: 'Today',
+}
 
 type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
@@ -331,6 +336,24 @@ function App() {
     ],
     [customLists, monthTasks, todayTasks],
   )
+  const upcomingReminders = useMemo(
+    () =>
+      reminderTasks
+        .filter(({ task }) => task.reminderAt && !task.done)
+        .sort(
+          (a, b) =>
+            new Date(a.task.reminderAt ?? '').getTime() -
+            new Date(b.task.reminderAt ?? '').getTime(),
+        )
+        .slice(0, 4),
+    [reminderTasks],
+  )
+  const totalOpenTasks = useMemo(
+    () =>
+      reminderTasks.filter(({ task }) => !task.done).length,
+    [reminderTasks],
+  )
+  const nextReminderLabel = formatReminder(upcomingReminders[0]?.task.reminderAt)
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
     const availableWidth = Math.max(280, viewportWidth - settings.tabWidth - 8)
@@ -1012,6 +1035,17 @@ function App() {
     })
   }
 
+  const focusSection = (section: SectionId | 'reminders') => {
+    setIsSettingsOpen(false)
+    setIsOpen(true)
+
+    window.requestAnimationFrame(() => {
+      const target = document.getElementById(`${section}-section`)
+
+      target?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+    })
+  }
+
   const onHandlePointerDown = (event: PointerEvent<HTMLButtonElement>) => {
     if (!isNative) {
       return
@@ -1216,30 +1250,48 @@ function App() {
             />
           </div>
         ) : (
-          <>
-        <header className="sidebar-header">
-          <div className="app-lockup">
-            <span className="app-icon">
-              <Check size={15} />
-            </span>
-            <strong>Todobar</strong>
-          </div>
-          <div className="icon-cluster">
-            <button
-              type="button"
-              className={isSettingsOpen ? 'is-active' : ''}
-              aria-label="Sidebar settings"
-              aria-pressed={isSettingsOpen}
-              onClick={() => setIsSettingsOpen((current) => !current)}
-            >
-              <Settings size={16} />
-            </button>
-          </div>
-        </header>
+          <div className="sidebar-content">
+            <header className="sidebar-header">
+              <div className="app-lockup">
+                <span className="app-icon">
+                  <Check size={15} />
+                </span>
+                <div>
+                  <strong>Todobar</strong>
+                  <span>Plan Console</span>
+                </div>
+              </div>
+              <div className="icon-cluster">
+                <button
+                  type="button"
+                  aria-label="Sidebar settings"
+                  aria-pressed={isSettingsOpen}
+                  onClick={() => setIsSettingsOpen((current) => !current)}
+                >
+                  <Settings size={16} />
+                </button>
+              </div>
+            </header>
+
+            <section className="focus-strip" aria-label="Planning status">
+              <div>
+                <strong>{progressPercent}%</strong>
+                <span>today complete</span>
+              </div>
+              <div>
+                <strong>{totalOpenTasks}</strong>
+                <span>open tasks</span>
+              </div>
+              <div>
+                <strong>{nextReminderLabel || 'None'}</strong>
+                <span>next reminder</span>
+              </div>
+            </section>
 
         <section
           className="panel-section"
           aria-labelledby="today-heading"
+          id="today-section"
           style={{ order: settings.sectionOrder.indexOf('today') + 1 }}
         >
           <div className="section-heading">
@@ -1303,6 +1355,7 @@ function App() {
         <section
           className="panel-section"
           aria-labelledby="month-heading"
+          id="month-section"
           style={{ order: settings.sectionOrder.indexOf('month') + 1 }}
         >
           <div className="section-heading">
@@ -1363,6 +1416,7 @@ function App() {
         <section
           className="panel-section list-section"
           aria-labelledby="lists-heading"
+          id="lists-section"
           style={{ order: settings.sectionOrder.indexOf('lists') + 1 }}
         >
           <div className="section-heading">
@@ -1477,10 +1531,123 @@ function App() {
             })}
           </div>
         </section>
-          </>
+            <UpcomingReminders
+              reminders={upcomingReminders}
+              onOpenSettings={() => setIsSettingsOpen(true)}
+            />
+          </div>
         )}
+        <SidebarRail
+          isSettingsOpen={isSettingsOpen}
+          sectionOrder={settings.sectionOrder}
+          onFocusSection={focusSection}
+          onOpenSettings={() => setIsSettingsOpen(true)}
+        />
       </aside>
     </main>
+  )
+}
+
+function SidebarRail({
+  isSettingsOpen,
+  sectionOrder,
+  onFocusSection,
+  onOpenSettings,
+}: {
+  isSettingsOpen: boolean
+  sectionOrder: SectionId[]
+  onFocusSection: (section: SectionId | 'reminders') => void
+  onOpenSettings: () => void
+}) {
+  return (
+    <nav className="sidebar-rail" aria-label="Todobar navigation">
+      <div className="rail-stack">
+        {sectionOrder.map((section) => (
+          <button
+            type="button"
+            key={section}
+            aria-label={`Jump to ${SECTION_LABELS[section]}`}
+            onClick={() => onFocusSection(section)}
+          >
+            {section === 'today' ? <Clock3 size={16} /> : null}
+            {section === 'month' ? <CalendarDays size={16} /> : null}
+            {section === 'lists' ? <ListTodo size={16} /> : null}
+            <span>{SECTION_LABELS[section].split(' ')[0]}</span>
+          </button>
+        ))}
+        <button
+          type="button"
+          aria-label="Jump to Reminders"
+          onClick={() => onFocusSection('reminders')}
+        >
+          <Bell size={16} />
+          <span>Remind</span>
+        </button>
+      </div>
+      <button
+        type="button"
+        className={isSettingsOpen ? 'is-active' : ''}
+        aria-label="Sidebar settings"
+        aria-pressed={isSettingsOpen}
+        onClick={onOpenSettings}
+      >
+        <Settings size={16} />
+        <span>Setup</span>
+      </button>
+    </nav>
+  )
+}
+
+function UpcomingReminders({
+  reminders,
+  onOpenSettings,
+}: {
+  reminders: Array<{ listTitle: string; task: Task }>
+  onOpenSettings: () => void
+}) {
+  return (
+    <section
+      className="panel-section reminder-section"
+      aria-labelledby="reminders-heading"
+      id="reminders-section"
+      style={{ order: 10 }}
+    >
+      <div className="section-heading">
+        <div>
+          <span id="reminders-heading">
+            <BellRing size={15} />
+            Reminders
+            <em>{reminders.length || 'No'} upcoming</em>
+          </span>
+        </div>
+        <button
+          type="button"
+          aria-label="Open notification settings"
+          onClick={onOpenSettings}
+        >
+          <Settings size={15} />
+        </button>
+      </div>
+      <div className="reminder-list">
+        {reminders.length > 0 ? (
+          reminders.map(({ listTitle, task }) => (
+            <article className="reminder-row" key={`${task.id}:${task.reminderAt}`}>
+              <span>{formatReminder(task.reminderAt)}</span>
+              <div>
+                <strong>{task.title}</strong>
+                <em>{listTitle}</em>
+              </div>
+              <Bell size={13} />
+            </article>
+          ))
+        ) : (
+          <div className="reminder-empty">
+            <Bell size={14} />
+            <span>No timed reminders yet</span>
+          </div>
+        )}
+      </div>
+    </section>
   )
 }
 
