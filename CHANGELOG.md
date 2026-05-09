@@ -6,8 +6,9 @@
 
 - Added a redesigned sidebar shell with a right-side command rail and compact
   planning status strip.
-- Added a theme dropdown with Codex, Quartz Glass, Frost, Paper, Graphite,
-  Midnight, Clay, and Blueprint presets on top of light and dark color modes.
+- Added a custom mode-aware theme picker with separate light and dark preset
+  sets for Codex, Quartz Glass, Frost, Paper, Graphite, Midnight, Clay, and
+  Blueprint variants.
 - Added reminder capture controls, quick reminder cycling on task rows, and
   native Tauri notification support with browser preview fallback.
 - Added section ordering controls so Today, Calendar, and Lists can be
@@ -31,6 +32,8 @@
   lists.
 - Simplified the sidebar rail into icon-only controls to avoid clipped labels
   and keep the panel calmer.
+- Replaced handle top/middle/bottom presets with clearer screen-edge docking
+  controls for right, left, top, and bottom placement.
 
 ## 0.1.5 - Native Shortcut Fix
 

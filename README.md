@@ -47,9 +47,9 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Native notification plugin support with browser fallback in preview
 - Optional completed-task visibility
 - Local persistence through browser storage
-- Light and dark modes
-- Theme dropdown with Codex, Quartz Glass, Frost, Paper, Graphite, Midnight,
-  Clay, and Blueprint presets
+- Light and dark modes with matching mode-specific theme presets
+- Custom theme picker with Codex, Quartz Glass, Frost, Paper, Graphite,
+  Midnight, Clay, and Blueprint variants
 - Rearrange Today, Calendar, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
@@ -138,8 +138,8 @@ choose Open.
 - Press `Esc` to close the panel.
 - Use the command rail to jump between Today, Calendar, Lists, and setup
   without turning the sidebar into a full dashboard.
-- Use the settings button to adjust appearance, desktop startup, window size,
-  handle shape, task density, motion, radius, and opacity.
+- Use the settings button to adjust appearance, dock edge, desktop startup,
+  window size, handle shape, task density, motion, radius, and opacity.
 
 ## Data and Privacy
 
