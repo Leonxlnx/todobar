@@ -116,12 +116,18 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
   await page.getByLabel('Create a custom list').fill('Workstream')
   await page.getByRole('button', { name: 'Create list' }).click()
-  const customList = page.locator('.custom-list').filter({ hasText: 'Workstream' })
-  await customList.getByLabel('Add a task to Workstream').fill('Pinned task')
+  await page.getByRole('button', { name: 'Rename Workstream' }).click()
+  await page.getByRole('textbox', { name: 'Rename Workstream' }).fill('Planner')
+  await page.getByRole('textbox', { name: 'Rename Workstream' }).press('Enter')
+  const customList = page.locator('.custom-list').filter({ hasText: 'Planner' })
+  await customList.getByLabel('Add a task to Planner').fill('Pinned task')
   await customList.locator('.submit-task').click()
-  await customList.getByRole('button', { name: 'Show Workstream on Today' }).click()
+  await customList.getByRole('button', { name: 'Show Planner on Today' }).click()
   await page.getByRole('button', { name: 'Jump to Today' }).click()
   await expect(page.getByText('Today goals', { exact: true })).toBeVisible()
+  await expect(
+    page.locator('.today-goal-list-title strong').filter({ hasText: 'Planner' }),
+  ).toBeVisible()
   await expect(page.getByText('Pinned task', { exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()

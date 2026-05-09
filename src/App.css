@@ -2327,6 +2327,19 @@ kbd {
   cursor: pointer;
 }
 
+.custom-list-edit-input {
+  min-width: 0;
+  height: 30px;
+  padding: 0 8px;
+  color: var(--ink);
+  font: 720 12px / 1.2 var(--font);
+  border: 1px solid var(--accent-line);
+  border-radius: 8px;
+  outline: 0;
+  background: var(--task-bg);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
 .custom-list-title span {
   overflow: hidden;
   font-size: 12px;

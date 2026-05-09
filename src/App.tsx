@@ -440,6 +440,8 @@ function App() {
     Record<string, string>
   >({})
   const [newListDraft, setNewListDraft] = useState('')
+  const [editingListId, setEditingListId] = useState<string | null>(null)
+  const [listTitleDraft, setListTitleDraft] = useState('')
   const notifiedReminderKeys = useRef<Record<string, boolean>>(
     loadNotifiedReminderKeys(),
   )
@@ -1512,6 +1514,30 @@ function App() {
     )
   }
 
+  const startRenameCustomList = (list: CustomTaskList) => {
+    setEditingListId(list.id)
+    setListTitleDraft(list.title)
+  }
+
+  const cancelRenameCustomList = () => {
+    setEditingListId(null)
+    setListTitleDraft('')
+  }
+
+  const commitRenameCustomList = (listId: string) => {
+    const nextTitle = listTitleDraft.trim()
+
+    if (nextTitle) {
+      setCustomLists((lists) =>
+        lists.map((list) =>
+          list.id === listId ? { ...list, title: nextTitle } : list,
+        ),
+      )
+    }
+
+    cancelRenameCustomList()
+  }
+
   const toggleCalendarTask = (
     source: CalendarTaskRef['source'],
     listId: string | undefined,
@@ -2222,15 +2248,37 @@ function App() {
                       return (
                         <section className="custom-list" key={list.id}>
                           <div className="custom-list-header">
-                            <button
-                              type="button"
-                              className="custom-list-title"
-                              aria-expanded={!list.collapsed}
-                              onClick={() => toggleCustomList(list.id)}
-                            >
-                              <span>{list.title}</span>
-                              <em>{list.tasks.length}</em>
-                            </button>
+                            {editingListId === list.id ? (
+                              <input
+                                className="custom-list-edit-input"
+                                aria-label={`Rename ${list.title}`}
+                                value={listTitleDraft}
+                                autoFocus
+                                onBlur={() => commitRenameCustomList(list.id)}
+                                onChange={(event) =>
+                                  setListTitleDraft(event.target.value)
+                                }
+                                onKeyDown={(event) => {
+                                  if (event.key === 'Enter') {
+                                    commitRenameCustomList(list.id)
+                                  }
+
+                                  if (event.key === 'Escape') {
+                                    cancelRenameCustomList()
+                                  }
+                                }}
+                              />
+                            ) : (
+                              <button
+                                type="button"
+                                className="custom-list-title"
+                                aria-expanded={!list.collapsed}
+                                onClick={() => toggleCustomList(list.id)}
+                              >
+                                <span>{list.title}</span>
+                                <em>{list.tasks.length}</em>
+                              </button>
+                            )}
                             <button
                               type="button"
                               className={`custom-list-pin ${
@@ -2248,19 +2296,11 @@ function App() {
                             </button>
                             <button
                               type="button"
-                              className="custom-list-toggle"
-                              aria-label={
-                                list.collapsed
-                                  ? `Expand ${list.title}`
-                                  : `Collapse ${list.title}`
-                              }
-                              onClick={() => toggleCustomList(list.id)}
+                              className="edit-button custom-list-edit"
+                              aria-label={`Rename ${list.title}`}
+                              onClick={() => startRenameCustomList(list)}
                             >
-                              {list.collapsed ? (
-                                <Plus size={14} />
-                              ) : (
-                                <Minus size={14} />
-                              )}
+                              <Pencil size={13} />
                             </button>
                             <button
                               type="button"
