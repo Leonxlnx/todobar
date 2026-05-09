@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v22'
+const STORAGE_KEY = 'todobar.sidebar.settings.v23'
 
+export type DockEdge = 'right' | 'left'
 export type ThemeMode = 'light' | 'dark'
 export type ThemePreset =
   | 'codex'
@@ -15,6 +16,7 @@ export type ThemePreset =
 export type SectionId = 'today' | 'calendar' | 'lists'
 
 export type SidebarSettings = {
+  dockEdge: DockEdge
   panelWidth: number
   tabWidth: number
   handleHeight: number
@@ -34,6 +36,7 @@ export type SidebarSettings = {
 }
 
 export const defaultSidebarSettings: SidebarSettings = {
+  dockEdge: 'right',
   panelWidth: 400,
   tabWidth: 42,
   handleHeight: 84,
@@ -77,6 +80,7 @@ function sanitizeSectionOrder(value?: SectionId[]) {
 
 function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
   return {
+    dockEdge: value.dockEdge === 'left' ? 'left' : 'right',
     panelWidth: clamp(
       value.panelWidth ?? defaultSidebarSettings.panelWidth,
       320,
@@ -138,6 +142,7 @@ export function useSidebarSettings() {
   const [settings, setSettings] = useState<SidebarSettings>(() => {
     const params = new URLSearchParams(window.location.search)
     const themeParam = params.get('theme')
+    const dockParam = params.get('dock')
 
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY)
@@ -147,6 +152,10 @@ export function useSidebarSettings() {
 
       return sanitizeSettings({
         ...base,
+        dockEdge:
+          dockParam === 'left' || dockParam === 'right'
+            ? dockParam
+            : base.dockEdge,
         theme:
           themeParam === 'dark' || themeParam === 'light'
             ? themeParam
@@ -155,6 +164,10 @@ export function useSidebarSettings() {
     } catch {
       return sanitizeSettings({
         ...defaultSidebarSettings,
+        dockEdge:
+          dockParam === 'left' || dockParam === 'right'
+            ? dockParam
+            : defaultSidebarSettings.dockEdge,
         theme:
           themeParam === 'dark' || themeParam === 'light'
             ? themeParam

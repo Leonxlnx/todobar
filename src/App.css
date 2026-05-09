@@ -819,6 +819,20 @@ kbd {
   right: min(var(--panel-width), calc(100vw - var(--tab-width)));
 }
 
+.workspace.dock-left .edge-handle {
+  right: auto;
+  left: 12px;
+}
+
+.workspace.dock-left .edge-handle.is-open {
+  right: auto;
+  left: min(var(--panel-width), calc(100vw - var(--tab-width)));
+}
+
+.workspace.dock-left .handle-symbol {
+  transform: rotate(180deg);
+}
+
 .workspace.is-native .edge-handle {
   top: var(--native-handle-y);
   left: 0;
@@ -841,6 +855,13 @@ kbd {
   height: var(--handle-height);
   border-radius: 16px 0 0 16px;
   transform: translateY(-50%);
+}
+
+.workspace.is-native.dock-left .edge-handle,
+.workspace.is-native.dock-left .edge-handle.is-open {
+  left: var(--panel-width);
+  right: auto;
+  border-radius: 0 16px 16px 0;
 }
 
 .workspace.is-native .edge-handle:hover,
@@ -920,6 +941,20 @@ kbd {
   background: var(--settings-surface);
 }
 
+.workspace.dock-left .todo-sidebar {
+  right: auto;
+  left: 0;
+  border-right: 1px solid var(--sidebar-border);
+  border-left: 0;
+  border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+  box-shadow: 28px 0 72px rgba(19, 25, 35, 0.14);
+  transform: translateX(calc(-100% - 18px));
+}
+
+.workspace.dock-left .todo-sidebar.is-open {
+  transform: translateX(0);
+}
+
 .workspace.is-native .todo-sidebar {
   left: var(--tab-width);
   right: auto;
@@ -933,6 +968,14 @@ kbd {
   box-shadow: none;
   backdrop-filter: none;
   transform: none;
+}
+
+.workspace.is-native.dock-left .todo-sidebar {
+  left: 0;
+  right: auto;
+  border-right: 0;
+  border-left: 0;
+  border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
 }
 
 .workspace.is-native .todo-sidebar.is-open {
@@ -1696,6 +1739,34 @@ kbd {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
   margin-top: 2px;
+}
+
+.dock-edge-setting {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.dock-edge-setting button {
+  height: 32px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 760;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--control-bg);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.dock-edge-setting button:hover,
+.dock-edge-setting button.is-selected {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
 }
 
 .position-presets button {

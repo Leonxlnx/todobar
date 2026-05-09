@@ -39,6 +39,10 @@ test('sidebar opens and completed-task visibility is configurable', async ({
 
   await page.getByLabel('Theme preset').selectOption('graphite')
   await expect(page.locator('.workspace')).toHaveClass(/style-graphite/)
+  await page.getByRole('button', { name: 'Dock left' }).click()
+  await expect(page.locator('.workspace')).toHaveClass(/dock-left/)
+  await page.getByRole('button', { name: 'Dock right' }).click()
+  await expect(page.locator('.workspace')).toHaveClass(/dock-right/)
   await page.getByRole('button', { name: 'Move Calendar up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()
@@ -179,5 +183,23 @@ test('native closed dock keeps a rounded tab shape', async ({ page }) => {
   await expect(page.locator('.edge-handle')).toHaveCSS(
     'border-top-right-radius',
     '0px',
+  )
+})
+
+test('native left dock keeps the tab on the outside edge', async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 442 })
+  await page.goto('/?runtime=tauri&dock=left')
+
+  const path = await page.locator('.native-dock-surface path').getAttribute('d')
+
+  expect(path).toContain('C')
+  expect(path).toContain('Q 392')
+  await expect(page.locator('.edge-handle')).toHaveCSS(
+    'border-top-left-radius',
+    '0px',
+  )
+  await expect(page.locator('.edge-handle')).toHaveCSS(
+    'border-top-right-radius',
+    '16px',
   )
 })

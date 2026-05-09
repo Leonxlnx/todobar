@@ -29,7 +29,12 @@ import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
 import { useSidebarSettings } from './sidebarSettings'
-import type { SectionId, SidebarSettings, ThemePreset } from './sidebarSettings'
+import type {
+  DockEdge,
+  SectionId,
+  SidebarSettings,
+  ThemePreset,
+} from './sidebarSettings'
 import { initialToday, monthPlan } from './tasks'
 import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
@@ -532,9 +537,10 @@ function App() {
     )
   }, [settings.handleHeight, visibleHandleY, viewportHeight])
   const dockSurface = useMemo(() => {
+    const isLeftDock = settings.dockEdge === 'left'
     const width = settings.tabWidth + effectivePanelWidth
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
-    const x = settings.tabWidth
+    const x = isLeftDock ? effectivePanelWidth : settings.tabWidth
     const handleRadius = Math.max(
       12,
       Math.min(16, settings.tabWidth * 0.4, settings.handleHeight * 0.24),
@@ -563,43 +569,73 @@ function App() {
       0,
       Math.min(settings.panelRadius, height - bottom - bottomDockRadius),
     )
-    const closedPath = [
-      `M ${x} ${top - topDockRadius}`,
-      `Q ${x} ${top} ${x - topDockRadius} ${top}`,
-      `H ${handleRadius}`,
-      `C ${handleRadius * 0.45} ${top} 0 ${top + handleRadius * 0.45} 0 ${top + handleRadius}`,
-      `V ${bottom - handleRadius}`,
-      `C 0 ${bottom - handleRadius * 0.45} ${handleRadius * 0.45} ${bottom} ${handleRadius} ${bottom}`,
-      `H ${x - bottomDockRadius}`,
-      `Q ${x} ${bottom} ${x} ${bottom + bottomDockRadius}`,
-      'Z',
-    ].join(' ')
+    const closedPath = isLeftDock
+      ? [
+          `M ${x} ${top - topDockRadius}`,
+          `Q ${x} ${top} ${x + topDockRadius} ${top}`,
+          `H ${width - handleRadius}`,
+          `C ${width - handleRadius * 0.45} ${top} ${width} ${top + handleRadius * 0.45} ${width} ${top + handleRadius}`,
+          `V ${bottom - handleRadius}`,
+          `C ${width} ${bottom - handleRadius * 0.45} ${width - handleRadius * 0.45} ${bottom} ${width - handleRadius} ${bottom}`,
+          `H ${x + bottomDockRadius}`,
+          `Q ${x} ${bottom} ${x} ${bottom + bottomDockRadius}`,
+          'Z',
+        ].join(' ')
+      : [
+          `M ${x} ${top - topDockRadius}`,
+          `Q ${x} ${top} ${x - topDockRadius} ${top}`,
+          `H ${handleRadius}`,
+          `C ${handleRadius * 0.45} ${top} 0 ${top + handleRadius * 0.45} 0 ${top + handleRadius}`,
+          `V ${bottom - handleRadius}`,
+          `C 0 ${bottom - handleRadius * 0.45} ${handleRadius * 0.45} ${bottom} ${handleRadius} ${bottom}`,
+          `H ${x - bottomDockRadius}`,
+          `Q ${x} ${bottom} ${x} ${bottom + bottomDockRadius}`,
+          'Z',
+        ].join(' ')
+    const openPath = isLeftDock
+      ? [
+          `M 0 0`,
+          `H ${x - topPanelRadius}`,
+          `Q ${x} 0 ${x} ${topPanelRadius}`,
+          `V ${top - topDockRadius}`,
+          `Q ${x} ${top} ${x + topDockRadius} ${top}`,
+          `H ${width - handleRadius}`,
+          `Q ${width} ${top} ${width} ${top + handleRadius}`,
+          `V ${bottom - handleRadius}`,
+          `Q ${width} ${bottom} ${width - handleRadius} ${bottom}`,
+          `H ${x + bottomDockRadius}`,
+          `Q ${x} ${bottom} ${x} ${bottom + bottomDockRadius}`,
+          `V ${height - bottomPanelRadius}`,
+          `Q ${x} ${height} ${x - bottomPanelRadius} ${height}`,
+          `H 0`,
+          'Z',
+        ].join(' ')
+      : [
+          `M ${x + topPanelRadius} 0`,
+          `H ${width}`,
+          `V ${height}`,
+          `H ${x + bottomPanelRadius}`,
+          `Q ${x} ${height} ${x} ${height - bottomPanelRadius}`,
+          `V ${bottom + bottomDockRadius}`,
+          `Q ${x} ${bottom} ${x - bottomDockRadius} ${bottom}`,
+          `H ${handleRadius}`,
+          `Q 0 ${bottom} 0 ${bottom - handleRadius}`,
+          `V ${top + handleRadius}`,
+          `Q 0 ${top} ${handleRadius} ${top}`,
+          `H ${x - topDockRadius}`,
+          `Q ${x} ${top} ${x} ${top - topDockRadius}`,
+          `V ${topPanelRadius}`,
+          `Q ${x} 0 ${x + topPanelRadius} 0`,
+          'Z',
+        ].join(' ')
 
     return {
       height,
-      path: isOpen
-        ? [
-            `M ${x + topPanelRadius} 0`,
-            `H ${width}`,
-            `V ${height}`,
-            `H ${x + bottomPanelRadius}`,
-            `Q ${x} ${height} ${x} ${height - bottomPanelRadius}`,
-            `V ${bottom + bottomDockRadius}`,
-            `Q ${x} ${bottom} ${x - bottomDockRadius} ${bottom}`,
-            `H ${handleRadius}`,
-            `Q 0 ${bottom} 0 ${bottom - handleRadius}`,
-            `V ${top + handleRadius}`,
-            `Q 0 ${top} ${handleRadius} ${top}`,
-            `H ${x - topDockRadius}`,
-            `Q ${x} ${top} ${x} ${top - topDockRadius}`,
-            `V ${topPanelRadius}`,
-            `Q ${x} 0 ${x + topPanelRadius} 0`,
-            'Z',
-          ].join(' ')
-        : closedPath,
+      path: isOpen ? openPath : closedPath,
       width,
     }
   }, [
+    settings.dockEdge,
     isOpen,
     settings.handleHeight,
     settings.panelRadius,
@@ -842,12 +878,19 @@ function App() {
           (settings.tabWidth + panelCssWidth) * scaleFactor,
         )
         const tabWidth = Math.round(settings.tabWidth * scaleFactor)
-        const openX = workArea.position.x + workArea.size.width - windowWidth
+        const panelWidth = Math.round(panelCssWidth * scaleFactor)
+        const closedOffset = Math.round(2 * scaleFactor)
+        const openX =
+          settings.dockEdge === 'left'
+            ? workArea.position.x
+            : workArea.position.x + workArea.size.width - windowWidth
         const closedX =
-          workArea.position.x +
-          workArea.size.width -
-          tabWidth +
-          Math.round(2 * scaleFactor)
+          settings.dockEdge === 'left'
+            ? workArea.position.x - panelWidth - closedOffset
+            : workArea.position.x +
+              workArea.size.width -
+              tabWidth +
+              closedOffset
         const openY = workArea.position.y
         const targetX = isOpen ? openX : closedX
         const startX = isOpen ? closedX : openX
@@ -913,7 +956,14 @@ function App() {
     }
 
     void syncNativeWindow()
-  }, [isNative, isOpen, settings.motionMs, settings.panelWidth, settings.tabWidth])
+  }, [
+    isNative,
+    isOpen,
+    settings.dockEdge,
+    settings.motionMs,
+    settings.panelWidth,
+    settings.tabWidth,
+  ])
 
   useEffect(() => {
     if (!isNative) {
@@ -950,15 +1000,19 @@ function App() {
         const handleBottom =
           (nativeHandleCenter + settings.handleHeight / 2) * scaleFactor
         const handleHitSlop = 3 * scaleFactor
+        const handleLeft = settings.dockEdge === 'left' ? panelWidth : 0
+        const handleRight = handleLeft + tabWidth
+        const panelLeft = settings.dockEdge === 'left' ? 0 : tabWidth
+        const panelRight = panelLeft + panelWidth
         const isOnHandle =
-          relativeX >= -handleHitSlop &&
-          relativeX <= tabWidth + handleHitSlop &&
+          relativeX >= handleLeft - handleHitSlop &&
+          relativeX <= handleRight + handleHitSlop &&
           relativeY >= handleTop - handleHitSlop &&
           relativeY <= handleBottom + handleHitSlop
         const isOnPanel =
           isOpen &&
-          relativeX >= tabWidth &&
-          relativeX <= tabWidth + panelWidth &&
+          relativeX >= panelLeft &&
+          relativeX <= panelRight &&
           relativeY >= 0
         const shouldIgnore = dragState.current
           ? false
@@ -991,6 +1045,7 @@ function App() {
     isNative,
     isOpen,
     nativeHandleCenter,
+    settings.dockEdge,
     settings.handleHeight,
     settings.tabWidth,
     effectivePanelWidth,
@@ -1436,7 +1491,7 @@ function App() {
     <main
       className={`workspace ${isNative ? 'is-native' : 'is-web-preview'} ${
         isOpen ? 'is-sidebar-open' : 'is-sidebar-closed'
-      } theme-${settings.theme} style-${settings.visualStyle}`}
+      } dock-${settings.dockEdge} theme-${settings.theme} style-${settings.visualStyle}`}
       style={appStyle}
     >
       <section
@@ -2244,6 +2299,10 @@ function SidebarSettingsPanel({
 
       <div className="settings-group">
         <div className="settings-group-title">Layout</div>
+        <DockEdgeSetting
+          value={settings.dockEdge}
+          onChange={(dockEdge) => onChange({ dockEdge })}
+        />
         <SectionOrderSetting
           order={settings.sectionOrder}
           onMove={(section, direction) =>
@@ -2408,6 +2467,37 @@ function SidebarSettingsPanel({
         />
       </div>
     </section>
+  )
+}
+
+function DockEdgeSetting({
+  value,
+  onChange,
+}: {
+  value: DockEdge
+  onChange: (value: DockEdge) => void
+}) {
+  return (
+    <div className="dock-edge-setting" aria-label="Dock edge">
+      <button
+        type="button"
+        className={value === 'right' ? 'is-selected' : ''}
+        aria-pressed={value === 'right'}
+        aria-label="Dock right"
+        onClick={() => onChange('right')}
+      >
+        Right
+      </button>
+      <button
+        type="button"
+        className={value === 'left' ? 'is-selected' : ''}
+        aria-pressed={value === 'left'}
+        aria-label="Dock left"
+        onClick={() => onChange('left')}
+      >
+        Left
+      </button>
+    </div>
   )
 }
 
