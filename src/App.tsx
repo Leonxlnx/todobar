@@ -538,12 +538,14 @@ function App() {
       Math.min(settings.panelRadius, height - bottom - bottomDockRadius),
     )
     const closedPath = [
-      `M ${x} ${top}`,
+      `M ${x} ${top - topDockRadius}`,
+      `Q ${x} ${top} ${x - topDockRadius} ${top}`,
       `H ${handleRadius}`,
       `C ${handleRadius * 0.45} ${top} 0 ${top + handleRadius * 0.45} 0 ${top + handleRadius}`,
       `V ${bottom - handleRadius}`,
       `C 0 ${bottom - handleRadius * 0.45} ${handleRadius * 0.45} ${bottom} ${handleRadius} ${bottom}`,
-      `H ${x}`,
+      `H ${x - bottomDockRadius}`,
+      `Q ${x} ${bottom} ${x} ${bottom + bottomDockRadius}`,
       'Z',
     ].join(' ')
 
