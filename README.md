@@ -24,7 +24,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 ## Current Features
 
 - Dockable native sidebar for Windows and macOS
-- Right, left, top, and bottom dock placement modes
+- Right, left, and wider top dock placement modes
 - Small draggable handle that opens and closes the panel
 - Global shortcut: `Alt + T`, with `Ctrl/Cmd + Alt + T` as a fallback
 - Native tray/menu-bar control for open, settings, and quit
@@ -48,10 +48,10 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark modes with matching mode-specific theme presets
-- Custom theme picker with Codex, Quartz Glass, Frost, Paper, Graphite,
-  Midnight, Clay, and Blueprint variants
+- Custom theme dropdown with six matching light presets and six matching dark
+  presets
 - Rearrange Today, Calendar, and Lists from settings
-- Adjustable panel width, visible tab size, handle height, vertical position,
+- Adjustable panel width, visible tab size, handle height, edge position,
   motion speed, corner radius, task row height, task spacing, task text size,
   completed-task visibility, launch-at-login, notifications, and surface opacity
 - Responsive sizing for different monitor heights and widths
