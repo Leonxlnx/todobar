@@ -39,14 +39,14 @@ test('sidebar opens and completed-task visibility is configurable', async ({
 
   await page.getByLabel('Theme preset').selectOption('graphite')
   await expect(page.locator('.workspace')).toHaveClass(/style-graphite/)
-  await page.getByRole('button', { name: 'Move Month Plan up' }).click()
+  await page.getByRole('button', { name: 'Move Calendar up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
   await expect(page.locator('section[aria-labelledby="today-heading"]')).toBeVisible()
-  await expect(page.locator('section[aria-labelledby="month-heading"]')).toHaveCount(0)
+  await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
 
   await page.getByLabel('Add a task to Today').fill('Reminder smoke')
   await page
@@ -66,12 +66,21 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.locator('#reminders-section')).toHaveCount(0)
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Jump to Month Plan' }).click()
-  await expect(page.getByRole('button', { name: 'Jump to Month Plan' })).toHaveAttribute(
+  await page.getByRole('button', { name: 'Jump to Calendar' }).click()
+  await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
     'aria-current',
     'true',
   )
-  await expect(page.locator('section[aria-labelledby="month-heading"]')).toBeVisible()
+  await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toBeVisible()
+  await expect(page.getByRole('grid')).toBeVisible()
+  await expect(page.getByLabel('Add a task to selected calendar day')).toBeVisible()
+  await page
+    .getByLabel('Add a task to selected calendar day')
+    .fill('Calendar smoke')
+  await page
+    .locator('section[aria-labelledby="calendar-heading"] .quick-add .submit-task')
+    .click()
+  await expect(page.getByText('Calendar smoke', { exact: true })).toBeVisible()
   await expect(page.locator('section[aria-labelledby="today-heading"]')).toHaveCount(0)
   await page.getByRole('button', { name: 'Jump to Lists' }).click()
   await expect(page.getByRole('button', { name: 'Jump to Lists' })).toHaveAttribute(
@@ -79,7 +88,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     'true',
   )
   await expect(page.locator('section[aria-labelledby="lists-heading"]')).toBeVisible()
-  await expect(page.locator('section[aria-labelledby="month-heading"]')).toHaveCount(0)
+  await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await page.getByText('Show completed', { exact: true }).click()
@@ -148,7 +157,7 @@ test('native closed dock keeps a rounded tab shape', async ({ page }) => {
   expect(path).toContain('C')
   await expect(page.locator('.edge-handle')).toHaveCSS(
     'border-top-left-radius',
-    '20px',
+    '24px',
   )
   await expect(page.locator('.edge-handle')).toHaveCSS(
     'border-top-right-radius',

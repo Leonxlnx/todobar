@@ -12,7 +12,7 @@ export type ThemePreset =
   | 'midnight'
   | 'clay'
   | 'blueprint'
-export type SectionId = 'today' | 'month' | 'lists'
+export type SectionId = 'today' | 'calendar' | 'lists'
 
 export type SidebarSettings = {
   panelWidth: number
@@ -49,19 +49,24 @@ export const defaultSidebarSettings: SidebarSettings = {
   notificationsEnabled: true,
   theme: 'light',
   visualStyle: 'codex',
-  sectionOrder: ['today', 'month', 'lists'],
+  sectionOrder: ['today', 'calendar', 'lists'],
 }
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(Math.max(value, min), max)
 
-const validSectionIds: SectionId[] = ['today', 'month', 'lists']
+const validSectionIds: SectionId[] = ['today', 'calendar', 'lists']
+const legacySectionIds: Record<string, SectionId> = {
+  month: 'calendar',
+}
 
 function sanitizeSectionOrder(value?: SectionId[]) {
   const incoming = Array.isArray(value) ? value : []
-  const unique = incoming.filter(
-    (section, index) =>
-      validSectionIds.includes(section) && incoming.indexOf(section) === index,
+  const normalized = incoming
+    .map((section) => legacySectionIds[section] ?? section)
+    .filter((section): section is SectionId => validSectionIds.includes(section))
+  const unique = normalized.filter(
+    (section, index) => normalized.indexOf(section) === index,
   )
 
   return [

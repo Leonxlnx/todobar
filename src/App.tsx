@@ -5,6 +5,8 @@ import {
   BellRing,
   CalendarDays,
   Check,
+  ChevronLeft,
+  ChevronRight,
   Circle,
   Clock3,
   Inbox,
@@ -44,8 +46,8 @@ const PRIORITY_ORDER: Record<Task['priority'], number> = {
   later: 2,
 }
 const SECTION_LABELS: Record<SectionId, string> = {
+  calendar: 'Calendar',
   lists: 'Lists',
-  month: 'Month Plan',
   today: 'Today',
 }
 const THEME_PRESETS = [
@@ -216,6 +218,75 @@ function formatReminder(reminderAt?: string) {
   }).format(date)
 }
 
+function formatDateKey(date: Date) {
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+
+  return `${year}-${month}-${day}`
+}
+
+function parseReminderDate(reminderAt?: string) {
+  if (!reminderAt) {
+    return null
+  }
+
+  const date = new Date(reminderAt)
+
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+function formatCalendarMonth(date: Date) {
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'long',
+    year: 'numeric',
+  }).format(date)
+}
+
+function formatCalendarDay(date: Date) {
+  return new Intl.DateTimeFormat(undefined, {
+    day: 'numeric',
+    month: 'short',
+  }).format(date)
+}
+
+function addMonths(date: Date, amount: number) {
+  return new Date(date.getFullYear(), date.getMonth() + amount, 1)
+}
+
+function buildCalendarDays(
+  cursor: Date,
+  tasks: Array<{ listTitle: string; task: Task }>,
+) {
+  const monthStart = new Date(cursor.getFullYear(), cursor.getMonth(), 1)
+  const gridStart = new Date(monthStart)
+  const mondayOffset = (monthStart.getDay() + 6) % 7
+  const todayKey = formatDateKey(new Date())
+
+  gridStart.setDate(monthStart.getDate() - mondayOffset)
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(gridStart)
+    date.setDate(gridStart.getDate() + index)
+
+    const key = formatDateKey(date)
+    const dayTasks = tasks.filter(({ task }) => {
+      const reminderDate = parseReminderDate(task.reminderAt)
+
+      return reminderDate ? formatDateKey(reminderDate) === key : false
+    })
+
+    return {
+      date,
+      doneCount: dayTasks.filter(({ task }) => task.done).length,
+      isCurrentMonth: date.getMonth() === cursor.getMonth(),
+      isToday: key === todayKey,
+      key,
+      taskCount: dayTasks.length,
+    }
+  })
+}
+
 function loadNotifiedReminderKeys() {
   try {
     const stored = window.localStorage.getItem(NOTIFIED_REMINDERS_STORAGE_KEY)
@@ -319,6 +390,10 @@ function App() {
     () => new URLSearchParams(window.location.search).get('settings') === '1',
   )
   const [activeRailSection, setActiveRailSection] = useState<SectionId>('today')
+  const [calendarCursor, setCalendarCursor] = useState(() => new Date())
+  const [selectedCalendarKey, setSelectedCalendarKey] = useState(() =>
+    formatDateKey(new Date()),
+  )
   const [settings, updateSettings, resetSettings] = useSidebarSettings()
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
@@ -379,7 +454,7 @@ function App() {
   const reminderTasks = useMemo(
     () => [
       ...todayTasks.map((task) => ({ listTitle: 'Today', task })),
-      ...monthTasks.map((task) => ({ listTitle: 'Month Plan', task })),
+      ...monthTasks.map((task) => ({ listTitle: 'Calendar', task })),
       ...customLists.flatMap((list) =>
         list.tasks.map((task) => ({ listTitle: list.title, task })),
       ),
@@ -390,6 +465,29 @@ function App() {
     () =>
       reminderTasks.filter(({ task }) => !task.done).length,
     [reminderTasks],
+  )
+  const calendarDays = useMemo(
+    () => buildCalendarDays(calendarCursor, reminderTasks),
+    [calendarCursor, reminderTasks],
+  )
+  const selectedCalendarDate = useMemo(
+    () => new Date(`${selectedCalendarKey}T09:00:00`),
+    [selectedCalendarKey],
+  )
+  const selectedCalendarTasks = useMemo(
+    () =>
+      reminderTasks.filter(({ task }) => {
+        const reminderDate = parseReminderDate(task.reminderAt)
+
+        return reminderDate
+          ? formatDateKey(reminderDate) === selectedCalendarKey
+          : false
+      }),
+    [reminderTasks, selectedCalendarKey],
+  )
+  const unscheduledMonthTasks = useMemo(
+    () => monthTasks.filter((task) => !task.reminderAt),
+    [monthTasks],
   )
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
@@ -412,8 +510,8 @@ function App() {
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
     const x = settings.tabWidth
     const handleRadius = Math.max(
-      14,
-      Math.min(20, settings.tabWidth * 0.48, settings.handleHeight * 0.28),
+      18,
+      Math.min(24, settings.tabWidth * 0.56, settings.handleHeight * 0.32),
     )
     const half = settings.handleHeight / 2
     const travel = Math.max(0, height - settings.handleHeight)
@@ -425,11 +523,11 @@ function App() {
     const bottom = center + half
     const topDockRadius = Math.max(
       0,
-      Math.min(16, settings.tabWidth * 0.55, top),
+      Math.min(24, settings.tabWidth * 0.72, top),
     )
     const bottomDockRadius = Math.max(
       0,
-      Math.min(16, settings.tabWidth * 0.55, height - bottom),
+      Math.min(24, settings.tabWidth * 0.72, height - bottom),
     )
     const topPanelRadius = Math.max(
       0,
@@ -897,7 +995,7 @@ function App() {
     updateTasks(listId, (tasks) => [
       createTask(
         title,
-        listId === 'today' ? 'Today' : 'Month Plan',
+        listId === 'today' ? 'Today' : 'Calendar',
         reminderDrafts[listId],
       ),
       ...tasks,
@@ -908,12 +1006,40 @@ function App() {
     setIsOpen(true)
   }
 
+  const addCalendarTask = () => {
+    const title = drafts.month.trim()
+
+    if (!title) {
+      return
+    }
+
+    const fallbackReminder = `${selectedCalendarKey}T09:00`
+
+    setMonthTasks((tasks) => [
+      createTask(
+        title,
+        `${formatCalendarDay(selectedCalendarDate)} · Calendar`,
+        reminderDrafts.month || fallbackReminder,
+      ),
+      ...tasks,
+    ])
+    setDrafts((current) => ({ ...current, month: '' }))
+    setReminderDrafts((current) => ({ ...current, month: '' }))
+    setIsOpen(true)
+  }
+
   const onDraftKeyDown = (
     event: KeyboardEvent<HTMLInputElement>,
     listId: TaskListId,
   ) => {
     if (event.key === 'Enter') {
       addTask(listId)
+    }
+  }
+
+  const onCalendarDraftKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === 'Enter') {
+      addCalendarTask()
     }
   }
 
@@ -1407,71 +1533,144 @@ function App() {
                 </section>
               ) : null}
 
-              {activeRailSection === 'month' ? (
+              {activeRailSection === 'calendar' ? (
                 <section
-                  className="panel-section"
-                  aria-labelledby="month-heading"
-                  id="month-section"
+                  className="panel-section calendar-section"
+                  aria-labelledby="calendar-heading"
+                  id="calendar-section"
                 >
                   <div className="section-heading">
                     <div>
-                      <span id="month-heading">
+                      <span id="calendar-heading">
                         <CalendarDays size={15} />
-                        Month Plan
-                        <em>{monthTasks.length} tasks</em>
+                        Calendar
+                        <em>{formatCalendarMonth(calendarCursor)}</em>
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      aria-label={
-                        collapsedSections.month
-                          ? 'Expand Month Plan'
-                          : 'Collapse Month Plan'
-                      }
-                      aria-expanded={!collapsedSections.month}
-                      onClick={() => toggleSection('month')}
-                    >
-                      {collapsedSections.month ? (
-                        <Plus size={15} />
-                      ) : (
-                        <Minus size={15} />
-                      )}
-                    </button>
-                  </div>
-                  <div
-                    className={`section-content ${
-                      collapsedSections.month ? 'is-collapsed' : ''
-                    }`}
-                    aria-hidden={collapsedSections.month}
-                  >
-                    <div className="section-content-inner">
-                      <QuickAdd
-                        ariaLabel="Add a task to Month Plan"
-                        value={drafts.month}
-                        reminderValue={reminderDrafts.month}
-                        placeholder="Add month task..."
-                        onChange={(value) => updateDraft('month', value)}
-                        onReminderChange={(value) =>
-                          updateReminderDraft('month', value)
+                    <div className="calendar-nav" aria-label="Calendar month">
+                      <button
+                        type="button"
+                        aria-label="Previous month"
+                        onClick={() =>
+                          setCalendarCursor((current) => addMonths(current, -1))
                         }
-                        onSubmit={() => addTask('month')}
-                        onKeyDown={(event) => onDraftKeyDown(event, 'month')}
-                      />
-                      <div className="task-list month-list">
-                        {visibleMonthTasks.map((task, index) => (
-                          <TaskRow
-                            key={task.id}
-                            task={task}
-                            index={index}
-                            onToggle={(id) => toggleTask('month', id)}
-                            onPriority={(id) => cycleTaskPriority('month', id)}
-                            onReminder={(id) => cycleTaskReminder('month', id)}
-                            onDelete={(id) => deleteTask('month', id)}
-                          />
-                        ))}
-                      </div>
+                      >
+                        <ChevronLeft size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        aria-label="Next month"
+                        onClick={() =>
+                          setCalendarCursor((current) => addMonths(current, 1))
+                        }
+                      >
+                        <ChevronRight size={15} />
+                      </button>
                     </div>
                   </div>
+
+                  <div className="calendar-board">
+                    <div className="calendar-weekdays" aria-hidden="true">
+                      {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+                        (day) => (
+                          <span key={day}>{day}</span>
+                        ),
+                      )}
+                    </div>
+                    <div
+                      className="calendar-grid"
+                      role="grid"
+                      aria-label={formatCalendarMonth(calendarCursor)}
+                    >
+                      {calendarDays.map((day) => (
+                        <button
+                          type="button"
+                          key={day.key}
+                          className={[
+                            day.isCurrentMonth ? '' : 'is-muted',
+                            day.isToday ? 'is-today' : '',
+                            day.key === selectedCalendarKey ? 'is-selected' : '',
+                            day.taskCount > 0 ? 'has-task' : '',
+                          ]
+                            .filter(Boolean)
+                            .join(' ')}
+                          aria-label={`${formatCalendarDay(day.date)}, ${
+                            day.taskCount
+                          } scheduled`}
+                          aria-selected={day.key === selectedCalendarKey}
+                          role="gridcell"
+                          onClick={() => setSelectedCalendarKey(day.key)}
+                        >
+                          <span>{day.date.getDate()}</span>
+                          {day.taskCount > 0 ? (
+                            <em>
+                              {day.doneCount}/{day.taskCount}
+                            </em>
+                          ) : null}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="calendar-day-panel">
+                    <div>
+                      <strong>{formatCalendarDay(selectedCalendarDate)}</strong>
+                      <span>
+                        {selectedCalendarTasks.length === 0
+                          ? 'Free'
+                          : `${selectedCalendarTasks.length} scheduled`}
+                      </span>
+                    </div>
+                    <QuickAdd
+                      ariaLabel="Add a task to selected calendar day"
+                      value={drafts.month}
+                      reminderValue={
+                        reminderDrafts.month || `${selectedCalendarKey}T09:00`
+                      }
+                      placeholder="Add to this day..."
+                      onChange={(value) => updateDraft('month', value)}
+                      onReminderChange={(value) =>
+                        updateReminderDraft('month', value)
+                      }
+                      onSubmit={addCalendarTask}
+                      onKeyDown={onCalendarDraftKeyDown}
+                    />
+                    {selectedCalendarTasks.length > 0 ? (
+                      <div className="calendar-agenda">
+                        {selectedCalendarTasks.map(({ listTitle, task }) => (
+                          <div className="calendar-agenda-row" key={task.id}>
+                            <span>{formatReminder(task.reminderAt)}</span>
+                            <strong>{task.title}</strong>
+                            <em>{listTitle}</em>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {unscheduledMonthTasks.length > 0 ? (
+                    <div className="calendar-backlog">
+                      <div className="mini-heading">
+                        <strong>Backlog</strong>
+                        <span>{unscheduledMonthTasks.length} open</span>
+                      </div>
+                      <div className="task-list month-list">
+                        {visibleMonthTasks
+                          .filter((task) => !task.reminderAt)
+                          .map((task, index) => (
+                            <TaskRow
+                              key={task.id}
+                              task={task}
+                              index={index}
+                              onToggle={(id) => toggleTask('month', id)}
+                              onPriority={(id) => cycleTaskPriority('month', id)}
+                              onReminder={(id) => cycleTaskReminder('month', id)}
+                              onDelete={(id) => deleteTask('month', id)}
+                            />
+                          ))}
+                      </div>
+                    </div>
+                  ) : null}
                 </section>
               ) : null}
 
@@ -1651,7 +1850,7 @@ function SidebarRail({
             onClick={() => onFocusSection(section)}
           >
             {section === 'today' ? <Clock3 size={16} /> : null}
-            {section === 'month' ? <CalendarDays size={16} /> : null}
+            {section === 'calendar' ? <CalendarDays size={16} /> : null}
             {section === 'lists' ? <ListTodo size={16} /> : null}
             <span>{SECTION_LABELS[section].split(' ')[0]}</span>
           </button>
@@ -1810,19 +2009,11 @@ function SidebarSettingsPanel({
             >
               {THEME_PRESETS.map((preset) => (
                 <option key={preset.id} value={preset.id}>
-                  {preset.label} - {preset.note}
+                  {preset.label}
                 </option>
               ))}
             </select>
           </label>
-          <div
-            className={`theme-select-preview theme-preview-${selectedTheme.id}`}
-            aria-hidden="true"
-          >
-            <i />
-            <i />
-            <i />
-          </div>
           <p>{selectedTheme.note}</p>
         </div>
       </div>
@@ -2004,8 +2195,8 @@ function SectionOrderSetting({
   onMove: (section: SectionId, direction: -1 | 1) => void
 }) {
   const labels: Record<SectionId, string> = {
+    calendar: 'Calendar',
     lists: 'Lists',
-    month: 'Month Plan',
     today: 'Today',
   }
 
