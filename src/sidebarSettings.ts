@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v23'
+const STORAGE_KEY = 'todobar.sidebar.settings.v24'
 
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
@@ -14,6 +14,11 @@ export type ThemePreset =
   | 'clay'
   | 'blueprint'
 export type SectionId = 'today' | 'calendar' | 'lists'
+
+export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
+  dark: ['codex', 'quartz', 'graphite', 'midnight', 'blueprint'],
+  light: ['codex', 'quartz', 'frost', 'paper', 'clay', 'blueprint'],
+}
 
 export type SidebarSettings = {
   dockEdge: DockEdge
@@ -79,6 +84,12 @@ function sanitizeSectionOrder(value?: SectionId[]) {
 }
 
 function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
+  const theme: ThemeMode = value.theme === 'dark' ? 'dark' : 'light'
+  const availableThemes = themePresetsByMode[theme]
+  const visualStyle = availableThemes.includes(value.visualStyle as ThemePreset)
+    ? (value.visualStyle as ThemePreset)
+    : availableThemes[0]
+
   return {
     dockEdge: ['right', 'left', 'top', 'bottom'].includes(value.dockEdge ?? '')
       ? (value.dockEdge as DockEdge)
@@ -123,19 +134,8 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
     notificationsEnabled:
       value.notificationsEnabled ??
       defaultSidebarSettings.notificationsEnabled,
-    theme: value.theme === 'dark' ? 'dark' : 'light',
-    visualStyle: [
-      'codex',
-      'quartz',
-      'frost',
-      'paper',
-      'graphite',
-      'midnight',
-      'clay',
-      'blueprint',
-    ].includes(value.visualStyle ?? '')
-      ? (value.visualStyle as ThemePreset)
-      : defaultSidebarSettings.visualStyle,
+    theme,
+    visualStyle,
     sectionOrder: sanitizeSectionOrder(value.sectionOrder),
   }
 }

@@ -29,11 +29,12 @@ import {
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
 import './App.css'
-import { useSidebarSettings } from './sidebarSettings'
+import { themePresetsByMode, useSidebarSettings } from './sidebarSettings'
 import type {
   DockEdge,
   SectionId,
   SidebarSettings,
+  ThemeMode,
   ThemePreset,
 } from './sidebarSettings'
 import { initialToday, monthPlan } from './tasks'
@@ -60,47 +61,74 @@ const SECTION_LABELS: Record<SectionId, string> = {
 const THEME_PRESETS = [
   {
     id: 'codex',
-    label: 'Codex',
-    note: 'Neutral',
+    label: 'Codex Light',
+    mode: 'light',
+    note: 'Clean light',
   },
   {
     id: 'quartz',
     label: 'Quartz Glass',
-    note: 'Clear light',
+    mode: 'light',
+    note: 'Soft translucent',
   },
   {
     id: 'frost',
     label: 'Frost',
-    note: 'Blue glass',
+    mode: 'light',
+    note: 'Cool blue',
   },
   {
     id: 'paper',
     label: 'Paper',
-    note: 'Warm light',
+    mode: 'light',
+    note: 'Warm matte',
+  },
+  {
+    id: 'clay',
+    label: 'Clay',
+    mode: 'light',
+    note: 'Muted warm',
+  },
+  {
+    id: 'blueprint',
+    label: 'Blueprint',
+    mode: 'light',
+    note: 'Light grid',
+  },
+  {
+    id: 'codex',
+    label: 'Codex Dark',
+    mode: 'dark',
+    note: 'Clean dark',
+  },
+  {
+    id: 'quartz',
+    label: 'Quartz Dark',
+    mode: 'dark',
+    note: 'Dark glass',
   },
   {
     id: 'graphite',
     label: 'Graphite',
+    mode: 'dark',
     note: 'Deep focus',
   },
   {
     id: 'midnight',
     label: 'Midnight',
-    note: 'Blue dark',
-  },
-  {
-    id: 'clay',
-    label: 'Clay',
-    note: 'Muted color',
+    mode: 'dark',
+    note: 'Blue black',
   },
   {
     id: 'blueprint',
-    label: 'Blueprint',
-    note: 'Grid',
+    label: 'Blueprint Dark',
+    mode: 'dark',
+    note: 'Dark grid',
   },
 ] as const satisfies Array<{
   id: ThemePreset
   label: string
+  mode: ThemeMode
   note: string
 }>
 
@@ -333,6 +361,29 @@ function moveSectionOrder(
   next.splice(nextIndex, 0, item)
 
   return next
+}
+
+function getThemeOptions(theme: ThemeMode) {
+  const allowed = themePresetsByMode[theme]
+
+  return THEME_PRESETS.filter(
+    (preset) => preset.mode === theme && allowed.includes(preset.id),
+  )
+}
+
+function getNextThemePatch(
+  currentTheme: ThemeMode,
+  currentPreset: ThemePreset,
+) {
+  const theme: ThemeMode = currentTheme === 'dark' ? 'light' : 'dark'
+  const allowed = themePresetsByMode[theme]
+
+  return {
+    theme,
+    visualStyle: allowed.includes(currentPreset)
+      ? currentPreset
+      : allowed[0],
+  }
 }
 
 function loadCustomLists() {
@@ -2524,9 +2575,10 @@ function SidebarSettingsPanel({
   onReset: () => void
   onClose: () => void
 }) {
+  const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
-    THEME_PRESETS.find((preset) => preset.id === settings.visualStyle) ??
-    THEME_PRESETS[0]
+    availableThemes.find((preset) => preset.id === settings.visualStyle) ??
+    availableThemes[0]
 
   return (
     <section className="settings-panel" aria-label="Sidebar settings">
@@ -2542,7 +2594,7 @@ function SidebarSettingsPanel({
               settings.theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
             }
             onClick={() =>
-              onChange({ theme: settings.theme === 'dark' ? 'light' : 'dark' })
+              onChange(getNextThemePatch(settings.theme, settings.visualStyle))
             }
           >
             {settings.theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
@@ -2561,33 +2613,55 @@ function SidebarSettingsPanel({
           <Palette size={12} />
           Theme
         </div>
-        <div className="theme-select-panel">
-          <label className="theme-select-field">
-            <span>Preset</span>
-            <select
-              aria-label="Theme preset"
-              value={settings.visualStyle}
-              onChange={(event) =>
-                onChange({ visualStyle: event.target.value as ThemePreset })
-              }
-            >
-              {THEME_PRESETS.map((preset) => (
-                <option key={preset.id} value={preset.id}>
-                  {preset.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <p>{selectedTheme.note}</p>
+        <div className="theme-picker-panel">
+          <div className="theme-mode-row" aria-label="Color mode">
+            <span>{settings.theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
+            <em>{selectedTheme?.note}</em>
+          </div>
+          <div
+            className="theme-picker"
+            role="radiogroup"
+            aria-label="Theme preset"
+          >
+            {availableThemes.map((preset) => (
+              <button
+                type="button"
+                key={`${preset.mode}-${preset.id}`}
+                role="radio"
+                aria-label={`Choose ${preset.label}`}
+                aria-checked={settings.visualStyle === preset.id}
+                className={
+                  settings.visualStyle === preset.id ? 'is-selected' : ''
+                }
+                onClick={() => onChange({ visualStyle: preset.id })}
+              >
+                <span
+                  className={`theme-swatch theme-preview-${preset.id}`}
+                  aria-hidden="true"
+                >
+                  <i />
+                  <i />
+                  <i />
+                  <i />
+                </span>
+                <strong>{preset.label}</strong>
+                <em>{preset.note}</em>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className="settings-group">
-        <div className="settings-group-title">Layout</div>
+        <div className="settings-group-title">Screen edge</div>
         <DockEdgeSetting
           value={settings.dockEdge}
           onChange={(dockEdge) => onChange({ dockEdge })}
         />
+      </div>
+
+      <div className="settings-group">
+        <div className="settings-group-title">Layout</div>
         <SectionOrderSetting
           order={settings.sectionOrder}
           onMove={(section, direction) =>
@@ -2650,7 +2724,7 @@ function SidebarSettingsPanel({
           onChange={(handleHeight) => onChange({ handleHeight })}
         />
         <SliderSetting
-          label="Vertical position"
+          label="Edge position"
           value={settings.handleY}
           min={0}
           max={100}
@@ -2658,31 +2732,6 @@ function SidebarSettingsPanel({
           suffix="%"
           onChange={(handleY) => onChange({ handleY })}
         />
-        <div className="position-presets" aria-label="Handle position presets">
-          <button
-            type="button"
-            className={settings.handleY <= 25 ? 'is-selected' : ''}
-            onClick={() => onChange({ handleY: 10 })}
-          >
-            Top
-          </button>
-          <button
-            type="button"
-            className={
-              settings.handleY > 25 && settings.handleY < 75 ? 'is-selected' : ''
-            }
-            onClick={() => onChange({ handleY: 50 })}
-          >
-            Middle
-          </button>
-          <button
-            type="button"
-            className={settings.handleY >= 75 ? 'is-selected' : ''}
-            onClick={() => onChange({ handleY: 90 })}
-          >
-            Bottom
-          </button>
-        </div>
       </div>
 
       <div className="settings-group">

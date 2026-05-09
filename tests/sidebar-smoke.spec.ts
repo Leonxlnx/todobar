@@ -37,8 +37,15 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
 
-  await page.getByLabel('Theme preset').selectOption('graphite')
+  await expect(
+    page.getByRole('radio', { name: 'Choose Graphite' }),
+  ).toHaveCount(0)
+  await page.getByRole('button', { name: 'Switch to dark mode' }).click()
+  await page.getByRole('radio', { name: 'Choose Graphite' }).click()
+  await expect(page.locator('.workspace')).toHaveClass(/theme-dark/)
   await expect(page.locator('.workspace')).toHaveClass(/style-graphite/)
+  await expect(page.getByText('Edge position', { exact: true })).toBeVisible()
+  await expect(page.getByText('Middle', { exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Dock left' }).click()
   await expect(page.locator('.workspace')).toHaveClass(/dock-left/)
   await page.getByRole('button', { name: 'Dock top' }).click()
