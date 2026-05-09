@@ -37,7 +37,7 @@ reliably from another app.
 toggle shortcuts are:
 
 - `Alt+T`
-- `CommandOrControl+Alt+T`
+- `Alt+Shift+T`
 
 Both shortcuts emit the same internal toggle event used by the tray/menu-bar
 control. Browser tab-restore shortcut chords are intentionally not used.

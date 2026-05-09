@@ -20,7 +20,12 @@
 ### Changed
 
 - Removed the browser tab-restore shortcut chord as a default. `Alt + T` is now
-  the primary toggle shortcut, with `Ctrl/Cmd + Alt + T` as a fallback.
+  the primary toggle shortcut, with `Alt + Shift + T` as a fallback.
+- Replaced the old translucent preset with clearer Glass naming and calmer preset
+  names across light and dark modes.
+- Widened the top dock layout and expanded handle size controls.
+- Added confirmation UI for reset, task delete, and custom-list delete while
+  preserving Shift-click as the immediate delete path.
 - Reworked task sections from stacked cards into calmer command rows with
   subtler action chrome and no hover lift.
 - Increased the default sidebar width for a less cramped open-source first-run
@@ -44,7 +49,7 @@
 
 ### Added
 
-- Added `Ctrl/Cmd + Alt + T` as a global toggle fallback.
+- Added `Alt + Shift + T` as a global toggle fallback.
 - Extended project verification so native shortcut registration remains covered.
 
 ### Verified

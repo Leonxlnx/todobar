@@ -31,8 +31,8 @@ The product should let users tune the sidebar to their workspace:
 - completed-task visibility
 - section order
 - light/dark mode
-- Codex, Quartz Glass, Frost, Paper, Graphite, Midnight, Clay, and Blueprint
-  theme presets
+- Studio, Lumen, Frostline, Paper Trail, Terra, Blueprint, Obsidian, Smoke,
+  Graphite, Nightfall, Ember, and Gridlock theme presets
 
 ## Guardrails
 
