@@ -14,7 +14,7 @@
       {
         "label": "main",
         "title": "Todobar",
-        "width": 382,
+        "width": 442,
         "height": 84,
         "resizable": false,
         "decorations": false,

@@ -441,29 +441,42 @@ function App() {
       0,
       Math.min(settings.panelRadius, height - bottom - bottomDockRadius),
     )
+    const closedPath = [
+      `M ${x} ${top}`,
+      `H ${handleRadius}`,
+      `Q 0 ${top} 0 ${top + handleRadius}`,
+      `V ${bottom - handleRadius}`,
+      `Q 0 ${bottom} ${handleRadius} ${bottom}`,
+      `H ${x}`,
+      'Z',
+    ].join(' ')
+
     return {
       height,
-      path: [
-        `M ${x + topPanelRadius} 0`,
-        `H ${width}`,
-        `V ${height}`,
-        `H ${x + bottomPanelRadius}`,
-        `Q ${x} ${height} ${x} ${height - bottomPanelRadius}`,
-        `V ${bottom + bottomDockRadius}`,
-        `Q ${x} ${bottom} ${x - bottomDockRadius} ${bottom}`,
-        `H ${handleRadius}`,
-        `Q 0 ${bottom} 0 ${bottom - handleRadius}`,
-        `V ${top + handleRadius}`,
-        `Q 0 ${top} ${handleRadius} ${top}`,
-        `H ${x - topDockRadius}`,
-        `Q ${x} ${top} ${x} ${top - topDockRadius}`,
-        `V ${topPanelRadius}`,
-        `Q ${x} 0 ${x + topPanelRadius} 0`,
-        'Z',
-      ].join(' '),
+      path: isOpen
+        ? [
+            `M ${x + topPanelRadius} 0`,
+            `H ${width}`,
+            `V ${height}`,
+            `H ${x + bottomPanelRadius}`,
+            `Q ${x} ${height} ${x} ${height - bottomPanelRadius}`,
+            `V ${bottom + bottomDockRadius}`,
+            `Q ${x} ${bottom} ${x - bottomDockRadius} ${bottom}`,
+            `H ${handleRadius}`,
+            `Q 0 ${bottom} 0 ${bottom - handleRadius}`,
+            `V ${top + handleRadius}`,
+            `Q 0 ${top} ${handleRadius} ${top}`,
+            `H ${x - topDockRadius}`,
+            `Q ${x} ${top} ${x} ${top - topDockRadius}`,
+            `V ${topPanelRadius}`,
+            `Q ${x} 0 ${x + topPanelRadius} 0`,
+            'Z',
+          ].join(' ')
+        : closedPath,
       width,
     }
   }, [
+    isOpen,
     settings.handleHeight,
     settings.panelRadius,
     settings.tabWidth,
@@ -643,7 +656,7 @@ function App() {
   }, [isNative])
 
   useEffect(() => {
-    if (!isNative) {
+    if (!isNative || import.meta.env.DEV) {
       return
     }
 
@@ -654,7 +667,11 @@ function App() {
         )
         const enabled = await isEnabled()
 
-        if (settings.launchAtLogin && !enabled) {
+        if (settings.launchAtLogin) {
+          if (enabled) {
+            await disable()
+          }
+
           await enable()
           return
         }
