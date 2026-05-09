@@ -45,15 +45,8 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
-
-  const monthBox = await page
-    .locator('section[aria-labelledby="month-heading"]')
-    .boundingBox()
-  const todayBox = await page
-    .locator('section[aria-labelledby="today-heading"]')
-    .boundingBox()
-
-  expect(monthBox?.y).toBeLessThan(todayBox?.y ?? 0)
+  await expect(page.locator('section[aria-labelledby="today-heading"]')).toBeVisible()
+  await expect(page.locator('section[aria-labelledby="month-heading"]')).toHaveCount(0)
 
   await page.getByLabel('Add a task to Today').fill('Reminder smoke')
   await page
@@ -78,16 +71,21 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     'aria-current',
     'true',
   )
+  await expect(page.locator('section[aria-labelledby="month-heading"]')).toBeVisible()
+  await expect(page.locator('section[aria-labelledby="today-heading"]')).toHaveCount(0)
   await page.getByRole('button', { name: 'Jump to Lists' }).click()
   await expect(page.getByRole('button', { name: 'Jump to Lists' })).toHaveAttribute(
     'aria-current',
     'true',
   )
+  await expect(page.locator('section[aria-labelledby="lists-heading"]')).toBeVisible()
+  await expect(page.locator('section[aria-labelledby="month-heading"]')).toHaveCount(0)
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
+  await page.getByRole('button', { name: 'Jump to Today' }).click()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeVisible()
 
   expect(consoleMessages).toEqual([])
@@ -140,3 +138,20 @@ for (const viewport of viewports) {
     await expect(page.getByText('Panel width', { exact: true })).toBeVisible()
   })
 }
+
+test('native closed dock keeps a rounded tab shape', async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 442 })
+  await page.goto('/?runtime=tauri')
+
+  const path = await page.locator('.native-dock-surface path').getAttribute('d')
+
+  expect(path).toContain('C')
+  await expect(page.locator('.edge-handle')).toHaveCSS(
+    'border-top-left-radius',
+    '20px',
+  )
+  await expect(page.locator('.edge-handle')).toHaveCSS(
+    'border-top-right-radius',
+    '0px',
+  )
+})

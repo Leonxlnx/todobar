@@ -21,6 +21,8 @@
   --sidebar-bg: rgba(252, 252, 251, var(--surface-alpha));
   --sidebar-solid-bg: #fcfcfb;
   --sidebar-border: rgba(24, 26, 32, 0.09);
+  --dock-bg: var(--sidebar-solid-bg);
+  --dock-stroke: rgba(24, 26, 32, 0.08);
   --control-bg: #f5f6f7;
   --task-bg: #fff;
   --task-border: rgba(24, 26, 32, 0.085);
@@ -70,6 +72,8 @@
   --sidebar-bg: rgba(13, 13, 14, var(--surface-alpha));
   --sidebar-solid-bg: #0d0d0e;
   --sidebar-border: rgba(255, 255, 255, 0.075);
+  --dock-bg: var(--sidebar-solid-bg);
+  --dock-stroke: rgba(255, 255, 255, 0.08);
   --control-bg: #171719;
   --task-bg: #151517;
   --task-border: rgba(255, 255, 255, 0.075);
@@ -108,6 +112,8 @@
   --line: rgba(47, 72, 103, 0.16);
   --sidebar-bg: rgba(255, 255, 255, calc(var(--surface-alpha) * 0.34));
   --sidebar-solid-bg: rgba(246, 251, 255, 0.4);
+  --dock-bg: rgba(246, 251, 255, 0.48);
+  --dock-stroke: rgba(49, 92, 158, 0.18);
   --control-bg: rgba(255, 255, 255, 0.22);
   --task-bg: rgba(255, 255, 255, 0.28);
   --task-border: rgba(49, 92, 158, 0.18);
@@ -130,6 +136,8 @@
     linear-gradient(145deg, #08111c 0%, #101b2a 48%, #172842 100%);
   --sidebar-bg: rgba(10, 18, 30, calc(var(--surface-alpha) * 0.4));
   --sidebar-solid-bg: rgba(8, 15, 25, 0.46);
+  --dock-bg: rgba(8, 15, 25, 0.56);
+  --dock-stroke: rgba(165, 202, 255, 0.14);
   --control-bg: rgba(255, 255, 255, 0.08);
   --task-bg: rgba(255, 255, 255, 0.09);
   --section-bg: rgba(255, 255, 255, 0.06);
@@ -148,6 +156,8 @@
   --line: rgba(36, 76, 118, 0.13);
   --sidebar-bg: rgba(241, 248, 255, var(--surface-alpha));
   --sidebar-solid-bg: #f1f8ff;
+  --dock-bg: #f1f8ff;
+  --dock-stroke: rgba(36, 76, 118, 0.13);
   --control-bg: #e8f2fb;
   --task-bg: #f8fcff;
   --task-border: rgba(36, 76, 118, 0.13);
@@ -170,6 +180,8 @@
   --line: rgba(64, 50, 34, 0.12);
   --sidebar-bg: rgba(252, 250, 244, var(--surface-alpha));
   --sidebar-solid-bg: #fcfaf4;
+  --dock-bg: #fcfaf4;
+  --dock-stroke: rgba(64, 50, 34, 0.12);
   --control-bg: #f3efe6;
   --task-bg: #fffdf8;
   --task-border: rgba(64, 50, 34, 0.12);
@@ -196,6 +208,8 @@
   --sidebar-bg: rgba(10, 11, 14, calc(var(--surface-alpha) * 0.98));
   --sidebar-solid-bg: #0a0b0e;
   --sidebar-border: rgba(255, 255, 255, 0.09);
+  --dock-bg: #0a0b0e;
+  --dock-stroke: rgba(255, 255, 255, 0.09);
   --control-bg: #15171c;
   --task-bg: #121419;
   --task-border: rgba(255, 255, 255, 0.09);
@@ -213,7 +227,8 @@
   --range-thumb: #f6f7f8;
   --range-track: rgba(255, 255, 255, 0.14);
   --panel-shadow: -34px 0 80px rgba(0, 0, 0, 0.52);
-  --handle-bg: linear-gradient(180deg, #ffffff 0%, #e7e8ea 100%);
+  --handle-bg: linear-gradient(180deg, #15171c 0%, #0a0b0e 100%);
+  --handle-hover-bg: linear-gradient(180deg, #1b1e25 0%, #0d0f13 100%);
 }
 
 .workspace.style-graphite .focus-strip div,
@@ -237,6 +252,8 @@
   --sidebar-bg: rgba(6, 11, 22, calc(var(--surface-alpha) * 0.97));
   --sidebar-solid-bg: #060b16;
   --sidebar-border: rgba(148, 172, 207, 0.12);
+  --dock-bg: #060b16;
+  --dock-stroke: rgba(148, 172, 207, 0.12);
   --control-bg: #0d1627;
   --task-bg: #0a1220;
   --task-border: rgba(148, 172, 207, 0.12);
@@ -264,6 +281,8 @@
   --line: rgba(87, 58, 43, 0.14);
   --sidebar-bg: rgba(250, 244, 239, var(--surface-alpha));
   --sidebar-solid-bg: #faf4ef;
+  --dock-bg: #faf4ef;
+  --dock-stroke: rgba(87, 58, 43, 0.14);
   --control-bg: #efe2d9;
   --task-bg: #fff9f5;
   --task-border: rgba(87, 58, 43, 0.14);
@@ -289,6 +308,8 @@
     linear-gradient(145deg, #f6f9ff 0%, #e9f0fb 52%, #dfeafa 100%);
   --sidebar-bg: rgba(244, 248, 255, var(--surface-alpha));
   --sidebar-solid-bg: #f4f8ff;
+  --dock-bg: #f4f8ff;
+  --dock-stroke: rgba(35, 79, 147, 0.18);
   --control-bg: #eaf1fb;
   --task-bg: #f9fbff;
   --section-bg: rgba(250, 252, 255, 0.78);
@@ -310,6 +331,8 @@
     linear-gradient(145deg, #07101e 0%, #0a1322 52%, #101b30 100%);
   --sidebar-bg: rgba(8, 17, 31, var(--surface-alpha));
   --sidebar-solid-bg: #08111f;
+  --dock-bg: #08111f;
+  --dock-stroke: rgba(116, 168, 255, 0.12);
   --control-bg: rgba(116, 168, 255, 0.07);
   --task-bg: rgba(116, 168, 255, 0.065);
   --section-bg: rgba(116, 168, 255, 0.06);
@@ -318,8 +341,8 @@
 }
 
 .workspace.theme-dark .native-dock-surface path {
-  fill: var(--sidebar-solid-bg);
-  stroke: rgba(255, 255, 255, 0.08);
+  fill: var(--dock-bg);
+  stroke: var(--dock-stroke);
 }
 
 .workspace.theme-dark .todo-sidebar {
@@ -427,8 +450,8 @@
 }
 
 .native-dock-surface path {
-  fill: var(--sidebar-solid-bg);
-  stroke: rgba(24, 26, 32, 0.08);
+  fill: var(--dock-bg);
+  stroke: var(--dock-stroke);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
@@ -803,9 +826,10 @@ kbd {
   width: var(--tab-width);
   height: var(--handle-height);
   border-color: transparent;
-  border-radius: 0;
+  border-radius: 20px 0 0 20px;
   background: transparent;
   box-shadow: none;
+  overflow: hidden;
   transform: translateY(-50%);
 }
 
@@ -815,7 +839,7 @@ kbd {
   right: auto;
   width: var(--tab-width);
   height: var(--handle-height);
-  border-radius: 14px;
+  border-radius: 20px 0 0 20px;
   transform: translateY(-50%);
 }
 
@@ -936,7 +960,7 @@ kbd {
 }
 
 .workspace.style-quartz .native-dock-surface path {
-  fill: var(--sidebar-solid-bg);
+  fill: var(--dock-bg);
 }
 
 .sidebar-content {
@@ -1104,6 +1128,17 @@ kbd {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.view-stack {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+
+.view-stack > .panel-section {
+  min-width: 0;
 }
 
 .quick-add {

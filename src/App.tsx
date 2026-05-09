@@ -319,8 +319,6 @@ function App() {
     () => new URLSearchParams(window.location.search).get('settings') === '1',
   )
   const [activeRailSection, setActiveRailSection] = useState<SectionId>('today')
-  const [pendingFocusSection, setPendingFocusSection] =
-    useState<SectionId | null>(null)
   const [settings, updateSettings, resetSettings] = useSidebarSettings()
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
@@ -414,8 +412,8 @@ function App() {
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
     const x = settings.tabWidth
     const handleRadius = Math.max(
-      0,
-      Math.min(14, settings.tabWidth / 2 - 1, settings.handleHeight / 2 - 1),
+      14,
+      Math.min(20, settings.tabWidth * 0.48, settings.handleHeight * 0.28),
     )
     const half = settings.handleHeight / 2
     const travel = Math.max(0, height - settings.handleHeight)
@@ -444,9 +442,9 @@ function App() {
     const closedPath = [
       `M ${x} ${top}`,
       `H ${handleRadius}`,
-      `Q 0 ${top} 0 ${top + handleRadius}`,
+      `C ${handleRadius * 0.45} ${top} 0 ${top + handleRadius * 0.45} 0 ${top + handleRadius}`,
       `V ${bottom - handleRadius}`,
-      `Q 0 ${bottom} ${handleRadius} ${bottom}`,
+      `C 0 ${bottom - handleRadius * 0.45} ${handleRadius * 0.45} ${bottom} ${handleRadius} ${bottom}`,
       `H ${x}`,
       'Z',
     ].join(' ')
@@ -1095,23 +1093,7 @@ function App() {
     setActiveRailSection(section)
     setIsSettingsOpen(false)
     setIsOpen(true)
-    setPendingFocusSection(section)
   }
-
-  useEffect(() => {
-    if (!isOpen || isSettingsOpen || !pendingFocusSection) {
-      return
-    }
-
-    const frame = window.requestAnimationFrame(() => {
-      const target = document.getElementById(`${pendingFocusSection}-section`)
-
-      target?.scrollIntoView({ block: 'start', behavior: 'smooth' })
-      setPendingFocusSection(null)
-    })
-
-    return () => window.cancelAnimationFrame(frame)
-  }, [isOpen, isSettingsOpen, pendingFocusSection])
 
   const openSettings = () => {
     setIsOpen(true)
@@ -1351,249 +1333,284 @@ function App() {
               </div>
             </section>
 
-        <section
-          className="panel-section"
-          aria-labelledby="today-heading"
-          id="today-section"
-          style={{ order: settings.sectionOrder.indexOf('today') + 1 }}
-        >
-          <div className="section-heading">
-            <div>
-              <span id="today-heading">
-                <Clock3 size={15} />
-                Today
-                <em>
-                  {completed} done · {todayTasks.length} total
-                </em>
-              </span>
-            </div>
-            <button
-              type="button"
-              aria-label={
-                collapsedSections.today ? 'Expand Today' : 'Collapse Today'
-              }
-              aria-expanded={!collapsedSections.today}
-              onClick={() => toggleSection('today')}
-            >
-              {collapsedSections.today ? <Plus size={15} /> : <Minus size={15} />}
-            </button>
-          </div>
-          <div className="section-meter" aria-hidden="true">
-            <span style={{ width: `${progressPercent}%` }} />
-          </div>
-          <div
-            className={`section-content ${
-              collapsedSections.today ? 'is-collapsed' : ''
-            }`}
-            aria-hidden={collapsedSections.today}
-          >
-            <div className="section-content-inner">
-              <QuickAdd
-                ariaLabel="Add a task to Today"
-                value={drafts.today}
-                reminderValue={reminderDrafts.today}
-                placeholder="Add task..."
-                onChange={(value) => updateDraft('today', value)}
-                onReminderChange={(value) => updateReminderDraft('today', value)}
-                onSubmit={() => addTask('today')}
-                onKeyDown={(event) => onDraftKeyDown(event, 'today')}
-              />
-              <div className="task-list">
-                {visibleTodayTasks.map((task, index) => (
-                  <TaskRow
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    onToggle={(id) => toggleTask('today', id)}
-                    onPriority={(id) => cycleTaskPriority('today', id)}
-                    onReminder={(id) => cycleTaskReminder('today', id)}
-                    onDelete={(id) => deleteTask('today', id)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="panel-section"
-          aria-labelledby="month-heading"
-          id="month-section"
-          style={{ order: settings.sectionOrder.indexOf('month') + 1 }}
-        >
-          <div className="section-heading">
-            <div>
-              <span id="month-heading">
-                <CalendarDays size={15} />
-                Month Plan
-                <em>{monthTasks.length} tasks</em>
-              </span>
-            </div>
-            <button
-              type="button"
-              aria-label={
-                collapsedSections.month
-                  ? 'Expand Month Plan'
-                  : 'Collapse Month Plan'
-              }
-              aria-expanded={!collapsedSections.month}
-              onClick={() => toggleSection('month')}
-            >
-              {collapsedSections.month ? <Plus size={15} /> : <Minus size={15} />}
-            </button>
-          </div>
-          <div
-            className={`section-content ${
-              collapsedSections.month ? 'is-collapsed' : ''
-            }`}
-            aria-hidden={collapsedSections.month}
-          >
-            <div className="section-content-inner">
-              <QuickAdd
-                ariaLabel="Add a task to Month Plan"
-                value={drafts.month}
-                reminderValue={reminderDrafts.month}
-                placeholder="Add month task..."
-                onChange={(value) => updateDraft('month', value)}
-                onReminderChange={(value) => updateReminderDraft('month', value)}
-                onSubmit={() => addTask('month')}
-                onKeyDown={(event) => onDraftKeyDown(event, 'month')}
-              />
-              <div className="task-list month-list">
-                {visibleMonthTasks.map((task, index) => (
-                  <TaskRow
-                    key={task.id}
-                    task={task}
-                    index={index}
-                    onToggle={(id) => toggleTask('month', id)}
-                    onPriority={(id) => cycleTaskPriority('month', id)}
-                    onReminder={(id) => cycleTaskReminder('month', id)}
-                    onDelete={(id) => deleteTask('month', id)}
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section
-          className="panel-section list-section"
-          aria-labelledby="lists-heading"
-          id="lists-section"
-          style={{ order: settings.sectionOrder.indexOf('lists') + 1 }}
-        >
-          <div className="section-heading">
-            <div>
-              <span id="lists-heading">
-                <ListTodo size={15} />
-                Lists
-                <em>{customLists.length} custom</em>
-              </span>
-            </div>
-          </div>
-
-          <div className="quick-add list-create">
-            <ListTodo size={16} />
-            <input
-              aria-label="Create a custom list"
-              placeholder="New list..."
-              value={newListDraft}
-              onChange={(event) => setNewListDraft(event.target.value)}
-              onKeyDown={onNewListKeyDown}
-            />
-            <button type="button" aria-label="Create list" onClick={addCustomList}>
-              <Plus size={16} />
-            </button>
-          </div>
-
-          <div className="custom-list-stack">
-            {customLists.map((list) => {
-              const sortedTasks = sortTasks(list.tasks)
-              const visibleTasks = settings.showCompleted
-                ? sortedTasks
-                : sortedTasks.filter((task) => !task.done)
-
-              return (
-                <section className="custom-list" key={list.id}>
-                  <div className="custom-list-header">
+            <div className="view-stack" data-view={activeRailSection}>
+              {activeRailSection === 'today' ? (
+                <section
+                  className="panel-section"
+                  aria-labelledby="today-heading"
+                  id="today-section"
+                >
+                  <div className="section-heading">
+                    <div>
+                      <span id="today-heading">
+                        <Clock3 size={15} />
+                        Today
+                        <em>
+                          {completed} done · {todayTasks.length} total
+                        </em>
+                      </span>
+                    </div>
                     <button
                       type="button"
-                      className="custom-list-title"
-                      aria-expanded={!list.collapsed}
-                      onClick={() => toggleCustomList(list.id)}
-                    >
-                      <span>{list.title}</span>
-                      <em>{list.tasks.length}</em>
-                    </button>
-                    <button
-                      type="button"
-                      className="custom-list-toggle"
                       aria-label={
-                        list.collapsed
-                          ? `Expand ${list.title}`
-                          : `Collapse ${list.title}`
+                        collapsedSections.today
+                          ? 'Expand Today'
+                          : 'Collapse Today'
                       }
-                      onClick={() => toggleCustomList(list.id)}
+                      aria-expanded={!collapsedSections.today}
+                      onClick={() => toggleSection('today')}
                     >
-                      {list.collapsed ? <Plus size={14} /> : <Minus size={14} />}
-                    </button>
-                    <button
-                      type="button"
-                      className="delete-button custom-list-delete"
-                      aria-label={`Delete ${list.title}`}
-                      onClick={() => deleteCustomList(list.id)}
-                    >
-                      <Trash2 size={13} />
+                      {collapsedSections.today ? (
+                        <Plus size={15} />
+                      ) : (
+                        <Minus size={15} />
+                      )}
                     </button>
                   </div>
-
+                  <div className="section-meter" aria-hidden="true">
+                    <span style={{ width: `${progressPercent}%` }} />
+                  </div>
                   <div
                     className={`section-content ${
-                      list.collapsed ? 'is-collapsed' : ''
+                      collapsedSections.today ? 'is-collapsed' : ''
                     }`}
-                    aria-hidden={Boolean(list.collapsed)}
+                    aria-hidden={collapsedSections.today}
                   >
                     <div className="section-content-inner">
                       <QuickAdd
-                        ariaLabel={`Add a task to ${list.title}`}
-                        value={customDrafts[list.id] ?? ''}
-                        reminderValue={customReminderDrafts[list.id] ?? ''}
+                        ariaLabel="Add a task to Today"
+                        value={drafts.today}
+                        reminderValue={reminderDrafts.today}
                         placeholder="Add task..."
-                        onChange={(value) => updateCustomDraft(list.id, value)}
+                        onChange={(value) => updateDraft('today', value)}
                         onReminderChange={(value) =>
-                          updateCustomReminderDraft(list.id, value)
+                          updateReminderDraft('today', value)
                         }
-                        onSubmit={() => addCustomTask(list.id)}
-                        onKeyDown={(event) =>
-                          onCustomDraftKeyDown(event, list.id)
-                        }
+                        onSubmit={() => addTask('today')}
+                        onKeyDown={(event) => onDraftKeyDown(event, 'today')}
                       />
-                      {visibleTasks.length > 0 ? (
-                        <div className="task-list">
-                          {visibleTasks.map((task, index) => (
-                            <TaskRow
-                              key={task.id}
-                              task={task}
-                              index={index}
-                              onToggle={(id) => toggleCustomTask(list.id, id)}
-                              onPriority={(id) =>
-                                cycleCustomTaskPriority(list.id, id)
-                              }
-                              onReminder={(id) =>
-                                cycleCustomTaskReminder(list.id, id)
-                              }
-                              onDelete={(id) => deleteCustomTask(list.id, id)}
-                            />
-                          ))}
-                        </div>
-                      ) : null}
+                      <div className="task-list">
+                        {visibleTodayTasks.map((task, index) => (
+                          <TaskRow
+                            key={task.id}
+                            task={task}
+                            index={index}
+                            onToggle={(id) => toggleTask('today', id)}
+                            onPriority={(id) => cycleTaskPriority('today', id)}
+                            onReminder={(id) => cycleTaskReminder('today', id)}
+                            onDelete={(id) => deleteTask('today', id)}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </section>
-              )
-            })}
-          </div>
-        </section>
+              ) : null}
+
+              {activeRailSection === 'month' ? (
+                <section
+                  className="panel-section"
+                  aria-labelledby="month-heading"
+                  id="month-section"
+                >
+                  <div className="section-heading">
+                    <div>
+                      <span id="month-heading">
+                        <CalendarDays size={15} />
+                        Month Plan
+                        <em>{monthTasks.length} tasks</em>
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label={
+                        collapsedSections.month
+                          ? 'Expand Month Plan'
+                          : 'Collapse Month Plan'
+                      }
+                      aria-expanded={!collapsedSections.month}
+                      onClick={() => toggleSection('month')}
+                    >
+                      {collapsedSections.month ? (
+                        <Plus size={15} />
+                      ) : (
+                        <Minus size={15} />
+                      )}
+                    </button>
+                  </div>
+                  <div
+                    className={`section-content ${
+                      collapsedSections.month ? 'is-collapsed' : ''
+                    }`}
+                    aria-hidden={collapsedSections.month}
+                  >
+                    <div className="section-content-inner">
+                      <QuickAdd
+                        ariaLabel="Add a task to Month Plan"
+                        value={drafts.month}
+                        reminderValue={reminderDrafts.month}
+                        placeholder="Add month task..."
+                        onChange={(value) => updateDraft('month', value)}
+                        onReminderChange={(value) =>
+                          updateReminderDraft('month', value)
+                        }
+                        onSubmit={() => addTask('month')}
+                        onKeyDown={(event) => onDraftKeyDown(event, 'month')}
+                      />
+                      <div className="task-list month-list">
+                        {visibleMonthTasks.map((task, index) => (
+                          <TaskRow
+                            key={task.id}
+                            task={task}
+                            index={index}
+                            onToggle={(id) => toggleTask('month', id)}
+                            onPriority={(id) => cycleTaskPriority('month', id)}
+                            onReminder={(id) => cycleTaskReminder('month', id)}
+                            onDelete={(id) => deleteTask('month', id)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              ) : null}
+
+              {activeRailSection === 'lists' ? (
+                <section
+                  className="panel-section list-section"
+                  aria-labelledby="lists-heading"
+                  id="lists-section"
+                >
+                  <div className="section-heading">
+                    <div>
+                      <span id="lists-heading">
+                        <ListTodo size={15} />
+                        Lists
+                        <em>{customLists.length} custom</em>
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="quick-add list-create">
+                    <ListTodo size={16} />
+                    <input
+                      aria-label="Create a custom list"
+                      placeholder="New list..."
+                      value={newListDraft}
+                      onChange={(event) => setNewListDraft(event.target.value)}
+                      onKeyDown={onNewListKeyDown}
+                    />
+                    <button
+                      type="button"
+                      aria-label="Create list"
+                      onClick={addCustomList}
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+
+                  <div className="custom-list-stack">
+                    {customLists.map((list) => {
+                      const sortedTasks = sortTasks(list.tasks)
+                      const visibleTasks = settings.showCompleted
+                        ? sortedTasks
+                        : sortedTasks.filter((task) => !task.done)
+
+                      return (
+                        <section className="custom-list" key={list.id}>
+                          <div className="custom-list-header">
+                            <button
+                              type="button"
+                              className="custom-list-title"
+                              aria-expanded={!list.collapsed}
+                              onClick={() => toggleCustomList(list.id)}
+                            >
+                              <span>{list.title}</span>
+                              <em>{list.tasks.length}</em>
+                            </button>
+                            <button
+                              type="button"
+                              className="custom-list-toggle"
+                              aria-label={
+                                list.collapsed
+                                  ? `Expand ${list.title}`
+                                  : `Collapse ${list.title}`
+                              }
+                              onClick={() => toggleCustomList(list.id)}
+                            >
+                              {list.collapsed ? (
+                                <Plus size={14} />
+                              ) : (
+                                <Minus size={14} />
+                              )}
+                            </button>
+                            <button
+                              type="button"
+                              className="delete-button custom-list-delete"
+                              aria-label={`Delete ${list.title}`}
+                              onClick={() => deleteCustomList(list.id)}
+                            >
+                              <Trash2 size={13} />
+                            </button>
+                          </div>
+
+                          <div
+                            className={`section-content ${
+                              list.collapsed ? 'is-collapsed' : ''
+                            }`}
+                            aria-hidden={Boolean(list.collapsed)}
+                          >
+                            <div className="section-content-inner">
+                              <QuickAdd
+                                ariaLabel={`Add a task to ${list.title}`}
+                                value={customDrafts[list.id] ?? ''}
+                                reminderValue={
+                                  customReminderDrafts[list.id] ?? ''
+                                }
+                                placeholder="Add task..."
+                                onChange={(value) =>
+                                  updateCustomDraft(list.id, value)
+                                }
+                                onReminderChange={(value) =>
+                                  updateCustomReminderDraft(list.id, value)
+                                }
+                                onSubmit={() => addCustomTask(list.id)}
+                                onKeyDown={(event) =>
+                                  onCustomDraftKeyDown(event, list.id)
+                                }
+                              />
+                              {visibleTasks.length > 0 ? (
+                                <div className="task-list">
+                                  {visibleTasks.map((task, index) => (
+                                    <TaskRow
+                                      key={task.id}
+                                      task={task}
+                                      index={index}
+                                      onToggle={(id) =>
+                                        toggleCustomTask(list.id, id)
+                                      }
+                                      onPriority={(id) =>
+                                        cycleCustomTaskPriority(list.id, id)
+                                      }
+                                      onReminder={(id) =>
+                                        cycleCustomTaskReminder(list.id, id)
+                                      }
+                                      onDelete={(id) =>
+                                        deleteCustomTask(list.id, id)
+                                      }
+                                    />
+                                  ))}
+                                </div>
+                              ) : null}
+                            </div>
+                          </div>
+                        </section>
+                      )
+                    })}
+                  </div>
+                </section>
+              ) : null}
+            </div>
           </div>
         )}
         <SidebarRail
