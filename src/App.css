@@ -102,7 +102,7 @@
     linear-gradient(180deg, #303036 0%, #19191d 100%);
 }
 
-.workspace.style-quartz {
+.workspace.style-glass {
   --workspace-bg:
     radial-gradient(circle at 72% 10%, rgba(139, 174, 230, 0.34), transparent 31%),
     radial-gradient(circle at 15% 86%, rgba(255, 255, 255, 0.92), transparent 38%),
@@ -130,7 +130,7 @@
   --handle-hover-bg: rgba(255, 255, 255, 0.6);
 }
 
-.workspace.theme-dark.style-quartz {
+.workspace.theme-dark.style-glass {
   --workspace-bg:
     radial-gradient(circle at 72% 8%, rgba(103, 154, 230, 0.36), transparent 34%),
     linear-gradient(145deg, #08111c 0%, #101b2a 48%, #172842 100%);
@@ -1158,23 +1158,23 @@ kbd {
   overflow: hidden;
 }
 
-.workspace.style-quartz .todo-sidebar,
-.workspace.style-quartz .settings-drawer {
+.workspace.style-glass .todo-sidebar,
+.workspace.style-glass .settings-drawer {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 44%),
     var(--sidebar-bg);
   backdrop-filter: blur(42px) saturate(1.9);
 }
 
-.workspace.is-native.style-quartz .todo-sidebar,
-.workspace.is-native.style-quartz .settings-drawer {
+.workspace.is-native.style-glass .todo-sidebar,
+.workspace.is-native.style-glass .settings-drawer {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 44%),
     var(--sidebar-solid-bg);
   backdrop-filter: blur(38px) saturate(1.8);
 }
 
-.workspace.style-quartz .native-dock-surface path {
+.workspace.style-glass .native-dock-surface path {
   fill: var(--dock-bg);
 }
 
@@ -1427,6 +1427,30 @@ kbd {
   animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.reminder-presets {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.reminder-presets button {
+  min-width: 0;
+  height: 26px;
+  color: var(--muted);
+  font-size: 9.5px;
+  font-weight: 780;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-bg);
+}
+
+.reminder-presets button:hover {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
 .reminder-popover label {
   min-width: 0;
   display: grid;
@@ -1487,6 +1511,7 @@ kbd {
 }
 
 .settings-panel-header {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1538,6 +1563,60 @@ kbd {
   border-radius: 9px;
   background: transparent;
   cursor: pointer;
+}
+
+.settings-confirm-popover {
+  position: relative;
+  z-index: 50;
+  width: 100%;
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  color: var(--ink);
+  border: 1px solid var(--accent-line);
+  border-radius: 14px;
+  background: var(--task-bg);
+  box-shadow: 0 22px 48px rgba(17, 24, 39, 0.18);
+  animation: reminder-popover-in 170ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.workspace.theme-dark .settings-confirm-popover {
+  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.42);
+}
+
+.settings-confirm-popover strong {
+  font-size: 12px;
+}
+
+.settings-confirm-popover span {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.35;
+}
+
+.settings-confirm-popover div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.settings-confirm-popover button {
+  width: auto;
+  min-width: 64px;
+  height: 28px;
+  padding: 0 10px;
+  color: var(--ink);
+  font-size: 10.5px;
+  font-weight: 760;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--control-bg);
+}
+
+.settings-confirm-popover button.is-danger {
+  color: #b42318;
+  border-color: rgba(180, 35, 24, 0.2);
+  background: rgba(180, 35, 24, 0.09);
 }
 
 .settings-group {
@@ -1776,17 +1855,17 @@ kbd {
   background: rgba(17, 19, 24, 0.18);
 }
 
-.theme-preview-quartz {
+.theme-preview-glass {
   background:
     radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.96), transparent 24px),
     linear-gradient(135deg, #eef6ff, #a7c5e8);
 }
 
-.theme-preview-quartz i:first-child {
+.theme-preview-glass i:first-child {
   background: rgba(255, 255, 255, 0.86);
 }
 
-.theme-preview-quartz i:not(:first-child) {
+.theme-preview-glass i:not(:first-child) {
   background: rgba(49, 92, 158, 0.25);
 }
 
@@ -2374,6 +2453,36 @@ kbd {
   display: grid;
 }
 
+.calendar-empty-state {
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  column-gap: 8px;
+  row-gap: 2px;
+  padding: 10px;
+  color: var(--muted);
+  border: 1px dashed var(--line);
+  border-radius: 13px;
+  background: var(--section-bg);
+}
+
+.calendar-empty-state svg {
+  grid-row: 1 / span 2;
+  color: var(--accent);
+}
+
+.calendar-empty-state strong {
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 760;
+}
+
+.calendar-empty-state span {
+  font-size: 10.5px;
+  line-height: 1.25;
+}
+
 .calendar-task-list .task-row {
   min-height: calc(var(--task-row-height) + 1px);
 }
@@ -2442,6 +2551,7 @@ kbd {
 }
 
 .custom-list-header {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
@@ -2787,6 +2897,68 @@ kbd {
   transform: scale(1.08);
 }
 
+.delete-confirm-popover {
+  position: absolute;
+  z-index: 35;
+  right: 8px;
+  top: 50%;
+  bottom: auto;
+  min-width: 176px;
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  color: var(--ink);
+  border: 1px solid rgba(180, 35, 24, 0.18);
+  border-radius: 12px;
+  background: var(--task-bg);
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.14);
+  transform: translateY(-50%);
+  animation: delete-confirm-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.workspace.theme-dark .delete-confirm-popover {
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.36);
+}
+
+.delete-confirm-popover span {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.delete-confirm-popover div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.delete-confirm-popover button {
+  width: auto;
+  height: 26px;
+  padding: 0 9px;
+  color: var(--ink);
+  font-size: 10px;
+  font-weight: 760;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--control-bg);
+  cursor: pointer;
+}
+
+.delete-confirm-popover button.is-danger {
+  color: #b42318;
+  border-color: rgba(180, 35, 24, 0.22);
+  background: rgba(180, 35, 24, 0.1);
+}
+
+.list-delete-confirm {
+  top: 35px;
+  right: 0;
+  bottom: auto;
+  transform: none;
+  animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
 .priority-dot {
   width: 6px;
   height: 6px;
@@ -2895,6 +3067,18 @@ kbd {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes delete-confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-50% - 4px)) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
   }
 }
 

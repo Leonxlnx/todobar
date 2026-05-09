@@ -213,7 +213,7 @@ function verifyNativeDesktopSurface() {
     '.global_shortcut()',
     '.on_shortcut(shortcut',
     'Alt+T',
-    'CommandOrControl+Alt+T',
+    'Alt+Shift+T',
     'todobar-tray-toggle',
     'todobar-tray-settings',
     'show_menu_on_left_click(false)',

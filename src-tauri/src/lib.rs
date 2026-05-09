@@ -66,7 +66,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
 }
 
 fn setup_global_shortcuts(app: &tauri::App) {
-    for shortcut in ["Alt+T", "CommandOrControl+Alt+T"] {
+    for shortcut in ["Alt+T", "Alt+Shift+T"] {
         let result = app
             .global_shortcut()
             .on_shortcut(shortcut, move |app, _shortcut, event| {

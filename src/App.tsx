@@ -28,7 +28,12 @@ import {
   X,
 } from 'lucide-react'
 import { memo, useEffect, useMemo, useRef, useState } from 'react'
-import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react'
+import type {
+  CSSProperties,
+  KeyboardEvent,
+  MouseEvent,
+  PointerEvent,
+} from 'react'
 import './App.css'
 import { themePresetsByMode, useSidebarSettings } from './sidebarSettings'
 import type {
@@ -49,9 +54,9 @@ const TASK_STORAGE_KEYS = {
 } as const
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
-const TOP_DOCK_MIN_PANEL_WIDTH = 560
-const TOP_DOCK_MAX_PANEL_WIDTH = 880
-const TOP_DOCK_WIDTH_MULTIPLIER = 1.45
+const TOP_DOCK_MIN_PANEL_WIDTH = 720
+const TOP_DOCK_MAX_PANEL_WIDTH = 1120
+const TOP_DOCK_WIDTH_MULTIPLIER = 2
 const PRIORITY_ORDER: Record<Task['priority'], number> = {
   focus: 0,
   normal: 1,
@@ -65,31 +70,31 @@ const SECTION_LABELS: Record<SectionId, string> = {
 const THEME_PRESETS = [
   {
     id: 'codex',
-    label: 'Codex Light',
+    label: 'Studio',
     mode: 'light',
-    note: 'Clean light',
+    note: 'Neutral clean',
   },
   {
-    id: 'quartz',
-    label: 'Quartz Glass',
+    id: 'glass',
+    label: 'Lumen',
     mode: 'light',
-    note: 'Soft translucent',
+    note: 'Soft glass',
   },
   {
     id: 'frost',
-    label: 'Frost',
+    label: 'Frostline',
     mode: 'light',
     note: 'Cool blue',
   },
   {
     id: 'paper',
-    label: 'Paper',
+    label: 'Paper Trail',
     mode: 'light',
     note: 'Warm matte',
   },
   {
     id: 'clay',
-    label: 'Clay',
+    label: 'Terra',
     mode: 'light',
     note: 'Muted warm',
   },
@@ -101,13 +106,13 @@ const THEME_PRESETS = [
   },
   {
     id: 'codex',
-    label: 'Codex Dark',
+    label: 'Obsidian',
     mode: 'dark',
-    note: 'Clean dark',
+    note: 'Deep neutral',
   },
   {
-    id: 'quartz',
-    label: 'Quartz Dark',
+    id: 'glass',
+    label: 'Smoke',
     mode: 'dark',
     note: 'Dark glass',
   },
@@ -119,19 +124,19 @@ const THEME_PRESETS = [
   },
   {
     id: 'midnight',
-    label: 'Midnight',
+    label: 'Nightfall',
     mode: 'dark',
     note: 'Blue black',
   },
   {
     id: 'clay',
-    label: 'Clay Dark',
+    label: 'Ember',
     mode: 'dark',
     note: 'Warm dark',
   },
   {
     id: 'blueprint',
-    label: 'Blueprint Dark',
+    label: 'Gridlock',
     mode: 'dark',
     note: 'Dark grid',
   },
@@ -250,6 +255,28 @@ function nextQuickReminder(current?: string) {
   return Number.isFinite(currentTime) && currentTime < tomorrowTime
     ? toLocalDateTimeValue(next)
     : undefined
+}
+
+function reminderPresetValue(kind: 'soon' | 'tomorrow' | 'nextWeek') {
+  const date = new Date()
+
+  if (kind === 'soon') {
+    date.setMinutes(date.getMinutes() + 30)
+  }
+
+  if (kind === 'tomorrow') {
+    date.setDate(date.getDate() + 1)
+    date.setHours(9, 0, 0, 0)
+  }
+
+  if (kind === 'nextWeek') {
+    date.setDate(date.getDate() + 7)
+    date.setHours(9, 0, 0, 0)
+  }
+
+  date.setSeconds(0, 0)
+
+  return toLocalDateTimeValue(date)
 }
 
 function formatReminder(reminderAt?: string) {
@@ -526,6 +553,9 @@ function App() {
   >({})
   const [newListDraft, setNewListDraft] = useState('')
   const [editingListId, setEditingListId] = useState<string | null>(null)
+  const [pendingCustomListDelete, setPendingCustomListDelete] = useState<
+    string | null
+  >(null)
   const [listTitleDraft, setListTitleDraft] = useState('')
   const notifiedReminderKeys = useRef<Record<string, boolean>>(
     loadNotifiedReminderKeys(),
@@ -856,9 +886,17 @@ function App() {
       const shortcut =
         event.altKey &&
         event.key.toLowerCase() === 't' &&
+        !event.ctrlKey &&
+        !event.metaKey &&
         !event.shiftKey
+      const fallbackShortcut =
+        event.altKey &&
+        event.shiftKey &&
+        event.key.toLowerCase() === 't' &&
+        !event.ctrlKey &&
+        !event.metaKey
 
-      if (shortcut || event.key === 'Escape') {
+      if (shortcut || fallbackShortcut || event.key === 'Escape') {
         event.preventDefault()
         setIsOpen((current) => (event.key === 'Escape' ? false : !current))
       }
@@ -1587,6 +1625,7 @@ function App() {
 
   const deleteCustomList = (listId: string) => {
     setCustomLists((lists) => lists.filter((list) => list.id !== listId))
+    setPendingCustomListDelete(null)
     setCustomDrafts((current) => {
       const next = { ...current }
       delete next[listId]
@@ -2267,7 +2306,13 @@ function App() {
                           )}
                         </div>
                       </div>
-                    ) : null}
+                    ) : (
+                      <div className="calendar-empty-state">
+                        <Clock3 size={14} />
+                        <strong>No reminders here</strong>
+                        <span>Add a task above or pick another day.</span>
+                      </div>
+                    )}
                   </div>
 
                   {unscheduledMonthTasks.length > 0 ? (
@@ -2401,10 +2446,42 @@ function App() {
                               type="button"
                               className="delete-button custom-list-delete"
                               aria-label={`Delete ${list.title}`}
-                              onClick={() => deleteCustomList(list.id)}
+                              aria-expanded={pendingCustomListDelete === list.id}
+                              onClick={(event) => {
+                                if (event.shiftKey) {
+                                  deleteCustomList(list.id)
+                                  return
+                                }
+
+                                setPendingCustomListDelete(list.id)
+                              }}
                             >
                               <Trash2 size={13} />
                             </button>
+                            {pendingCustomListDelete === list.id ? (
+                              <div
+                                className="delete-confirm-popover list-delete-confirm"
+                                role="alertdialog"
+                                aria-label={`Confirm delete ${list.title}`}
+                              >
+                                <span>Delete list?</span>
+                                <div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setPendingCustomListDelete(null)}
+                                  >
+                                    Cancel
+                                  </button>
+                                  <button
+                                    type="button"
+                                    className="is-danger"
+                                    onClick={() => deleteCustomList(list.id)}
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </div>
+                            ) : null}
                           </div>
 
                           <div
@@ -2563,7 +2640,13 @@ function QuickAdd({
         placeholder={placeholder}
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        onKeyDown={onKeyDown}
+        onKeyDown={(event) => {
+          onKeyDown(event)
+
+          if (event.key === 'Enter' && value.trim()) {
+            setIsReminderOpen(false)
+          }
+        }}
       />
       <button
         type="button"
@@ -2578,12 +2661,35 @@ function QuickAdd({
         type="button"
         className="submit-task"
         aria-label="Add task"
-        onClick={onSubmit}
+        onClick={() => {
+          onSubmit()
+          setIsReminderOpen(false)
+        }}
       >
         <Plus size={16} />
       </button>
       {isReminderOpen ? (
         <div className="reminder-popover">
+          <div className="reminder-presets" aria-label="Reminder presets">
+            <button
+              type="button"
+              onClick={() => onReminderChange(reminderPresetValue('soon'))}
+            >
+              30 min
+            </button>
+            <button
+              type="button"
+              onClick={() => onReminderChange(reminderPresetValue('tomorrow'))}
+            >
+              Tomorrow
+            </button>
+            <button
+              type="button"
+              onClick={() => onReminderChange(reminderPresetValue('nextWeek'))}
+            >
+              Next week
+            </button>
+          </div>
           <label>
             <span>Remind</span>
             <input
@@ -2619,6 +2725,7 @@ function SidebarSettingsPanel({
   onReset: () => void
   onClose: () => void
 }) {
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false)
   const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
     availableThemes.find((preset) => preset.id === settings.visualStyle) ??
@@ -2644,7 +2751,12 @@ function SidebarSettingsPanel({
           >
             {settings.theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
           </button>
-          <button type="button" aria-label="Reset settings" onClick={onReset}>
+          <button
+            type="button"
+            aria-label="Reset settings"
+            aria-expanded={isResetConfirmOpen}
+            onClick={() => setIsResetConfirmOpen((current) => !current)}
+          >
             <RotateCcw size={15} />
           </button>
           <button type="button" aria-label="Close settings" onClick={onClose}>
@@ -2652,6 +2764,32 @@ function SidebarSettingsPanel({
           </button>
         </div>
       </div>
+
+      {isResetConfirmOpen ? (
+        <div
+          className="settings-confirm-popover"
+          role="alertdialog"
+          aria-label="Reset settings confirmation"
+        >
+          <strong>Reset settings?</strong>
+          <span>Layout, theme, motion, and sizing return to defaults.</span>
+          <div>
+            <button type="button" onClick={() => setIsResetConfirmOpen(false)}>
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="is-danger"
+              onClick={() => {
+                onReset()
+                setIsResetConfirmOpen(false)
+              }}
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      ) : null}
 
       <div className="settings-group settings-appearance">
         <div className="settings-group-title">
@@ -2726,8 +2864,8 @@ function SidebarSettingsPanel({
         <SliderSetting
           label="Visible tab"
           value={settings.tabWidth}
-          min={34}
-          max={62}
+          min={26}
+          max={88}
           step={2}
           suffix="px"
           onChange={(tabWidth) => onChange({ tabWidth })}
@@ -2739,8 +2877,8 @@ function SidebarSettingsPanel({
         <SliderSetting
           label="Button height"
           value={settings.handleHeight}
-          min={72}
-          max={132}
+          min={56}
+          max={176}
           step={2}
           suffix="px"
           onChange={(handleHeight) => onChange({ handleHeight })}
@@ -3093,6 +3231,7 @@ const TaskRow = memo(function TaskRow({
   onRename?: (id: number, title: string) => void
 }) {
   const [isEditing, setIsEditing] = useState(false)
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
   const [draft, setDraft] = useState(task.title)
   const priorityLabel =
     task.priority === 'focus'
@@ -3115,6 +3254,14 @@ const TaskRow = memo(function TaskRow({
   const cancelRename = () => {
     setDraft(task.title)
     setIsEditing(false)
+  }
+  const requestDelete = (event: MouseEvent<HTMLButtonElement>) => {
+    if (event.shiftKey) {
+      onDelete?.(task.id)
+      return
+    }
+
+    setIsDeleteConfirmOpen(true)
   }
 
   return (
@@ -3202,11 +3349,36 @@ const TaskRow = memo(function TaskRow({
           type="button"
           className="delete-button"
           aria-label={`Delete ${task.title}`}
-          onClick={() => onDelete?.(task.id)}
+          aria-expanded={isDeleteConfirmOpen}
+          onClick={requestDelete}
         >
           <Trash2 size={13} />
         </button>
       </div>
+      {isDeleteConfirmOpen ? (
+        <div
+          className="delete-confirm-popover"
+          role="alertdialog"
+          aria-label={`Confirm delete ${task.title}`}
+        >
+          <span>Delete task?</span>
+          <div>
+            <button
+              type="button"
+              onClick={() => setIsDeleteConfirmOpen(false)}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              className="is-danger"
+              onClick={() => onDelete?.(task.id)}
+            >
+              Delete
+            </button>
+          </div>
+        </div>
+      ) : null}
     </article>
   )
 }, areTaskRowsEqual)

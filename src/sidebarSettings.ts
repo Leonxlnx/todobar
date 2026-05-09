@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v25'
+const STORAGE_KEY = 'todobar.sidebar.settings.v26'
 
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
 export type ThemePreset =
   | 'codex'
-  | 'quartz'
+  | 'glass'
   | 'frost'
   | 'paper'
   | 'graphite'
@@ -16,8 +16,8 @@ export type ThemePreset =
 export type SectionId = 'today' | 'calendar' | 'lists'
 
 export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
-  dark: ['codex', 'quartz', 'graphite', 'midnight', 'clay', 'blueprint'],
-  light: ['codex', 'quartz', 'frost', 'paper', 'clay', 'blueprint'],
+  dark: ['codex', 'glass', 'graphite', 'midnight', 'clay', 'blueprint'],
+  light: ['codex', 'glass', 'frost', 'paper', 'clay', 'blueprint'],
 }
 
 export type SidebarSettings = {
@@ -105,11 +105,11 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       320,
       560,
     ),
-    tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 34, 62),
+    tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 26, 88),
     handleHeight: clamp(
       value.handleHeight ?? defaultSidebarSettings.handleHeight,
-      72,
-      132,
+      56,
+      176,
     ),
     handleY: clamp(value.handleY ?? defaultSidebarSettings.handleY, 0, 100),
     motionMs: clamp(value.motionMs ?? defaultSidebarSettings.motionMs, 140, 360),

@@ -55,6 +55,14 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.locator('.workspace')).toHaveClass(/dock-top/)
   await page.getByRole('button', { name: 'Dock right' }).click()
   await expect(page.locator('.workspace')).toHaveClass(/dock-right/)
+  await page.getByRole('button', { name: 'Reset settings' }).click()
+  await expect(
+    page.getByRole('alertdialog', { name: 'Reset settings confirmation' }),
+  ).toBeVisible()
+  await page.getByRole('button', { name: 'Cancel' }).click()
+  await expect(
+    page.getByRole('alertdialog', { name: 'Reset settings confirmation' }),
+  ).toHaveCount(0)
   await page.getByRole('button', { name: 'Move Calendar up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()
@@ -89,6 +97,23 @@ test('sidebar opens and completed-task visibility is configurable', async ({
       .locator('section[aria-labelledby="today-heading"]')
       .getByText('Renamed smoke', { exact: true }),
   ).toBeVisible()
+  await page.getByLabel('Add a task to Today').fill('Delete smoke')
+  await page
+    .locator('section[aria-labelledby="today-heading"] .quick-add .submit-task')
+    .click()
+  await page.getByRole('button', { name: 'Delete Delete smoke' }).click()
+  await expect(
+    page.getByRole('alertdialog', { name: 'Confirm delete Delete smoke' }),
+  ).toBeVisible()
+  await page
+    .getByRole('alertdialog', { name: 'Confirm delete Delete smoke' })
+    .getByRole('button', { name: 'Cancel' })
+    .click()
+  await expect(page.getByText('Delete smoke', { exact: true })).toBeVisible()
+  await page
+    .getByRole('button', { name: 'Delete Delete smoke' })
+    .click({ modifiers: ['Shift'] })
+  await expect(page.getByText('Delete smoke', { exact: true })).toHaveCount(0)
   await expect(page.locator('#reminders-section')).toHaveCount(0)
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 
@@ -248,5 +273,5 @@ test('native top dock keeps a wider outside tab shape', async ({ page }) => {
     'border-bottom-left-radius',
     '16px',
   )
-  await expect(page.locator('.todo-sidebar')).toHaveCSS('width', '580px')
+  await expect(page.locator('.todo-sidebar')).toHaveCSS('width', '800px')
 })
