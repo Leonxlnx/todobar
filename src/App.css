@@ -761,7 +761,10 @@ kbd {
   user-select: none;
   touch-action: none;
   transition:
+    bottom var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    left var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     right var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    top var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     color 160ms ease,
     transform 160ms ease;
 }
@@ -833,6 +836,58 @@ kbd {
   transform: rotate(180deg);
 }
 
+.workspace.dock-top .edge-handle,
+.workspace.dock-bottom .edge-handle {
+  right: auto;
+  left: clamp(
+    calc(var(--handle-half) + 8px),
+    var(--handle-y),
+    calc(100vw - var(--handle-half) - 8px)
+  );
+  width: var(--handle-height);
+  height: var(--tab-width);
+  transform: translateX(-50%);
+}
+
+.workspace.dock-top .edge-handle {
+  top: 12px;
+  border-radius: 0 0 16px 16px;
+}
+
+.workspace.dock-bottom .edge-handle {
+  top: auto;
+  bottom: 12px;
+  border-radius: 16px 16px 0 0;
+}
+
+.workspace.dock-top .edge-handle.is-open {
+  top: min(var(--panel-depth), calc(100vh - var(--tab-width)));
+  left: clamp(
+    calc(var(--handle-half) + 8px),
+    var(--handle-y),
+    calc(100vw - var(--handle-half) - 8px)
+  );
+  right: auto;
+}
+
+.workspace.dock-bottom .edge-handle.is-open {
+  right: auto;
+  bottom: min(var(--panel-depth), calc(100vh - var(--tab-width)));
+  left: clamp(
+    calc(var(--handle-half) + 8px),
+    var(--handle-y),
+    calc(100vw - var(--handle-half) - 8px)
+  );
+}
+
+.workspace.dock-top .handle-symbol {
+  transform: rotate(90deg);
+}
+
+.workspace.dock-bottom .handle-symbol {
+  transform: rotate(-90deg);
+}
+
 .workspace.is-native .edge-handle {
   top: var(--native-handle-y);
   left: 0;
@@ -862,6 +917,30 @@ kbd {
   left: var(--panel-width);
   right: auto;
   border-radius: 0 16px 16px 0;
+}
+
+.workspace.is-native.dock-top .edge-handle,
+.workspace.is-native.dock-top .edge-handle.is-open {
+  top: var(--panel-depth);
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  width: min(var(--handle-height), calc(var(--panel-width) - 24px));
+  height: var(--tab-width);
+  border-radius: 0 0 16px 16px;
+  transform: translateX(-50%);
+}
+
+.workspace.is-native.dock-bottom .edge-handle,
+.workspace.is-native.dock-bottom .edge-handle.is-open {
+  top: 0;
+  left: 50%;
+  right: auto;
+  bottom: auto;
+  width: min(var(--handle-height), calc(var(--panel-width) - 24px));
+  height: var(--tab-width);
+  border-radius: 16px 16px 0 0;
+  transform: translateX(-50%);
 }
 
 .workspace.is-native .edge-handle:hover,
@@ -955,6 +1034,41 @@ kbd {
   transform: translateX(0);
 }
 
+.workspace.dock-top .todo-sidebar,
+.workspace.dock-bottom .todo-sidebar {
+  right: auto;
+  left: clamp(
+    0px,
+    calc(var(--handle-y) - var(--panel-half)),
+    calc(100vw - var(--panel-width))
+  );
+  width: min(var(--panel-width), 100vw);
+  height: min(var(--panel-depth), calc(100vh - var(--tab-width)));
+  border-left: 0;
+  border-right: 0;
+  transform: translateY(calc(-100% - 18px));
+}
+
+.workspace.dock-top .todo-sidebar {
+  top: 0;
+  bottom: auto;
+  border-radius: 0 0 var(--panel-radius) var(--panel-radius);
+  box-shadow: 0 28px 72px rgba(19, 25, 35, 0.14);
+}
+
+.workspace.dock-bottom .todo-sidebar {
+  top: auto;
+  bottom: 0;
+  border-radius: var(--panel-radius) var(--panel-radius) 0 0;
+  box-shadow: 0 -28px 72px rgba(19, 25, 35, 0.14);
+  transform: translateY(calc(100% + 18px));
+}
+
+.workspace.dock-top .todo-sidebar.is-open,
+.workspace.dock-bottom .todo-sidebar.is-open {
+  transform: translateY(0);
+}
+
 .workspace.is-native .todo-sidebar {
   left: var(--tab-width);
   right: auto;
@@ -976,6 +1090,28 @@ kbd {
   border-right: 0;
   border-left: 0;
   border-radius: 0 var(--panel-radius) var(--panel-radius) 0;
+}
+
+.workspace.is-native.dock-top .todo-sidebar,
+.workspace.is-native.dock-bottom .todo-sidebar {
+  left: 0;
+  right: auto;
+  width: var(--panel-width);
+  height: var(--panel-depth);
+  border: 0;
+  box-shadow: none;
+}
+
+.workspace.is-native.dock-top .todo-sidebar {
+  top: 0;
+  bottom: auto;
+  border-radius: 0 0 var(--panel-radius) var(--panel-radius);
+}
+
+.workspace.is-native.dock-bottom .todo-sidebar {
+  top: var(--tab-width);
+  bottom: auto;
+  border-radius: var(--panel-radius) var(--panel-radius) 0 0;
 }
 
 .workspace.is-native .todo-sidebar.is-open {

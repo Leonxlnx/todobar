@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const STORAGE_KEY = 'todobar.sidebar.settings.v23'
 
-export type DockEdge = 'right' | 'left'
+export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
 export type ThemePreset =
   | 'codex'
@@ -80,7 +80,9 @@ function sanitizeSectionOrder(value?: SectionId[]) {
 
 function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
   return {
-    dockEdge: value.dockEdge === 'left' ? 'left' : 'right',
+    dockEdge: ['right', 'left', 'top', 'bottom'].includes(value.dockEdge ?? '')
+      ? (value.dockEdge as DockEdge)
+      : 'right',
     panelWidth: clamp(
       value.panelWidth ?? defaultSidebarSettings.panelWidth,
       320,
@@ -153,7 +155,10 @@ export function useSidebarSettings() {
       return sanitizeSettings({
         ...base,
         dockEdge:
-          dockParam === 'left' || dockParam === 'right'
+          dockParam === 'left' ||
+          dockParam === 'right' ||
+          dockParam === 'top' ||
+          dockParam === 'bottom'
             ? dockParam
             : base.dockEdge,
         theme:
@@ -165,7 +170,10 @@ export function useSidebarSettings() {
       return sanitizeSettings({
         ...defaultSidebarSettings,
         dockEdge:
-          dockParam === 'left' || dockParam === 'right'
+          dockParam === 'left' ||
+          dockParam === 'right' ||
+          dockParam === 'top' ||
+          dockParam === 'bottom'
             ? dockParam
             : defaultSidebarSettings.dockEdge,
         theme:

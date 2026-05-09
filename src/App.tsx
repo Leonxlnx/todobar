@@ -362,26 +362,30 @@ function loadCustomLists() {
   }
 }
 
-function animateNativeX<Position>(
+function animateNativePosition<Position>(
   windowHandle: NativeWindowHandle<Position>,
   createPosition: (x: number, y: number) => Position,
   startX: number,
   endX: number,
-  y: number,
+  startY: number,
+  endY: number,
   duration: number,
 ) {
   return new Promise<void>((resolve) => {
     const startTime = performance.now()
     let lastX = Number.NaN
+    let lastY = Number.NaN
 
     const step = (time: number) => {
       const progress = Math.min((time - startTime) / duration, 1)
       const eased = progress * progress * (3 - 2 * progress)
       const nextX = Math.round(startX + (endX - startX) * eased)
+      const nextY = Math.round(startY + (endY - startY) * eased)
 
-      if (nextX !== lastX) {
+      if (nextX !== lastX || nextY !== lastY) {
         lastX = nextX
-        void windowHandle.setPosition(createPosition(nextX, y))
+        lastY = nextY
+        void windowHandle.setPosition(createPosition(nextX, nextY))
       }
 
       if (progress < 1) {
@@ -526,6 +530,11 @@ function App() {
 
     return Math.min(settings.panelWidth, availableWidth)
   }, [settings.panelWidth, settings.tabWidth, viewportWidth])
+  const effectivePanelDepth = useMemo(() => {
+    const availableHeight = Math.max(280, viewportHeight - settings.tabWidth - 8)
+
+    return Math.min(settings.panelWidth, availableHeight, 560)
+  }, [settings.panelWidth, settings.tabWidth, viewportHeight])
   const nativeHandleCenter = useMemo(() => {
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
     const half = settings.handleHeight / 2
@@ -538,13 +547,113 @@ function App() {
   }, [settings.handleHeight, visibleHandleY, viewportHeight])
   const dockSurface = useMemo(() => {
     const isLeftDock = settings.dockEdge === 'left'
-    const width = settings.tabWidth + effectivePanelWidth
-    const height = Math.max(settings.handleHeight, viewportHeight || 0)
-    const x = isLeftDock ? effectivePanelWidth : settings.tabWidth
     const handleRadius = Math.max(
       12,
       Math.min(16, settings.tabWidth * 0.4, settings.handleHeight * 0.24),
     )
+
+    if (settings.dockEdge === 'top' || settings.dockEdge === 'bottom') {
+      const width = effectivePanelWidth
+      const height = settings.tabWidth + effectivePanelDepth
+      const panelRadius = Math.max(
+        0,
+        Math.min(settings.panelRadius, width / 2, effectivePanelDepth / 2),
+      )
+      const handleLength = Math.min(
+        settings.handleHeight,
+        Math.max(72, width - 24),
+      )
+      const left = (width - handleLength) / 2
+      const right = left + handleLength
+      const dockRadius = Math.max(
+        0,
+        Math.min(18, settings.tabWidth * 0.5, left, width - right),
+      )
+      const isTopDock = settings.dockEdge === 'top'
+
+      if (isTopDock) {
+        const y = effectivePanelDepth
+        const closedPath = [
+          `M ${left - dockRadius} ${y}`,
+          `Q ${left} ${y} ${left} ${y + dockRadius}`,
+          `V ${height - handleRadius}`,
+          `Q ${left} ${height} ${left + handleRadius} ${height}`,
+          `H ${right - handleRadius}`,
+          `Q ${right} ${height} ${right} ${height - handleRadius}`,
+          `V ${y + dockRadius}`,
+          `Q ${right} ${y} ${right + dockRadius} ${y}`,
+          'Z',
+        ].join(' ')
+        const openPath = [
+          `M ${panelRadius} 0`,
+          `H ${width - panelRadius}`,
+          `Q ${width} 0 ${width} ${panelRadius}`,
+          `V ${y - panelRadius}`,
+          `Q ${width} ${y} ${width - panelRadius} ${y}`,
+          `H ${right + dockRadius}`,
+          `Q ${right} ${y} ${right} ${y + dockRadius}`,
+          `V ${height - handleRadius}`,
+          `Q ${right} ${height} ${right - handleRadius} ${height}`,
+          `H ${left + handleRadius}`,
+          `Q ${left} ${height} ${left} ${height - handleRadius}`,
+          `V ${y + dockRadius}`,
+          `Q ${left} ${y} ${left - dockRadius} ${y}`,
+          `H ${panelRadius}`,
+          `Q 0 ${y} 0 ${y - panelRadius}`,
+          `V ${panelRadius}`,
+          `Q 0 0 ${panelRadius} 0`,
+          'Z',
+        ].join(' ')
+
+        return {
+          height,
+          path: isOpen ? openPath : closedPath,
+          width,
+        }
+      }
+
+      const y = settings.tabWidth
+      const closedPath = [
+        `M ${left - dockRadius} ${y}`,
+        `Q ${left} ${y} ${left} ${y - dockRadius}`,
+        `V ${handleRadius}`,
+        `Q ${left} 0 ${left + handleRadius} 0`,
+        `H ${right - handleRadius}`,
+        `Q ${right} 0 ${right} ${handleRadius}`,
+        `V ${y - dockRadius}`,
+        `Q ${right} ${y} ${right + dockRadius} ${y}`,
+        'Z',
+      ].join(' ')
+      const openPath = [
+        `M ${left - dockRadius} ${y}`,
+        `Q ${left} ${y} ${left} ${y - dockRadius}`,
+        `V ${handleRadius}`,
+        `Q ${left} 0 ${left + handleRadius} 0`,
+        `H ${right - handleRadius}`,
+        `Q ${right} 0 ${right} ${handleRadius}`,
+        `V ${y - dockRadius}`,
+        `Q ${right} ${y} ${right + dockRadius} ${y}`,
+        `H ${width - panelRadius}`,
+        `Q ${width} ${y} ${width} ${y + panelRadius}`,
+        `V ${height - panelRadius}`,
+        `Q ${width} ${height} ${width - panelRadius} ${height}`,
+        `H ${panelRadius}`,
+        `Q 0 ${height} 0 ${height - panelRadius}`,
+        `V ${y + panelRadius}`,
+        `Q 0 ${y} ${panelRadius} ${y}`,
+        'Z',
+      ].join(' ')
+
+      return {
+        height,
+        path: isOpen ? openPath : closedPath,
+        width,
+      }
+    }
+
+    const width = settings.tabWidth + effectivePanelWidth
+    const height = Math.max(settings.handleHeight, viewportHeight || 0)
+    const x = isLeftDock ? effectivePanelWidth : settings.tabWidth
     const half = settings.handleHeight / 2
     const travel = Math.max(0, height - settings.handleHeight)
     const center = Math.min(
@@ -640,6 +749,7 @@ function App() {
     settings.handleHeight,
     settings.panelRadius,
     settings.tabWidth,
+    effectivePanelDepth,
     effectivePanelWidth,
     visibleHandleY,
     viewportHeight,
@@ -870,33 +980,71 @@ function App() {
         const workArea = monitor.workArea
         const scaleFactor = monitor.scaleFactor || 1
         const fullCssWidth = Math.round(workArea.size.width / scaleFactor)
+        const fullCssHeight = Math.round(workArea.size.height / scaleFactor)
+        const isHorizontalDock =
+          settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
         const panelCssWidth = Math.min(
           settings.panelWidth,
           Math.max(280, fullCssWidth - settings.tabWidth - 8),
         )
-        const windowWidth = Math.round(
+        const panelCssDepth = Math.min(
+          settings.panelWidth,
+          Math.max(280, fullCssHeight - settings.tabWidth - 8),
+          560,
+        )
+        const sideWindowWidth = Math.round(
           (settings.tabWidth + panelCssWidth) * scaleFactor,
         )
+        const horizontalWindowWidth = Math.round(panelCssWidth * scaleFactor)
+        const horizontalWindowHeight = Math.round(
+          (settings.tabWidth + panelCssDepth) * scaleFactor,
+        )
+        const windowWidth = isHorizontalDock
+          ? horizontalWindowWidth
+          : sideWindowWidth
         const tabWidth = Math.round(settings.tabWidth * scaleFactor)
         const panelWidth = Math.round(panelCssWidth * scaleFactor)
+        const panelDepth = Math.round(panelCssDepth * scaleFactor)
         const closedOffset = Math.round(2 * scaleFactor)
-        const openX =
-          settings.dockEdge === 'left'
+        const horizontalX =
+          workArea.position.x +
+          Math.round(
+            Math.max(0, workArea.size.width - windowWidth) *
+              (visibleHandleY / 100),
+          )
+        const openX = isHorizontalDock
+          ? horizontalX
+          : settings.dockEdge === 'left'
             ? workArea.position.x
             : workArea.position.x + workArea.size.width - windowWidth
-        const closedX =
-          settings.dockEdge === 'left'
+        const closedX = isHorizontalDock
+          ? horizontalX
+          : settings.dockEdge === 'left'
             ? workArea.position.x - panelWidth - closedOffset
             : workArea.position.x +
               workArea.size.width -
               tabWidth +
               closedOffset
-        const openY = workArea.position.y
+        const openY =
+          settings.dockEdge === 'bottom'
+            ? workArea.position.y + workArea.size.height - horizontalWindowHeight
+            : workArea.position.y
+        const closedY =
+          settings.dockEdge === 'top'
+            ? workArea.position.y - panelDepth - closedOffset
+            : settings.dockEdge === 'bottom'
+              ? workArea.position.y +
+                workArea.size.height -
+                tabWidth +
+                closedOffset
+              : openY
         const targetX = isOpen ? openX : closedX
+        const targetY = isOpen ? openY : closedY
         const startX = isOpen ? closedX : openX
-        const targetY = openY
-        const targetHeight = workArea.size.height
-        const fullCssHeight = Math.round(workArea.size.height / scaleFactor)
+        const startY = isOpen ? closedY : openY
+        const targetHeight = isHorizontalDock
+          ? horizontalWindowHeight
+          : workArea.size.height
 
         const setTarget = async () => {
           await appWindow.setSize(new PhysicalSize(windowWidth, targetHeight))
@@ -924,14 +1072,15 @@ function App() {
           setViewportWidth(fullCssWidth)
           setViewportHeight(fullCssHeight)
           await Promise.all([
-            appWindow.setSize(new PhysicalSize(windowWidth, workArea.size.height)),
-            appWindow.setPosition(new PhysicalPosition(closedX, openY)),
+            appWindow.setSize(new PhysicalSize(windowWidth, targetHeight)),
+            appWindow.setPosition(new PhysicalPosition(startX, startY)),
           ])
-          await animateNativeX(
+          await animateNativePosition(
             appWindow,
             (x, y) => new PhysicalPosition(x, y),
             startX,
             openX,
+            startY,
             openY,
             settings.motionMs,
           )
@@ -941,12 +1090,13 @@ function App() {
 
         setViewportWidth(fullCssWidth)
         setViewportHeight(fullCssHeight)
-        await animateNativeX(
+        await animateNativePosition(
           appWindow,
           (x, y) => new PhysicalPosition(x, y),
           startX,
           closedX,
-          openY,
+          startY,
+          closedY,
           settings.motionMs,
         )
         await setTarget()
@@ -963,6 +1113,7 @@ function App() {
     settings.motionMs,
     settings.panelWidth,
     settings.tabWidth,
+    visibleHandleY,
   ])
 
   useEffect(() => {
@@ -995,15 +1146,47 @@ function App() {
         const relativeY = cursor.y - position.y
         const tabWidth = settings.tabWidth * scaleFactor
         const panelWidth = effectivePanelWidth * scaleFactor
-        const handleTop =
-          (nativeHandleCenter - settings.handleHeight / 2) * scaleFactor
-        const handleBottom =
-          (nativeHandleCenter + settings.handleHeight / 2) * scaleFactor
+        const panelDepth = effectivePanelDepth * scaleFactor
         const handleHitSlop = 3 * scaleFactor
-        const handleLeft = settings.dockEdge === 'left' ? panelWidth : 0
-        const handleRight = handleLeft + tabWidth
-        const panelLeft = settings.dockEdge === 'left' ? 0 : tabWidth
-        const panelRight = panelLeft + panelWidth
+        const isHorizontalDock =
+          settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
+        const horizontalHandleLength =
+          Math.min(
+            settings.handleHeight,
+            Math.max(72, effectivePanelWidth - 24),
+          ) * scaleFactor
+        const handleLeft = isHorizontalDock
+          ? (panelWidth - horizontalHandleLength) / 2
+          : settings.dockEdge === 'left'
+            ? panelWidth
+            : 0
+        const handleRight = isHorizontalDock
+          ? handleLeft + horizontalHandleLength
+          : handleLeft + tabWidth
+        const handleTop = isHorizontalDock
+          ? settings.dockEdge === 'top'
+            ? panelDepth
+            : 0
+          : (nativeHandleCenter - settings.handleHeight / 2) * scaleFactor
+        const handleBottom = isHorizontalDock
+          ? settings.dockEdge === 'top'
+            ? panelDepth + tabWidth
+            : tabWidth
+          : (nativeHandleCenter + settings.handleHeight / 2) * scaleFactor
+        const panelLeft = isHorizontalDock
+          ? 0
+          : settings.dockEdge === 'left'
+            ? 0
+            : tabWidth
+        const panelRight = isHorizontalDock ? panelWidth : panelLeft + panelWidth
+        const panelTop = isHorizontalDock
+          ? settings.dockEdge === 'top'
+            ? 0
+            : tabWidth
+          : 0
+        const panelBottom = isHorizontalDock
+          ? panelTop + panelDepth
+          : Number.POSITIVE_INFINITY
         const isOnHandle =
           relativeX >= handleLeft - handleHitSlop &&
           relativeX <= handleRight + handleHitSlop &&
@@ -1013,7 +1196,8 @@ function App() {
           isOpen &&
           relativeX >= panelLeft &&
           relativeX <= panelRight &&
-          relativeY >= 0
+          relativeY >= panelTop &&
+          relativeY <= panelBottom
         const shouldIgnore = dragState.current
           ? false
           : !(isOnHandle || isOnPanel)
@@ -1048,6 +1232,7 @@ function App() {
     settings.dockEdge,
     settings.handleHeight,
     settings.tabWidth,
+    effectivePanelDepth,
     effectivePanelWidth,
   ])
 
@@ -1402,10 +1587,12 @@ function App() {
     event.currentTarget.setPointerCapture(event.pointerId)
     suppressNextClick.current = false
 
+    const isHorizontalDock =
+      settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
     const drag: HandleDragState = {
-      startScreenY: event.screenY,
+      startScreenY: isHorizontalDock ? event.screenX : event.screenY,
       startHandleY: visibleHandleY,
-      height: window.innerHeight,
+      height: isHorizontalDock ? window.innerWidth : window.innerHeight,
       moved: false,
       latestHandleY: null,
     }
@@ -1420,7 +1607,10 @@ function App() {
       return
     }
 
-    const deltaY = event.screenY - drag.startScreenY
+    const isHorizontalDock =
+      settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
+    const screenAxis = isHorizontalDock ? event.screenX : event.screenY
+    const deltaY = screenAxis - drag.startScreenY
 
     if (Math.abs(deltaY) < DRAG_THRESHOLD && !drag.moved) {
       return
@@ -1473,6 +1663,8 @@ function App() {
 
   const appStyle = {
     '--panel-width': `${effectivePanelWidth}px`,
+    '--panel-half': `${effectivePanelWidth / 2}px`,
+    '--panel-depth': `${effectivePanelDepth}px`,
     '--tab-width': `${settings.tabWidth}px`,
     '--handle-height': `${settings.handleHeight}px`,
     '--handle-half': `${settings.handleHeight / 2}px`,
@@ -2496,6 +2688,24 @@ function DockEdgeSetting({
         onClick={() => onChange('left')}
       >
         Left
+      </button>
+      <button
+        type="button"
+        className={value === 'top' ? 'is-selected' : ''}
+        aria-pressed={value === 'top'}
+        aria-label="Dock top"
+        onClick={() => onChange('top')}
+      >
+        Top
+      </button>
+      <button
+        type="button"
+        className={value === 'bottom' ? 'is-selected' : ''}
+        aria-pressed={value === 'bottom'}
+        aria-label="Dock bottom"
+        onClick={() => onChange('bottom')}
+      >
+        Bottom
       </button>
     </div>
   )
