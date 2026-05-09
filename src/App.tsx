@@ -510,8 +510,8 @@ function App() {
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
     const x = settings.tabWidth
     const handleRadius = Math.max(
-      18,
-      Math.min(24, settings.tabWidth * 0.56, settings.handleHeight * 0.32),
+      12,
+      Math.min(16, settings.tabWidth * 0.4, settings.handleHeight * 0.24),
     )
     const half = settings.handleHeight / 2
     const travel = Math.max(0, height - settings.handleHeight)
@@ -523,11 +523,11 @@ function App() {
     const bottom = center + half
     const topDockRadius = Math.max(
       0,
-      Math.min(24, settings.tabWidth * 0.72, top),
+      Math.min(18, settings.tabWidth * 0.5, top),
     )
     const bottomDockRadius = Math.max(
       0,
-      Math.min(24, settings.tabWidth * 0.72, height - bottom),
+      Math.min(18, settings.tabWidth * 0.5, height - bottom),
     )
     const topPanelRadius = Math.max(
       0,
