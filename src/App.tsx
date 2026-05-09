@@ -2318,6 +2318,7 @@ function SidebarRail({
             className={activeSection === section && !isSettingsOpen ? 'is-active' : ''}
             aria-label={`Jump to ${SECTION_LABELS[section]}`}
             aria-current={activeSection === section && !isSettingsOpen ? 'true' : undefined}
+            title={SECTION_LABELS[section]}
             onClick={() => onFocusSection(section)}
           >
             {section === 'today' ? <Clock3 size={16} /> : null}
@@ -2332,6 +2333,7 @@ function SidebarRail({
         className={isSettingsOpen ? 'is-active' : ''}
         aria-label="Sidebar settings"
         aria-pressed={isSettingsOpen}
+        title="Settings"
         onClick={onOpenSettings}
       >
         <Settings size={16} />
