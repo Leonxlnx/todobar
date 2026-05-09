@@ -1859,16 +1859,39 @@ kbd {
   gap: 10px;
 }
 
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .calendar-nav {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  padding: 2px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--control-bg);
 }
 
 .calendar-nav button {
-  width: 27px;
-  height: 27px;
+  width: 25px;
+  height: 25px;
   border-radius: 8px;
+}
+
+.calendar-today-button {
+  width: auto !important;
+  min-width: 48px;
+  height: 31px !important;
+  padding: 0 10px !important;
+  color: var(--ink) !important;
+  font-size: 10.5px;
+  font-weight: 760;
+  border-color: var(--line) !important;
+  border-radius: 10px !important;
+  background: var(--control-bg) !important;
 }
 
 .calendar-board {
@@ -1997,44 +2020,10 @@ kbd {
 
 .calendar-agenda {
   display: grid;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--task-bg);
 }
 
-.calendar-agenda-row {
-  min-height: 42px;
-  display: grid;
-  grid-template-columns: 54px minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 9px;
-  border-bottom: 1px solid var(--line);
-}
-
-.calendar-agenda-row:last-child {
-  border-bottom: 0;
-}
-
-.calendar-agenda-row span,
-.calendar-agenda-row em {
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 10px;
-  font-style: normal;
-  font-weight: 680;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.calendar-agenda-row strong {
-  overflow: hidden;
-  color: var(--ink);
-  font-size: var(--task-title-size);
-  font-weight: 730;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.calendar-task-list .task-row {
+  min-height: calc(var(--task-row-height) + 1px);
 }
 
 .section-content {
@@ -2102,7 +2091,7 @@ kbd {
 
 .custom-list-header {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   align-items: center;
   gap: 4px;
 }
@@ -2137,6 +2126,7 @@ kbd {
   font-weight: 760;
 }
 
+.custom-list-pin,
 .custom-list-toggle,
 .delete-button {
   width: 30px;
@@ -2151,10 +2141,69 @@ kbd {
 }
 
 .custom-list-title:hover,
+.custom-list-pin:hover,
 .custom-list-toggle:hover {
   color: var(--ink);
   border-color: var(--line);
   background: var(--surface-hover);
+}
+
+.custom-list-pin.is-pinned {
+  color: var(--accent);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.today-goals {
+  display: grid;
+  gap: 8px;
+  padding-top: 1px;
+}
+
+.pinned-list-stack {
+  display: grid;
+  gap: 8px;
+}
+
+.today-goal-list {
+  display: grid;
+  gap: 7px;
+}
+
+.today-goal-list-title {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 2px;
+}
+
+.today-goal-list-title strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11.5px;
+  font-weight: 760;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.today-goal-list-title span,
+.empty-list-note {
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 680;
+}
+
+.empty-list-note {
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--section-bg);
+}
+
+.compact-task-list .task-row {
+  min-height: calc(var(--task-row-height) - 1px);
 }
 
 .delete-button {

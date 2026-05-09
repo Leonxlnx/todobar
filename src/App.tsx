@@ -14,6 +14,7 @@ import {
   Moon,
   Minus,
   Palette,
+  Pin,
   RotateCcw,
   PanelRightClose,
   PanelRightOpen,
@@ -106,6 +107,13 @@ type CustomTaskList = {
   title: string
   tasks: Task[]
   collapsed?: boolean
+  showOnToday?: boolean
+}
+type CalendarTaskRef = {
+  listId?: string
+  listTitle: string
+  source: TaskListId | 'custom'
+  task: Task
 }
 
 const defaultCustomLists: CustomTaskList[] = [
@@ -342,6 +350,7 @@ function loadCustomLists() {
         title: typeof list.title === 'string' ? list.title : 'List',
         tasks: Array.isArray(list.tasks) ? list.tasks : [],
         collapsed: Boolean(list.collapsed),
+        showOnToday: Boolean(list.showOnToday),
       }))
   } catch {
     return defaultCustomLists
@@ -452,14 +461,31 @@ function App() {
     [settings.showCompleted, sortedMonthTasks],
   )
   const reminderTasks = useMemo(
-    () => [
-      ...todayTasks.map((task) => ({ listTitle: 'Today', task })),
-      ...monthTasks.map((task) => ({ listTitle: 'Calendar', task })),
+    (): CalendarTaskRef[] => [
+      ...todayTasks.map((task) => ({
+        listTitle: 'Today',
+        source: 'today' as const,
+        task,
+      })),
+      ...monthTasks.map((task) => ({
+        listTitle: 'Calendar',
+        source: 'month' as const,
+        task,
+      })),
       ...customLists.flatMap((list) =>
-        list.tasks.map((task) => ({ listTitle: list.title, task })),
+        list.tasks.map((task) => ({
+          listId: list.id,
+          listTitle: list.title,
+          source: 'custom' as const,
+          task,
+        })),
       ),
     ],
     [customLists, monthTasks, todayTasks],
+  )
+  const pinnedTodayLists = useMemo(
+    () => customLists.filter((list) => list.showOnToday),
+    [customLists],
   )
   const totalOpenTasks = useMemo(
     () =>
@@ -1217,6 +1243,87 @@ function App() {
     })
   }
 
+  const toggleCustomListOnToday = (listId: string) => {
+    setCustomLists((lists) =>
+      lists.map((list) =>
+        list.id === listId
+          ? { ...list, showOnToday: !list.showOnToday }
+          : list,
+      ),
+    )
+  }
+
+  const toggleCalendarTask = (
+    source: CalendarTaskRef['source'],
+    listId: string | undefined,
+    taskId: number,
+  ) => {
+    if (source === 'custom') {
+      if (listId) {
+        toggleCustomTask(listId, taskId)
+      }
+
+      return
+    }
+
+    toggleTask(source, taskId)
+  }
+
+  const cycleCalendarTaskPriority = (
+    source: CalendarTaskRef['source'],
+    listId: string | undefined,
+    taskId: number,
+  ) => {
+    if (source === 'custom') {
+      if (listId) {
+        cycleCustomTaskPriority(listId, taskId)
+      }
+
+      return
+    }
+
+    cycleTaskPriority(source, taskId)
+  }
+
+  const cycleCalendarTaskReminder = (
+    source: CalendarTaskRef['source'],
+    listId: string | undefined,
+    taskId: number,
+  ) => {
+    if (source === 'custom') {
+      if (listId) {
+        cycleCustomTaskReminder(listId, taskId)
+      }
+
+      return
+    }
+
+    cycleTaskReminder(source, taskId)
+  }
+
+  const deleteCalendarTask = (
+    source: CalendarTaskRef['source'],
+    listId: string | undefined,
+    taskId: number,
+  ) => {
+    if (source === 'custom') {
+      if (listId) {
+        deleteCustomTask(listId, taskId)
+      }
+
+      return
+    }
+
+    deleteTask(source, taskId)
+  }
+
+  const jumpCalendarToToday = () => {
+    const today = new Date()
+
+    setCalendarCursor(today)
+    setSelectedCalendarKey(formatDateKey(today))
+  }
+
   const focusSection = (section: SectionId) => {
     setActiveRailSection(section)
     setIsSettingsOpen(false)
@@ -1530,6 +1637,65 @@ function App() {
                           />
                         ))}
                       </div>
+                      {pinnedTodayLists.length > 0 ? (
+                        <section
+                          className="today-goals"
+                          aria-label="Pinned lists on Today"
+                        >
+                          <div className="mini-heading">
+                            <strong>Today goals</strong>
+                            <span>{pinnedTodayLists.length} pinned</span>
+                          </div>
+                          <div className="pinned-list-stack">
+                            {pinnedTodayLists.map((list) => {
+                              const sortedTasks = sortTasks(list.tasks)
+                              const visibleTasks = settings.showCompleted
+                                ? sortedTasks
+                                : sortedTasks.filter((task) => !task.done)
+
+                              return (
+                                <section
+                                  className="today-goal-list"
+                                  key={list.id}
+                                  aria-label={`${list.title} goals`}
+                                >
+                                  <div className="today-goal-list-title">
+                                    <strong>{list.title}</strong>
+                                    <span>{list.tasks.length}</span>
+                                  </div>
+                                  {visibleTasks.length > 0 ? (
+                                    <div className="task-list compact-task-list">
+                                      {visibleTasks.map((task, index) => (
+                                        <TaskRow
+                                          key={task.id}
+                                          task={task}
+                                          index={index}
+                                          onToggle={(id) =>
+                                            toggleCustomTask(list.id, id)
+                                          }
+                                          onPriority={(id) =>
+                                            cycleCustomTaskPriority(list.id, id)
+                                          }
+                                          onReminder={(id) =>
+                                            cycleCustomTaskReminder(list.id, id)
+                                          }
+                                          onDelete={(id) =>
+                                            deleteCustomTask(list.id, id)
+                                          }
+                                        />
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="empty-list-note">
+                                      No tasks in this list.
+                                    </p>
+                                  )}
+                                </section>
+                              )
+                            })}
+                          </div>
+                        </section>
+                      ) : null}
                     </div>
                   </div>
                 </section>
@@ -1549,24 +1715,34 @@ function App() {
                         <em>{formatCalendarMonth(calendarCursor)}</em>
                       </span>
                     </div>
-                    <div className="calendar-nav" aria-label="Calendar month">
+                    <div className="calendar-toolbar" aria-label="Calendar month">
+                      <div className="calendar-nav">
+                        <button
+                          type="button"
+                          aria-label="Previous month"
+                          onClick={() =>
+                            setCalendarCursor((current) => addMonths(current, -1))
+                          }
+                        >
+                          <ChevronLeft size={15} />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Next month"
+                          onClick={() =>
+                            setCalendarCursor((current) => addMonths(current, 1))
+                          }
+                        >
+                          <ChevronRight size={15} />
+                        </button>
+                      </div>
                       <button
                         type="button"
-                        aria-label="Previous month"
-                        onClick={() =>
-                          setCalendarCursor((current) => addMonths(current, -1))
-                        }
+                        className="calendar-today-button"
+                        aria-label="Jump to today"
+                        onClick={jumpCalendarToToday}
                       >
-                        <ChevronLeft size={15} />
-                      </button>
-                      <button
-                        type="button"
-                        aria-label="Next month"
-                        onClick={() =>
-                          setCalendarCursor((current) => addMonths(current, 1))
-                        }
-                      >
-                        <ChevronRight size={15} />
+                        Today
                       </button>
                     </div>
                   </div>
@@ -1601,7 +1777,19 @@ function App() {
                           } scheduled`}
                           aria-selected={day.key === selectedCalendarKey}
                           role="gridcell"
-                          onClick={() => setSelectedCalendarKey(day.key)}
+                          onClick={() => {
+                            setSelectedCalendarKey(day.key)
+
+                            if (!day.isCurrentMonth) {
+                              setCalendarCursor(
+                                new Date(
+                                  day.date.getFullYear(),
+                                  day.date.getMonth(),
+                                  1,
+                                ),
+                              )
+                            }
+                          }}
                         >
                           <span>{day.date.getDate()}</span>
                           {day.taskCount > 0 ? (
@@ -1639,13 +1827,32 @@ function App() {
                     />
                     {selectedCalendarTasks.length > 0 ? (
                       <div className="calendar-agenda">
-                        {selectedCalendarTasks.map(({ listTitle, task }) => (
-                          <div className="calendar-agenda-row" key={task.id}>
-                            <span>{formatReminder(task.reminderAt)}</span>
-                            <strong>{task.title}</strong>
-                            <em>{listTitle}</em>
-                          </div>
-                        ))}
+                        <div className="task-list calendar-task-list">
+                          {selectedCalendarTasks.map(
+                            ({ listId, listTitle, source, task }, index) => (
+                              <TaskRow
+                                key={`${source}-${listId ?? 'base'}-${task.id}`}
+                                task={{
+                                  ...task,
+                                  meta: `${formatReminder(task.reminderAt)} · ${listTitle}`,
+                                }}
+                                index={index}
+                                onToggle={(id) =>
+                                  toggleCalendarTask(source, listId, id)
+                                }
+                                onPriority={(id) =>
+                                  cycleCalendarTaskPriority(source, listId, id)
+                                }
+                                onReminder={(id) =>
+                                  cycleCalendarTaskReminder(source, listId, id)
+                                }
+                                onDelete={(id) =>
+                                  deleteCalendarTask(source, listId, id)
+                                }
+                              />
+                            ),
+                          )}
+                        </div>
                       </div>
                     ) : null}
                   </div>
@@ -1728,6 +1935,21 @@ function App() {
                             >
                               <span>{list.title}</span>
                               <em>{list.tasks.length}</em>
+                            </button>
+                            <button
+                              type="button"
+                              className={`custom-list-pin ${
+                                list.showOnToday ? 'is-pinned' : ''
+                              }`}
+                              aria-label={
+                                list.showOnToday
+                                  ? `Remove ${list.title} from Today`
+                                  : `Show ${list.title} on Today`
+                              }
+                              aria-pressed={Boolean(list.showOnToday)}
+                              onClick={() => toggleCustomListOnToday(list.id)}
+                            >
+                              <Pin size={13} />
                             </button>
                             <button
                               type="button"
