@@ -3,9 +3,9 @@
 [![CI](https://github.com/Leonxlnx/todobar/actions/workflows/ci.yml/badge.svg)](https://github.com/Leonxlnx/todobar/actions/workflows/ci.yml)
 [![Release](https://github.com/Leonxlnx/todobar/actions/workflows/release.yml/badge.svg)](https://github.com/Leonxlnx/todobar/actions/workflows/release.yml)
 
-Todobar is a native right-edge todo sidebar for macOS and Windows. It stays out
-of the way as a small docked handle, opens into a clean task panel, and is built
-for fast capture while you work in other apps.
+Todobar is a native dockable todo sidebar for macOS and Windows. It stays out of
+the way as a small edge handle, opens into a clean task panel, and is built for
+fast capture while you work in other apps.
 
 The app is early, but the foundation is real: Tauri v2, React, local persisted
 tasks, reminders, native notifications, global shortcuts, autostart,
@@ -23,7 +23,8 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 
 ## Current Features
 
-- Right-edge native sidebar for Windows and macOS
+- Dockable native sidebar for Windows and macOS
+- Right, left, top, and bottom dock placement modes
 - Small draggable handle that opens and closes the panel
 - Global shortcut: `Alt + T`, with `Ctrl/Cmd + Alt + T` as a fallback
 - Native tray/menu-bar control for open, settings, and quit
@@ -31,23 +32,25 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Single-instance desktop behavior
 - Always-on-top frameless window
 - Click-through transparent area outside the handle and open panel
-- Compact right-side command rail for Today, Month Plan, Lists, and setup
+- Compact icon command rail for Today, Calendar, Lists, and setup
 - Planning status strip with today's progress, open task count, and list count
 - Today tasks
-- Month Plan tasks
+- Real calendar view with month navigation, selected-day capture, and scheduled
+  task actions
 - Custom task lists
-- Add, complete, prioritize, collapse, and delete tasks
-- Delete custom lists
+- Pin custom lists onto Today as goal groups
+- Add, edit, complete, prioritize, collapse, and delete tasks
+- Rename and delete custom lists
 - Add reminder times while capturing tasks
 - Quick reminder cycling on existing tasks
-- Clean right-side rail for Today, Month Plan, Lists, and Settings
+- Clean icon rail for Today, Calendar, Lists, and Settings
 - Native notification plugin support with browser fallback in preview
 - Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark modes
 - Theme dropdown with Codex, Quartz Glass, Frost, Paper, Graphite, Midnight,
   Clay, and Blueprint presets
-- Rearrange Today, Month Plan, and Lists from settings
+- Rearrange Today, Calendar, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, vertical position,
   motion speed, corner radius, task row height, task spacing, task text size,
   completed-task visibility, launch-at-login, notifications, and surface opacity
@@ -87,7 +90,7 @@ What is not fully verified yet:
 
 Todobar is planned in product layers:
 
-- Version 0: right-edge planner with local Today, Month Plan, custom lists,
+- Version 0: dockable planner with local Today, Calendar, custom lists,
   launch-at-login, global shortcut, tray/menu-bar control, and responsive native
   shell.
 - Version 1: better planner with editable tasks, undo, reminders,
@@ -127,13 +130,13 @@ choose Open.
 
 ## Usage
 
-- Click the right-edge handle to open or close Todobar.
-- Drag the handle up or down to change its vertical position.
+- Click the edge handle to open or close Todobar.
+- Drag the handle along its docked edge to change its position.
 - Press `Alt + T` to toggle it from any app.
 - If that shortcut is already owned by another app, use `Ctrl/Cmd + Alt + T`.
 - Use the tray/menu-bar icon to toggle Todobar, open settings, or quit.
 - Press `Esc` to close the panel.
-- Use the command rail to jump between Today, Month Plan, Lists, and setup
+- Use the command rail to jump between Today, Calendar, Lists, and setup
   without turning the sidebar into a full dashboard.
 - Use the settings button to adjust appearance, desktop startup, window size,
   handle shape, task density, motion, radius, and opacity.
@@ -243,8 +246,8 @@ Todobar uses:
 
 Native window behavior is intentionally kept in a small layer:
 
-- the Tauri window fills the monitor height
-- the visible tab remains docked to the right edge
+- the Tauri window is positioned per dock edge
+- the visible tab remains docked to the chosen screen edge
 - transparent regions pass clicks through to the app behind Todobar
 - panel width is clamped so it still fits on narrow monitors
 

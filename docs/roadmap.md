@@ -28,7 +28,7 @@ Exit criteria:
 Goal: prove that Tauri can deliver the required native UX.
 
 - Add Tauri v2.
-- Create a frameless right-edge sidebar window.
+- Create a frameless dockable sidebar window.
 - Add a settings window.
 - Register global shortcuts.
 - Add tray/menu-bar item.
@@ -76,7 +76,7 @@ Goal: make Todobar useful every day without AI.
 
 - Inbox
 - Today
-- Month Plan
+- Calendar
 - Later
 - Quick Capture
 - Command Mode

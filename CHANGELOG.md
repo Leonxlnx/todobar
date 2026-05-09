@@ -10,8 +10,12 @@
   Midnight, Clay, and Blueprint presets on top of light and dark color modes.
 - Added reminder capture controls, quick reminder cycling on task rows, and
   native Tauri notification support with browser preview fallback.
-- Added section ordering controls so Today, Month Plan, and Lists can be
+- Added section ordering controls so Today, Calendar, and Lists can be
   rearranged from settings.
+- Added real Calendar navigation with selected-day capture and task actions.
+- Added right, left, top, and bottom dock placement modes.
+- Added pinned custom lists on Today for goal groups.
+- Added inline task editing and custom list renaming.
 
 ### Changed
 
@@ -25,6 +29,8 @@
   during normal pointer movement.
 - Memoized task rows and added lightweight rendering containment for long task
   lists.
+- Simplified the sidebar rail into icon-only controls to avoid clipped labels
+  and keep the panel calmer.
 
 ## 0.1.5 - Native Shortcut Fix
 
