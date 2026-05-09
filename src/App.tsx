@@ -14,6 +14,7 @@ import {
   Moon,
   Minus,
   Palette,
+  Pencil,
   Pin,
   RotateCcw,
   PanelRightClose,
@@ -1343,6 +1344,12 @@ function App() {
     updateTasks(listId, (tasks) => tasks.filter((task) => task.id !== id))
   }
 
+  const renameTask = (listId: TaskListId, id: number, title: string) => {
+    updateTasks(listId, (tasks) =>
+      tasks.map((task) => (task.id === id ? { ...task, title } : task)),
+    )
+  }
+
   const toggleSection = (listId: TaskListId) => {
     setCollapsedSections((current) => ({
       ...current,
@@ -1461,6 +1468,18 @@ function App() {
     )
   }
 
+  const renameCustomTask = (
+    listId: string,
+    taskId: number,
+    title: string,
+  ) => {
+    updateCustomListTasks(listId, (tasks) =>
+      tasks.map((task) =>
+        task.id === taskId ? { ...task, title } : task,
+      ),
+    )
+  }
+
   const toggleCustomList = (listId: string) => {
     setCustomLists((lists) =>
       lists.map((list) =>
@@ -1555,6 +1574,23 @@ function App() {
     }
 
     deleteTask(source, taskId)
+  }
+
+  const renameCalendarTask = (
+    source: CalendarTaskRef['source'],
+    listId: string | undefined,
+    taskId: number,
+    title: string,
+  ) => {
+    if (source === 'custom') {
+      if (listId) {
+        renameCustomTask(listId, taskId, title)
+      }
+
+      return
+    }
+
+    renameTask(source, taskId, title)
   }
 
   const jumpCalendarToToday = () => {
@@ -1881,6 +1917,9 @@ function App() {
                             onPriority={(id) => cycleTaskPriority('today', id)}
                             onReminder={(id) => cycleTaskReminder('today', id)}
                             onDelete={(id) => deleteTask('today', id)}
+                            onRename={(id, title) =>
+                              renameTask('today', id, title)
+                            }
                           />
                         ))}
                       </div>
@@ -1928,6 +1967,9 @@ function App() {
                                           }
                                           onDelete={(id) =>
                                             deleteCustomTask(list.id, id)
+                                          }
+                                          onRename={(id, title) =>
+                                            renameCustomTask(list.id, id, title)
                                           }
                                         />
                                       ))}
@@ -2096,6 +2138,9 @@ function App() {
                                 onDelete={(id) =>
                                   deleteCalendarTask(source, listId, id)
                                 }
+                                onRename={(id, title) =>
+                                  renameCalendarTask(source, listId, id, title)
+                                }
                               />
                             ),
                           )}
@@ -2122,6 +2167,9 @@ function App() {
                               onPriority={(id) => cycleTaskPriority('month', id)}
                               onReminder={(id) => cycleTaskReminder('month', id)}
                               onDelete={(id) => deleteTask('month', id)}
+                              onRename={(id, title) =>
+                                renameTask('month', id, title)
+                              }
                             />
                           ))}
                       </div>
@@ -2267,6 +2315,9 @@ function App() {
                                       }
                                       onDelete={(id) =>
                                         deleteCustomTask(list.id, id)
+                                      }
+                                      onRename={(id, title) =>
+                                        renameCustomTask(list.id, id, title)
                                       }
                                     />
                                   ))}
@@ -2824,6 +2875,7 @@ const TaskRow = memo(function TaskRow({
   onPriority,
   onReminder,
   onDelete,
+  onRename,
 }: {
   task: Task
   index?: number
@@ -2831,7 +2883,10 @@ const TaskRow = memo(function TaskRow({
   onPriority?: (id: number) => void
   onReminder?: (id: number) => void
   onDelete?: (id: number) => void
+  onRename?: (id: number, title: string) => void
 }) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [draft, setDraft] = useState(task.title)
   const priorityLabel =
     task.priority === 'focus'
       ? 'Focus'
@@ -2839,6 +2894,21 @@ const TaskRow = memo(function TaskRow({
         ? 'Later'
         : 'Task'
   const reminderLabel = formatReminder(task.reminderAt)
+  const commitRename = () => {
+    const nextTitle = draft.trim()
+
+    if (nextTitle && nextTitle !== task.title) {
+      onRename?.(task.id, nextTitle)
+    } else {
+      setDraft(task.title)
+    }
+
+    setIsEditing(false)
+  }
+  const cancelRename = () => {
+    setDraft(task.title)
+    setIsEditing(false)
+  }
 
   return (
     <article
@@ -2856,7 +2926,27 @@ const TaskRow = memo(function TaskRow({
         {task.done ? <Check size={13} /> : <Circle size={13} />}
       </button>
       <div className="task-body">
-        <strong className={task.done ? 'is-done' : ''}>{task.title}</strong>
+        {isEditing ? (
+          <input
+            className="task-edit-input"
+            aria-label={`Edit ${task.title}`}
+            value={draft}
+            autoFocus
+            onBlur={commitRename}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                commitRename()
+              }
+
+              if (event.key === 'Escape') {
+                cancelRename()
+              }
+            }}
+          />
+        ) : (
+          <strong className={task.done ? 'is-done' : ''}>{task.title}</strong>
+        )}
         <span>
           {task.meta}
           {reminderLabel ? (
@@ -2868,6 +2958,19 @@ const TaskRow = memo(function TaskRow({
         </span>
       </div>
       <div className="row-actions">
+        {onRename ? (
+          <button
+            type="button"
+            className="edit-button"
+            aria-label={`Edit ${task.title}`}
+            onClick={() => {
+              setDraft(task.title)
+              setIsEditing(true)
+            }}
+          >
+            <Pencil size={13} />
+          </button>
+        ) : null}
         <button
           type="button"
           className="priority-button"

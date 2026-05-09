@@ -71,6 +71,16 @@ test('sidebar opens and completed-task visibility is configurable', async ({
       .locator('section[aria-labelledby="today-heading"]')
       .getByText('Reminder smoke', { exact: true }),
   ).toBeVisible()
+  await page.getByRole('button', { name: 'Edit Reminder smoke' }).click()
+  await page.getByRole('textbox', { name: 'Edit Reminder smoke' }).fill(
+    'Renamed smoke',
+  )
+  await page.getByRole('textbox', { name: 'Edit Reminder smoke' }).press('Enter')
+  await expect(
+    page
+      .locator('section[aria-labelledby="today-heading"]')
+      .getByText('Renamed smoke', { exact: true }),
+  ).toBeVisible()
   await expect(page.locator('#reminders-section')).toHaveCount(0)
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 

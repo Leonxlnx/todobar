@@ -530,6 +530,7 @@ button {
 .settings-actions button,
 .quick-add button,
 .check-button,
+.edit-button,
 .priority-button,
 .reminder-button,
 .delete-button,
@@ -556,6 +557,7 @@ button {
 .settings-actions button:hover,
 .quick-add button:hover,
 .check-button:hover,
+.edit-button:hover,
 .priority-button:hover,
 .reminder-button:hover,
 .delete-button:hover,
@@ -571,6 +573,7 @@ button {
 .workspace.theme-dark .settings-actions button:hover,
 .workspace.theme-dark .quick-add button:hover,
 .workspace.theme-dark .check-button:hover,
+.workspace.theme-dark .edit-button:hover,
 .workspace.theme-dark .priority-button:hover,
 .workspace.theme-dark .reminder-button:hover,
 .workspace.theme-dark .delete-button:hover,
@@ -586,6 +589,7 @@ button {
 .settings-actions button:focus-visible,
 .quick-add button:focus-visible,
 .check-button:focus-visible,
+.edit-button:focus-visible,
 .edge-handle:focus-visible,
 .priority-button:focus-visible,
 .reminder-button:focus-visible,
@@ -602,6 +606,7 @@ button {
 .workspace.theme-dark .settings-actions button:focus-visible,
 .workspace.theme-dark .quick-add button:focus-visible,
 .workspace.theme-dark .check-button:focus-visible,
+.workspace.theme-dark .edit-button:focus-visible,
 .workspace.theme-dark .edge-handle:focus-visible,
 .workspace.theme-dark .priority-button:focus-visible,
 .workspace.theme-dark .reminder-button:focus-visible,
@@ -2497,6 +2502,7 @@ kbd {
 }
 
 .check-button svg,
+.edit-button svg,
 .priority-dot,
 .reminder-button svg,
 .delete-button svg {
@@ -2568,6 +2574,12 @@ kbd {
   border-radius: 7px;
 }
 
+.edit-button {
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+}
+
 .reminder-button {
   width: 24px;
   height: 24px;
@@ -2584,7 +2596,7 @@ kbd {
   display: flex;
   align-items: center;
   gap: 1px;
-  min-width: 72px;
+  min-width: 96px;
   justify-content: flex-end;
   opacity: 0.54;
   transition: opacity 160ms ease;
@@ -2601,6 +2613,20 @@ kbd {
   border-radius: 7px;
   opacity: 0.48;
   transform: translateX(1px);
+}
+
+.task-edit-input {
+  min-width: 0;
+  width: 100%;
+  height: 24px;
+  padding: 0 7px;
+  color: var(--ink);
+  font: 680 var(--task-title-size) / 1.2 var(--font);
+  border: 1px solid var(--accent-line);
+  border-radius: 8px;
+  outline: 0;
+  background: var(--task-bg);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .task-row:hover .delete-button,
@@ -2803,7 +2829,7 @@ kbd {
   }
 
   .row-actions {
-    min-width: 50px;
+    min-width: 72px;
   }
 }
 
