@@ -5,6 +5,7 @@ import {
   BellRing,
   CalendarDays,
   Check,
+  ChevronDown,
   ChevronLeft,
   ChevronRight,
   Circle,
@@ -48,6 +49,9 @@ const TASK_STORAGE_KEYS = {
 } as const
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
+const TOP_DOCK_MIN_PANEL_WIDTH = 560
+const TOP_DOCK_MAX_PANEL_WIDTH = 880
+const TOP_DOCK_WIDTH_MULTIPLIER = 1.45
 const PRIORITY_ORDER: Record<Task['priority'], number> = {
   focus: 0,
   normal: 1,
@@ -120,6 +124,12 @@ const THEME_PRESETS = [
     note: 'Blue black',
   },
   {
+    id: 'clay',
+    label: 'Clay Dark',
+    mode: 'dark',
+    note: 'Warm dark',
+  },
+  {
     id: 'blueprint',
     label: 'Blueprint Dark',
     mode: 'dark',
@@ -131,6 +141,7 @@ const THEME_PRESETS = [
   mode: ThemeMode
   note: string
 }>
+type ThemePresetOption = (typeof THEME_PRESETS)[number]
 
 type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
@@ -386,6 +397,29 @@ function getNextThemePatch(
   }
 }
 
+function getDockPanelWidth(
+  dockEdge: DockEdge,
+  panelWidth: number,
+  tabWidth: number,
+  viewportWidth: number,
+) {
+  const isTopDock = dockEdge === 'top'
+  const reservedWidth = isTopDock ? 16 : tabWidth + 8
+  const availableWidth = Math.max(280, viewportWidth - reservedWidth)
+  const requestedWidth = isTopDock
+    ? Math.max(
+        TOP_DOCK_MIN_PANEL_WIDTH,
+        Math.round(panelWidth * TOP_DOCK_WIDTH_MULTIPLIER),
+      )
+    : panelWidth
+
+  return Math.min(
+    requestedWidth,
+    availableWidth,
+    isTopDock ? TOP_DOCK_MAX_PANEL_WIDTH : Number.POSITIVE_INFINITY,
+  )
+}
+
 function loadCustomLists() {
   try {
     const stored = window.localStorage.getItem(CUSTOM_LISTS_STORAGE_KEY)
@@ -580,10 +614,18 @@ function App() {
   )
   const visibleHandleY = dragHandleY ?? settings.handleY
   const effectivePanelWidth = useMemo(() => {
-    const availableWidth = Math.max(280, viewportWidth - settings.tabWidth - 8)
-
-    return Math.min(settings.panelWidth, availableWidth)
-  }, [settings.panelWidth, settings.tabWidth, viewportWidth])
+    return getDockPanelWidth(
+      settings.dockEdge,
+      settings.panelWidth,
+      settings.tabWidth,
+      viewportWidth,
+    )
+  }, [
+    settings.dockEdge,
+    settings.panelWidth,
+    settings.tabWidth,
+    viewportWidth,
+  ])
   const effectivePanelDepth = useMemo(() => {
     const availableHeight = Math.max(280, viewportHeight - settings.tabWidth - 8)
 
@@ -1037,9 +1079,11 @@ function App() {
         const fullCssHeight = Math.round(workArea.size.height / scaleFactor)
         const isHorizontalDock =
           settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
-        const panelCssWidth = Math.min(
+        const panelCssWidth = getDockPanelWidth(
+          settings.dockEdge,
           settings.panelWidth,
-          Math.max(280, fullCssWidth - settings.tabWidth - 8),
+          settings.tabWidth,
+          fullCssWidth,
         )
         const panelCssDepth = Math.min(
           settings.panelWidth,
@@ -2578,7 +2622,8 @@ function SidebarSettingsPanel({
   const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
     availableThemes.find((preset) => preset.id === settings.visualStyle) ??
-    availableThemes[0]
+    availableThemes[0] ??
+    THEME_PRESETS[0]
 
   return (
     <section className="settings-panel" aria-label="Sidebar settings">
@@ -2618,37 +2663,14 @@ function SidebarSettingsPanel({
             <span>{settings.theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
             <em>{selectedTheme?.note}</em>
           </div>
-          <div
-            className="theme-picker"
-            role="radiogroup"
-            aria-label="Theme preset"
-          >
-            {availableThemes.map((preset) => (
-              <button
-                type="button"
-                key={`${preset.mode}-${preset.id}`}
-                role="radio"
-                aria-label={`Choose ${preset.label}`}
-                aria-checked={settings.visualStyle === preset.id}
-                className={
-                  settings.visualStyle === preset.id ? 'is-selected' : ''
-                }
-                onClick={() => onChange({ visualStyle: preset.id })}
-              >
-                <span
-                  className={`theme-swatch theme-preview-${preset.id}`}
-                  aria-hidden="true"
-                >
-                  <i />
-                  <i />
-                  <i />
-                  <i />
-                </span>
-                <strong>{preset.label}</strong>
-                <em>{preset.note}</em>
-              </button>
-            ))}
-          </div>
+          <ThemePresetDropdown
+            key={settings.theme}
+            options={availableThemes}
+            selectedTheme={selectedTheme}
+            theme={settings.theme}
+            value={settings.visualStyle}
+            onChange={(visualStyle) => onChange({ visualStyle })}
+          />
         </div>
       </div>
 
@@ -2804,6 +2826,111 @@ function SidebarSettingsPanel({
   )
 }
 
+function ThemeSwatch({ id }: { id: ThemePreset }) {
+  return (
+    <span className={`theme-swatch theme-preview-${id}`} aria-hidden="true">
+      <i />
+      <i />
+      <i />
+      <i />
+    </span>
+  )
+}
+
+function ThemePresetDropdown({
+  options,
+  selectedTheme,
+  theme,
+  value,
+  onChange,
+}: {
+  options: ThemePresetOption[]
+  selectedTheme: ThemePresetOption
+  theme: ThemeMode
+  value: ThemePreset
+  onChange: (value: ThemePreset) => void
+}) {
+  const [isOpen, setIsOpen] = useState(false)
+  const modeLabel = theme === 'dark' ? 'Dark mode' : 'Light mode'
+
+  return (
+    <div
+      className={`theme-dropdown ${isOpen ? 'is-open' : ''}`}
+      onBlur={(event) => {
+        const nextTarget = event.relatedTarget
+
+        if (
+          !(nextTarget instanceof Node) ||
+          !event.currentTarget.contains(nextTarget)
+        ) {
+          setIsOpen(false)
+        }
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && isOpen) {
+          event.preventDefault()
+          event.stopPropagation()
+          setIsOpen(false)
+        }
+      }}
+    >
+      <button
+        type="button"
+        className="theme-dropdown-trigger"
+        aria-label="Theme preset"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((current) => !current)}
+      >
+        <ThemeSwatch id={selectedTheme.id} />
+        <span className="theme-dropdown-current">
+          <strong>{selectedTheme.label}</strong>
+          <em>
+            {modeLabel} - {options.length} presets
+          </em>
+        </span>
+        <ChevronDown
+          className="theme-dropdown-chevron"
+          size={16}
+          aria-hidden="true"
+        />
+      </button>
+
+      {isOpen ? (
+        <div
+          className="theme-dropdown-menu"
+          role="listbox"
+          aria-label="Theme preset"
+        >
+          {options.map((preset) => (
+            <button
+              type="button"
+              key={`${preset.mode}-${preset.id}`}
+              role="option"
+              aria-label={`Choose ${preset.label}`}
+              aria-selected={value === preset.id}
+              className={value === preset.id ? 'is-selected' : ''}
+              onClick={() => {
+                onChange(preset.id)
+                setIsOpen(false)
+              }}
+            >
+              <ThemeSwatch id={preset.id} />
+              <span>
+                <strong>{preset.label}</strong>
+                <em>{preset.note}</em>
+              </span>
+              {value === preset.id ? (
+                <Check size={14} aria-hidden="true" />
+              ) : null}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  )
+}
+
 function DockEdgeSetting({
   value,
   onChange,
@@ -2833,21 +2960,12 @@ function DockEdgeSetting({
       </button>
       <button
         type="button"
-        className={value === 'top' ? 'is-selected' : ''}
+        className={value === 'top' ? 'is-selected is-wide' : 'is-wide'}
         aria-pressed={value === 'top'}
         aria-label="Dock top"
         onClick={() => onChange('top')}
       >
         Top
-      </button>
-      <button
-        type="button"
-        className={value === 'bottom' ? 'is-selected' : ''}
-        aria-pressed={value === 'bottom'}
-        aria-label="Dock bottom"
-        onClick={() => onChange('bottom')}
-      >
-        Bottom
       </button>
     </div>
   )

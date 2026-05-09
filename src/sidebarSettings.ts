@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v24'
+const STORAGE_KEY = 'todobar.sidebar.settings.v25'
 
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
@@ -16,7 +16,7 @@ export type ThemePreset =
 export type SectionId = 'today' | 'calendar' | 'lists'
 
 export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
-  dark: ['codex', 'quartz', 'graphite', 'midnight', 'blueprint'],
+  dark: ['codex', 'quartz', 'graphite', 'midnight', 'clay', 'blueprint'],
   light: ['codex', 'quartz', 'frost', 'paper', 'clay', 'blueprint'],
 }
 
@@ -89,11 +89,17 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
   const visualStyle = availableThemes.includes(value.visualStyle as ThemePreset)
     ? (value.visualStyle as ThemePreset)
     : availableThemes[0]
+  const dockEdge =
+    value.dockEdge === 'left' ||
+    value.dockEdge === 'right' ||
+    value.dockEdge === 'top'
+      ? value.dockEdge
+      : value.dockEdge === 'bottom'
+        ? 'top'
+        : 'right'
 
   return {
-    dockEdge: ['right', 'left', 'top', 'bottom'].includes(value.dockEdge ?? '')
-      ? (value.dockEdge as DockEdge)
-      : 'right',
+    dockEdge,
     panelWidth: clamp(
       value.panelWidth ?? defaultSidebarSettings.panelWidth,
       320,
@@ -157,8 +163,7 @@ export function useSidebarSettings() {
         dockEdge:
           dockParam === 'left' ||
           dockParam === 'right' ||
-          dockParam === 'top' ||
-          dockParam === 'bottom'
+          dockParam === 'top'
             ? dockParam
             : base.dockEdge,
         theme:
@@ -172,8 +177,7 @@ export function useSidebarSettings() {
         dockEdge:
           dockParam === 'left' ||
           dockParam === 'right' ||
-          dockParam === 'top' ||
-          dockParam === 'bottom'
+          dockParam === 'top'
             ? dockParam
             : defaultSidebarSettings.dockEdge,
         theme:
