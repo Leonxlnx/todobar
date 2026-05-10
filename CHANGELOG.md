@@ -6,10 +6,10 @@
 
 - Added a redesigned sidebar shell with a right-side command rail and compact
   planning status strip.
-- Added a custom mode-aware theme dropdown with six light presets and six dark
+- Added a custom mode-aware theme dropdown with five light presets and five dark
   presets.
 - Added reminder capture controls, quick reminder cycling on task rows, and
-  native Tauri notification support with browser preview fallback.
+  custom Todobar reminder toasts that avoid OS notification chrome.
 - Added section ordering controls so Today, Calendar, and Lists can be
   rearranged from settings.
 - Added real Calendar navigation with selected-day capture and task actions.
@@ -21,8 +21,8 @@
 
 - Removed the browser tab-restore shortcut chord as a default. `Alt + T` is now
   the primary toggle shortcut, with `Alt + Shift + T` as a fallback.
-- Replaced the old translucent preset with clearer Glass naming and calmer preset
-  names across light and dark modes.
+- Removed the translucent Lumen/Smoke preset and kept the picker focused on
+  solid, readable light and dark themes.
 - Widened the top dock layout and expanded handle size controls.
 - Added confirmation UI for reset, task delete, and custom-list delete while
   preserving Shift-click as the immediate delete path.

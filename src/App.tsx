@@ -27,7 +27,7 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
-import { memo, useEffect, useMemo, useRef, useState } from 'react'
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
   CSSProperties,
   KeyboardEvent,
@@ -75,12 +75,6 @@ const THEME_PRESETS = [
     note: 'Neutral clean',
   },
   {
-    id: 'glass',
-    label: 'Lumen',
-    mode: 'light',
-    note: 'Soft glass',
-  },
-  {
     id: 'frost',
     label: 'Frostline',
     mode: 'light',
@@ -109,12 +103,6 @@ const THEME_PRESETS = [
     label: 'Obsidian',
     mode: 'dark',
     note: 'Deep neutral',
-  },
-  {
-    id: 'glass',
-    label: 'Smoke',
-    mode: 'dark',
-    note: 'Dark glass',
   },
   {
     id: 'graphite',
@@ -164,6 +152,13 @@ type CalendarTaskRef = {
   listTitle: string
   source: TaskListId | 'custom'
   task: Task
+}
+type ReminderToast = {
+  id: string
+  title: string
+  body: string
+  dueLabel: string
+  reminderAt?: string
 }
 
 const defaultCustomLists: CustomTaskList[] = [
@@ -556,10 +551,37 @@ function App() {
   const [pendingCustomListDelete, setPendingCustomListDelete] = useState<
     string | null
   >(null)
+  const [reminderToasts, setReminderToasts] = useState<ReminderToast[]>([])
   const [listTitleDraft, setListTitleDraft] = useState('')
   const notifiedReminderKeys = useRef<Record<string, boolean>>(
     loadNotifiedReminderKeys(),
   )
+  const dismissReminderToast = useCallback((id: string) => {
+    setReminderToasts((current) => current.filter((toast) => toast.id !== id))
+  }, [])
+  const pushReminderToast = useCallback((task: Task, listTitle: string) => {
+    const id = `${task.id}:${task.reminderAt ?? 'now'}`
+    const toast: ReminderToast = {
+      id,
+      title: task.title,
+      body: `${listTitle} · ${task.meta}`,
+      dueLabel: formatReminder(task.reminderAt) || 'now',
+      reminderAt: task.reminderAt,
+    }
+
+    setReminderToasts((current) => [
+      toast,
+      ...current.filter((item) => item.id !== id),
+    ].slice(0, 3))
+    setIsSettingsOpen(false)
+    setIsOpen(true)
+
+    window.setTimeout(() => {
+      setReminderToasts((current) =>
+        current.filter((item) => item.id !== id),
+      )
+    }, 9000)
+  }, [])
   const [collapsedSections, setCollapsedSections] =
     useState<CollapsedSections>({
       today: false,
@@ -941,54 +963,6 @@ function App() {
       return
     }
 
-    let cancelled = false
-
-    const notify = async (task: Task, listTitle: string) => {
-      const body = `${listTitle} · ${task.meta}`
-
-      try {
-        if (isNative) {
-          const {
-            isPermissionGranted,
-            requestPermission,
-            sendNotification,
-          } = await import('@tauri-apps/plugin-notification')
-
-          let permissionGranted = await isPermissionGranted()
-
-          if (!permissionGranted) {
-            permissionGranted = (await requestPermission()) === 'granted'
-          }
-
-          if (permissionGranted && !cancelled) {
-            sendNotification({ body, title: task.title })
-            return true
-          }
-
-          return false
-        }
-
-        if (!('Notification' in window)) {
-          return false
-        }
-
-        let permission = Notification.permission
-
-        if (permission === 'default') {
-          permission = await Notification.requestPermission()
-        }
-
-        if (permission === 'granted' && !cancelled) {
-          new Notification(task.title, { body })
-          return true
-        }
-      } catch {
-        // Notifications are best-effort; tasks and reminders stay usable.
-      }
-
-      return false
-    }
-
     const checkReminders = () => {
       const now = Date.now()
 
@@ -1014,7 +988,7 @@ function App() {
           NOTIFIED_REMINDERS_STORAGE_KEY,
           JSON.stringify(notifiedReminderKeys.current),
         )
-        void notify(task, listTitle)
+        pushReminderToast(task, listTitle)
       }
     }
 
@@ -1022,10 +996,9 @@ function App() {
     const interval = window.setInterval(checkReminders, 30000)
 
     return () => {
-      cancelled = true
       window.clearInterval(interval)
     }
-  }, [isNative, reminderTasks, settings.notificationsEnabled])
+  }, [pushReminderToast, reminderTasks, settings.notificationsEnabled])
 
   useEffect(() => {
     if (!isNative) {
@@ -1766,6 +1739,20 @@ function App() {
     setIsOpen(true)
   }
 
+  const openReminderToast = (toast: ReminderToast) => {
+    const reminderDate = parseReminderDate(toast.reminderAt)
+
+    if (reminderDate) {
+      setCalendarCursor(reminderDate)
+      setSelectedCalendarKey(formatDateKey(reminderDate))
+    }
+
+    setActiveRailSection('calendar')
+    setIsSettingsOpen(false)
+    setIsOpen(true)
+    dismissReminderToast(toast.id)
+  }
+
   const openSettings = () => {
     setIsOpen(true)
     setIsSettingsOpen(true)
@@ -1966,6 +1953,12 @@ function App() {
           <PanelRightClose className="handle-icon-close" size={15} />
         </span>
       </button>
+
+      <ReminderToastStack
+        toasts={reminderToasts}
+        onClose={dismissReminderToast}
+        onOpen={openReminderToast}
+      />
 
       <aside
         className={`todo-sidebar ${isOpen ? 'is-open' : ''} ${
@@ -2555,6 +2548,51 @@ function App() {
         />
       </aside>
     </main>
+  )
+}
+
+function ReminderToastStack({
+  toasts,
+  onClose,
+  onOpen,
+}: {
+  toasts: ReminderToast[]
+  onClose: (id: string) => void
+  onOpen: (toast: ReminderToast) => void
+}) {
+  return (
+    <section
+      className="reminder-toast-stack"
+      aria-label="Reminder alerts"
+      aria-live="polite"
+      aria-atomic="false"
+    >
+      {toasts.map((toast) => (
+        <article className="reminder-toast" key={toast.id} role="status">
+          <span className="reminder-toast-icon" aria-hidden="true">
+            <BellRing size={15} />
+          </span>
+          <div className="reminder-toast-copy">
+            <strong>{toast.title}</strong>
+            <span>{toast.body}</span>
+            <em>Due {toast.dueLabel}</em>
+          </div>
+          <div className="reminder-toast-actions">
+            <button type="button" onClick={() => onOpen(toast)}>
+              Open
+            </button>
+            <button
+              type="button"
+              className="is-icon"
+              aria-label={`Dismiss reminder ${toast.title}`}
+              onClick={() => onClose(toast.id)}
+            >
+              <X size={13} />
+            </button>
+          </div>
+        </article>
+      ))}
+    </section>
   )
 }
 

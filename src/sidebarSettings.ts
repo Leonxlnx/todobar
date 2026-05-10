@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react'
 
-const STORAGE_KEY = 'todobar.sidebar.settings.v26'
+const STORAGE_KEY = 'todobar.sidebar.settings.v27'
 
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
 export type ThemePreset =
   | 'codex'
-  | 'glass'
   | 'frost'
   | 'paper'
   | 'graphite'
@@ -16,8 +15,8 @@ export type ThemePreset =
 export type SectionId = 'today' | 'calendar' | 'lists'
 
 export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
-  dark: ['codex', 'glass', 'graphite', 'midnight', 'clay', 'blueprint'],
-  light: ['codex', 'glass', 'frost', 'paper', 'clay', 'blueprint'],
+  dark: ['codex', 'graphite', 'midnight', 'clay', 'blueprint'],
+  light: ['codex', 'frost', 'paper', 'clay', 'blueprint'],
 }
 
 export type SidebarSettings = {

@@ -102,51 +102,6 @@
     linear-gradient(180deg, #303036 0%, #19191d 100%);
 }
 
-.workspace.style-glass {
-  --workspace-bg:
-    radial-gradient(circle at 72% 10%, rgba(139, 174, 230, 0.34), transparent 31%),
-    radial-gradient(circle at 15% 86%, rgba(255, 255, 255, 0.92), transparent 38%),
-    linear-gradient(145deg, #eaf2fa 0%, #fbfdff 46%, #d6e4f1 100%);
-  --ink: #111827;
-  --muted: #5f7185;
-  --line: rgba(47, 72, 103, 0.16);
-  --sidebar-bg: rgba(255, 255, 255, calc(var(--surface-alpha) * 0.34));
-  --sidebar-solid-bg: rgba(246, 251, 255, 0.4);
-  --dock-bg: rgba(246, 251, 255, 0.48);
-  --dock-stroke: rgba(49, 92, 158, 0.18);
-  --control-bg: rgba(255, 255, 255, 0.22);
-  --task-bg: rgba(255, 255, 255, 0.28);
-  --task-border: rgba(49, 92, 158, 0.18);
-  --section-bg: rgba(255, 255, 255, 0.2);
-  --rail-bg: rgba(246, 251, 255, 0.18);
-  --settings-surface: rgba(246, 251, 255, 0.34);
-  --surface-hover: rgba(255, 255, 255, 0.42);
-  --row-hover-bg: rgba(49, 92, 158, 0.08);
-  --accent: #315c9e;
-  --accent-soft: rgba(49, 92, 158, 0.1);
-  --accent-line: rgba(49, 92, 158, 0.26);
-  --panel-shadow: -30px 0 90px rgba(55, 74, 100, 0.2);
-  --handle-bg: rgba(246, 251, 255, 0.46);
-  --handle-hover-bg: rgba(255, 255, 255, 0.6);
-}
-
-.workspace.theme-dark.style-glass {
-  --workspace-bg:
-    radial-gradient(circle at 72% 8%, rgba(103, 154, 230, 0.36), transparent 34%),
-    linear-gradient(145deg, #08111c 0%, #101b2a 48%, #172842 100%);
-  --sidebar-bg: rgba(10, 18, 30, calc(var(--surface-alpha) * 0.4));
-  --sidebar-solid-bg: rgba(8, 15, 25, 0.46);
-  --dock-bg: rgba(8, 15, 25, 0.56);
-  --dock-stroke: rgba(165, 202, 255, 0.14);
-  --control-bg: rgba(255, 255, 255, 0.08);
-  --task-bg: rgba(255, 255, 255, 0.09);
-  --section-bg: rgba(255, 255, 255, 0.06);
-  --rail-bg: rgba(255, 255, 255, 0.045);
-  --settings-surface: rgba(8, 15, 25, 0.46);
-  --handle-bg: rgba(8, 15, 25, 0.54);
-  --handle-hover-bg: rgba(12, 23, 38, 0.68);
-}
-
 .workspace.style-frost {
   --workspace-bg:
     radial-gradient(circle at 75% 12%, rgba(96, 165, 250, 0.2), transparent 34%),
@@ -992,6 +947,126 @@ kbd {
   outline: none;
 }
 
+.reminder-toast-stack {
+  position: fixed;
+  z-index: 38;
+  top: 64px;
+  right: calc(var(--tab-width) + 14px);
+  width: min(300px, calc(100vw - var(--tab-width) - 28px));
+  display: grid;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.workspace.dock-left .reminder-toast-stack {
+  right: auto;
+  left: calc(var(--tab-width) + 14px);
+}
+
+.workspace.dock-top .reminder-toast-stack {
+  top: calc(var(--tab-width) + 18px);
+  right: 14px;
+}
+
+.reminder-toast {
+  min-height: 72px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 11px;
+  color: #f8fafc;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(116, 168, 255, 0.2), transparent 42%),
+    linear-gradient(180deg, #181a20 0%, #0f1115 100%);
+  box-shadow:
+    0 22px 54px rgba(14, 23, 38, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: auto;
+  animation: toast-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.reminder-toast-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: #93c5fd;
+  border: 1px solid rgba(147, 197, 253, 0.22);
+  border-radius: 11px;
+  background: rgba(147, 197, 253, 0.11);
+}
+
+.reminder-toast-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.reminder-toast-copy strong,
+.reminder-toast-copy span,
+.reminder-toast-copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reminder-toast-copy strong {
+  color: #ffffff;
+  font-size: 12px;
+  line-height: 1.25;
+  font-weight: 780;
+}
+
+.reminder-toast-copy span {
+  color: #b8c1cf;
+  font-size: 10.8px;
+  line-height: 1.25;
+  font-weight: 640;
+}
+
+.reminder-toast-copy em {
+  color: #93c5fd;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 760;
+}
+
+.reminder-toast-actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.reminder-toast-actions button {
+  height: 28px;
+  display: grid;
+  place-items: center;
+  padding: 0 10px;
+  color: #0f1115;
+  font-size: 10.5px;
+  font-weight: 780;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.reminder-toast-actions button:hover {
+  border-color: rgba(147, 197, 253, 0.32);
+  background: #eaf2ff;
+}
+
+.reminder-toast-actions button.is-icon {
+  width: 28px;
+  padding: 0;
+  color: #b8c1cf;
+  border-color: rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.06);
+}
+
 .todo-sidebar {
   position: fixed;
   z-index: 15;
@@ -1156,26 +1231,6 @@ kbd {
 
 .workspace.is-native.is-sidebar-closed {
   overflow: hidden;
-}
-
-.workspace.style-glass .todo-sidebar,
-.workspace.style-glass .settings-drawer {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 44%),
-    var(--sidebar-bg);
-  backdrop-filter: blur(42px) saturate(1.9);
-}
-
-.workspace.is-native.style-glass .todo-sidebar,
-.workspace.is-native.style-glass .settings-drawer {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 44%),
-    var(--sidebar-solid-bg);
-  backdrop-filter: blur(38px) saturate(1.8);
-}
-
-.workspace.style-glass .native-dock-surface path {
-  fill: var(--dock-bg);
 }
 
 .sidebar-content {
@@ -1853,20 +1908,6 @@ kbd {
 
 .theme-preview-codex i:not(:first-child) {
   background: rgba(17, 19, 24, 0.18);
-}
-
-.theme-preview-glass {
-  background:
-    radial-gradient(circle at 18% 20%, rgba(255, 255, 255, 0.96), transparent 24px),
-    linear-gradient(135deg, #eef6ff, #a7c5e8);
-}
-
-.theme-preview-glass i:first-child {
-  background: rgba(255, 255, 255, 0.86);
-}
-
-.theme-preview-glass i:not(:first-child) {
-  background: rgba(49, 92, 158, 0.25);
 }
 
 .theme-preview-frost {
@@ -2815,9 +2856,11 @@ kbd {
 }
 
 .task-reminder {
-  max-width: 50%;
+  min-width: max-content;
+  max-width: 100%;
   display: inline-flex;
   align-items: center;
+  flex: 0 0 auto;
   gap: 3px;
   overflow: hidden;
   color: var(--accent);
@@ -2825,6 +2868,10 @@ kbd {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.task-reminder svg {
+  flex: 0 0 auto;
 }
 
 .priority-button {
@@ -3055,6 +3102,18 @@ kbd {
 
   to {
     transform: translateX(0);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 

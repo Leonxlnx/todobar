@@ -51,7 +51,8 @@ Possible soon:
 
 - dialog for import/export
 - opener for file paths/URLs
-- notification only after notification strategy exists
+- separate notification window only if in-app reminder toasts need to appear
+  while the sidebar remains fully closed
 
 ## Window Configuration
 
@@ -156,4 +157,3 @@ The native spike is successful only when:
 - Tauri capabilities: https://v2.tauri.app/security/capabilities/
 - Tauri window API: https://v2.tauri.app/reference/javascript/api/namespacewindow/
 - Tauri sidecars: https://tauri.app/develop/sidecar/
-

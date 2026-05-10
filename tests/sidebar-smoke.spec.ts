@@ -38,11 +38,13 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Theme preset' }).click()
-  await expect(page.getByRole('option')).toHaveCount(6)
+  await expect(page.getByRole('option')).toHaveCount(5)
+  await expect(page.getByRole('option', { name: 'Choose Lumen' })).toHaveCount(0)
   await expect(page.getByRole('option', { name: 'Choose Graphite' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Switch to dark mode' }).click()
   await page.getByRole('button', { name: 'Theme preset' }).click()
-  await expect(page.getByRole('option')).toHaveCount(6)
+  await expect(page.getByRole('option')).toHaveCount(5)
+  await expect(page.getByRole('option', { name: 'Choose Smoke' })).toHaveCount(0)
   await page.getByRole('option', { name: 'Choose Graphite' }).click()
   await expect(page.locator('.workspace')).toHaveClass(/theme-dark/)
   await expect(page.locator('.workspace')).toHaveClass(/style-graphite/)
@@ -117,6 +119,27 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.locator('#reminders-section')).toHaveCount(0)
   await expect(page.locator('.task-reminder').filter({ hasText: '09:30' })).toBeVisible()
 
+  await page.evaluate(() => {
+    window.localStorage.setItem('todobar.notified-reminders.v1', '{}')
+  })
+  await page.getByLabel('Add a task to Today').fill('Toast smoke')
+  await page
+    .locator('section[aria-labelledby="today-heading"] .quick-add .reminder-toggle')
+    .click()
+  await page
+    .getByRole('textbox', { name: 'Reminder time' })
+    .fill('2020-01-01T09:30')
+  await page
+    .locator('section[aria-labelledby="today-heading"] .quick-add .submit-task')
+    .click()
+  const reminderToast = page.getByRole('status').filter({ hasText: 'Toast smoke' })
+  await expect(reminderToast).toBeVisible()
+  await reminderToast.getByRole('button', { name: 'Open' }).click()
+  await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
+
   await page.getByRole('button', { name: 'Jump to Calendar' }).click()
   await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
     'aria-current',
@@ -131,7 +154,11 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page
     .locator('section[aria-labelledby="calendar-heading"] .quick-add .submit-task')
     .click()
-  await expect(page.getByText('Calendar smoke', { exact: true })).toBeVisible()
+  await expect(
+    page
+      .locator('section[aria-labelledby="calendar-heading"]')
+      .getByText('Calendar smoke', { exact: true }),
+  ).toBeVisible()
   await page
     .locator('section[aria-labelledby="calendar-heading"]')
     .getByRole('button', { name: 'Jump to today', exact: true })

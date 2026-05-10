@@ -27,12 +27,12 @@ The product should let users tune the sidebar to their workspace:
 - task row height, spacing, and text size
 - motion speed
 - corner radius
-- surface opacity
+- surface opacity, limited to readable solid surfaces
 - completed-task visibility
 - section order
 - light/dark mode
-- Studio, Lumen, Frostline, Paper Trail, Terra, Blueprint, Obsidian, Smoke,
-  Graphite, Nightfall, Ember, and Gridlock theme presets
+- Studio, Frostline, Paper Trail, Terra, Blueprint, Obsidian, Graphite,
+  Nightfall, Ember, and Gridlock theme presets
 
 ## Guardrails
 

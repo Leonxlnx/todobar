@@ -93,7 +93,6 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
-        .plugin(tauri_plugin_notification::init())
         .setup(|app| {
             setup_tray(app)?;
             setup_global_shortcuts(app);
