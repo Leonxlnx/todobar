@@ -25,6 +25,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page).toHaveTitle(/todobar/i)
   await expect(page.getByText('Todobar').first()).toBeVisible()
   await expect(page.getByText('Today').first()).toBeVisible()
+  await expect(page.locator('.section-meter')).toHaveCount(0)
 
   const openButton = page.getByRole('button', { name: 'Open Todobar' })
 
@@ -216,6 +217,15 @@ for (const viewport of viewports) {
     await expect(sidebar).toBeVisible()
     await expect(handle).toBeVisible()
     await expect(page.getByRole('button', { name: 'Sidebar settings' })).toBeVisible()
+    await expect.poll(async () =>
+      page.locator('.sidebar-rail button').evaluateAll((buttons) =>
+        buttons.every((button) => {
+          const rect = button.getBoundingClientRect()
+
+          return Math.round(rect.width) === Math.round(rect.height)
+        }),
+      ),
+    ).toBe(true)
 
     const sidebarBox = await sidebar.boundingBox()
     const handleBox = await handle.boundingBox()
@@ -247,6 +257,44 @@ for (const viewport of viewports) {
     await expect(page.getByText('Panel width', { exact: true })).toBeVisible()
   })
 }
+
+test('due reminders badge the closed handle without opening the sidebar', async ({
+  page,
+}) => {
+  await page.goto('/')
+  await page.evaluate(() => {
+    window.localStorage.setItem('todobar.notified-reminders.v1', '{}')
+    window.localStorage.setItem(
+      'todobar.today.v1',
+      JSON.stringify([
+        {
+          id: 99001,
+          meta: 'Today',
+          priority: 'normal',
+          reminderAt: '2020-01-01T09:00',
+          title: 'Closed reminder',
+        },
+      ]),
+    )
+  })
+  await page.reload()
+
+  await expect(page.locator('.workspace')).toHaveClass(/is-sidebar-closed/)
+  await expect(page.locator('.handle-badge')).toHaveText('1')
+  await expect(page.locator('.reminder-toast-stack')).toHaveCSS('opacity', '0')
+
+  await page.getByRole('button', { name: 'Open Todobar' }).click()
+  const reminderToast = page.getByRole('status').filter({
+    hasText: 'Closed reminder',
+  })
+
+  await expect(reminderToast).toBeVisible()
+  await reminderToast.getByRole('button', { name: 'Open' }).click()
+  await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
+    'aria-current',
+    'true',
+  )
+})
 
 test('native closed dock keeps a rounded tab shape', async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 442 })

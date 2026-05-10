@@ -45,6 +45,12 @@
   Screen Edge controls as Left, Right, then Top.
 - Refined task, calendar, settings, and list buttons with square hit targets,
   soft-ui bevels, pressed states, and task action tooltips.
+- Removed the duplicate per-section Today meter so the sidebar has one progress
+  bar at the top.
+- Added drag-and-drop section ordering while keeping the small arrow controls as
+  an accessible fallback.
+- Moved reminder alerts to a bottom toast position and added a red handle badge
+  for due reminders when the sidebar is closed.
 
 ### Fixed
 
@@ -54,6 +60,12 @@
   appears cut off.
 - Fixed native monitor targeting by resolving the monitor under the cursor before
   falling back to the current window monitor.
+- Fixed reminder alerts opening the full sidebar automatically when they become
+  due.
+- Fixed task action tooltips and delete confirmations being trapped under task
+  row layers.
+- Fixed startup monitor targeting in the native shell by using the cursor monitor
+  before falling back to the current window monitor.
 
 ## 0.1.5 - Native Shortcut Fix
 

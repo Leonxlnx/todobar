@@ -201,6 +201,7 @@ function verifyNativeDesktopSurface() {
   const cargoToml = read('src-tauri/Cargo.toml')
   const nativeShell = read('src-tauri/src/lib.rs')
   const app = read('src/App.tsx')
+  const defaultCapability = read('src-tauri/capabilities/default.json')
   const readme = read('README.md')
 
   if (!cargoToml.includes('tray-icon')) {
@@ -214,6 +215,8 @@ function verifyNativeDesktopSurface() {
     '.on_shortcut(shortcut',
     'Alt+T',
     'Alt+Shift+T',
+    'monitorFromPoint',
+    'monitor_from_point',
     'todobar-tray-toggle',
     'todobar-tray-settings',
     'show_menu_on_left_click(false)',
@@ -221,6 +224,10 @@ function verifyNativeDesktopSurface() {
     if (!nativeShell.includes(token) && !app.includes(token)) {
       fail(`desktop tray control: missing ${token}`)
     }
+  }
+
+  if (!defaultCapability.includes('core:window:allow-monitor-from-point')) {
+    fail('src-tauri/capabilities/default.json: missing monitor-from-point permission')
   }
 
   if (!readme.includes('Native tray/menu-bar control')) {
