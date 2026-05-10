@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Circle,
   Clock3,
+  GripVertical,
   Inbox,
   ListTodo,
   Moon,
@@ -30,6 +31,7 @@ import {
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
   CSSProperties,
+  DragEvent,
   KeyboardEvent,
   MouseEvent,
   PointerEvent,
@@ -252,21 +254,27 @@ function nextQuickReminder(current?: string) {
     : undefined
 }
 
-function reminderPresetValue(kind: 'soon' | 'tomorrow' | 'nextWeek') {
-  const date = new Date()
+function reminderPresetValue(
+  kind: 'soon' | 'tomorrow' | 'nextWeek',
+  current?: string,
+) {
+  const currentDate = current ? new Date(current) : null
+  const date =
+    currentDate && Number.isFinite(currentDate.getTime())
+      ? new Date(currentDate)
+      : new Date()
 
   if (kind === 'soon') {
+    date.setTime(Date.now())
     date.setMinutes(date.getMinutes() + 30)
   }
 
   if (kind === 'tomorrow') {
     date.setDate(date.getDate() + 1)
-    date.setHours(9, 0, 0, 0)
   }
 
   if (kind === 'nextWeek') {
     date.setDate(date.getDate() + 7)
-    date.setHours(9, 0, 0, 0)
   }
 
   date.setSeconds(0, 0)
@@ -393,6 +401,24 @@ function moveSectionOrder(
   const [item] = next.splice(currentIndex, 1)
   next.splice(nextIndex, 0, item)
 
+  return next
+}
+
+function moveSectionOrderToIndex(
+  sections: SectionId[],
+  section: SectionId,
+  targetIndex: number,
+) {
+  const currentIndex = sections.indexOf(section)
+
+  if (currentIndex === -1 || currentIndex === targetIndex) {
+    return sections
+  }
+
+  const next = sections.filter((item) => item !== section)
+  const boundedIndex = Math.min(Math.max(targetIndex, 0), next.length)
+
+  next.splice(boundedIndex, 0, section)
   return next
 }
 
@@ -573,8 +599,6 @@ function App() {
       toast,
       ...current.filter((item) => item.id !== id),
     ].slice(0, 3))
-    setIsSettingsOpen(false)
-    setIsOpen(true)
 
     window.setTimeout(() => {
       setReminderToasts((current) =>
@@ -1961,6 +1985,11 @@ function App() {
           <PanelRightOpen className="handle-icon-open" size={15} />
           <PanelRightClose className="handle-icon-close" size={15} />
         </span>
+        {reminderToasts.length > 0 ? (
+          <span className="handle-badge" aria-label={`${reminderToasts.length} reminders`}>
+            {Math.min(reminderToasts.length, 9)}
+          </span>
+        ) : null}
       </button>
 
       <ReminderToastStack
@@ -2039,9 +2068,6 @@ function App() {
                       )}
                     </button>
                   </div>
-                  <div className="section-meter" aria-hidden="true">
-                    <span style={{ width: `${progressPercent}%` }} />
-                  </div>
                   <div
                     className={`section-content ${
                       collapsedSections.today ? 'is-collapsed' : ''
@@ -2053,6 +2079,7 @@ function App() {
                         ariaLabel="Add a task to Today"
                         value={drafts.today}
                         reminderValue={reminderDrafts.today}
+                        suggestedReminderValue=""
                         placeholder="Add task..."
                         onChange={(value) => updateDraft('today', value)}
                         onReminderChange={(value) =>
@@ -2250,7 +2277,7 @@ function App() {
                       <strong>{formatCalendarDay(selectedCalendarDate)}</strong>
                       <span>
                         {selectedCalendarTasks.length === 0
-                          ? 'Free'
+                          ? 'No reminders'
                           : `${selectedCalendarTasks.length} scheduled`}
                       </span>
                     </div>
@@ -2258,8 +2285,9 @@ function App() {
                       ariaLabel="Add a task to selected calendar day"
                       value={drafts.month}
                       reminderValue={
-                        reminderDrafts.month || `${selectedCalendarKey}T09:00`
+                        reminderDrafts.month
                       }
+                      suggestedReminderValue={`${selectedCalendarKey}T09:00`}
                       placeholder="Add to this day..."
                       onChange={(value) => updateDraft('month', value)}
                       onReminderChange={(value) =>
@@ -2649,6 +2677,7 @@ function QuickAdd({
   ariaLabel,
   value,
   reminderValue,
+  suggestedReminderValue,
   placeholder,
   onChange,
   onReminderChange,
@@ -2658,6 +2687,7 @@ function QuickAdd({
   ariaLabel: string
   value: string
   reminderValue: string
+  suggestedReminderValue?: string
   placeholder: string
   onChange: (value: string) => void
   onReminderChange: (value: string) => void
@@ -2666,6 +2696,7 @@ function QuickAdd({
 }) {
   const [isReminderOpen, setIsReminderOpen] = useState(false)
   const hasReminder = Boolean(reminderValue)
+  const reminderInputValue = reminderValue || suggestedReminderValue || ''
 
   return (
     <div
@@ -2690,8 +2721,15 @@ function QuickAdd({
       <button
         type="button"
         className="reminder-toggle"
-        aria-label={hasReminder ? 'Edit reminder time' : 'Add reminder time'}
+        aria-label={
+          isReminderOpen
+            ? 'Close reminder time'
+            : hasReminder
+              ? 'Edit reminder time'
+              : 'Add reminder time'
+        }
         aria-pressed={hasReminder}
+        aria-expanded={isReminderOpen}
         onClick={() => setIsReminderOpen((current) => !current)}
       >
         {hasReminder ? <BellRing size={15} /> : <Bell size={15} />}
@@ -2712,21 +2750,37 @@ function QuickAdd({
           <div className="reminder-presets" aria-label="Reminder presets">
             <button
               type="button"
-              onClick={() => onReminderChange(reminderPresetValue('soon'))}
+              aria-label="30 minutes from now"
+              onClick={() =>
+                onReminderChange(reminderPresetValue('soon', reminderInputValue))
+              }
             >
-              30 min
+              <strong>30 min</strong>
+              <span>from now</span>
             </button>
             <button
               type="button"
-              onClick={() => onReminderChange(reminderPresetValue('tomorrow'))}
+              aria-label="Tomorrow at the same time"
+              onClick={() =>
+                onReminderChange(
+                  reminderPresetValue('tomorrow', reminderInputValue),
+                )
+              }
             >
-              Tomorrow
+              <strong>Tomorrow</strong>
+              <span>same time</span>
             </button>
             <button
               type="button"
-              onClick={() => onReminderChange(reminderPresetValue('nextWeek'))}
+              aria-label="Next week at the same time"
+              onClick={() =>
+                onReminderChange(
+                  reminderPresetValue('nextWeek', reminderInputValue),
+                )
+              }
             >
-              Next week
+              <strong>Next week</strong>
+              <span>same time</span>
             </button>
           </div>
           <label>
@@ -2734,7 +2788,7 @@ function QuickAdd({
             <input
               aria-label="Reminder time"
               type="datetime-local"
-              value={reminderValue}
+              value={reminderInputValue}
               onChange={(event) => onReminderChange(event.target.value)}
             />
           </label>
@@ -2885,6 +2939,15 @@ function SidebarSettingsPanel({
         <div className="settings-group-title">Layout</div>
         <SectionOrderSetting
           order={settings.sectionOrder}
+          onReorder={(section, targetIndex) =>
+            onChange({
+              sectionOrder: moveSectionOrderToIndex(
+                settings.sectionOrder,
+                section,
+                targetIndex,
+              ),
+            })
+          }
           onMove={(section, direction) =>
             onChange({
               sectionOrder: moveSectionOrder(
@@ -3158,21 +3221,21 @@ function DockEdgeSetting({
       </button>
       <button
         type="button"
+        className={value === 'top' ? 'is-selected' : ''}
+        aria-pressed={value === 'top'}
+        aria-label="Dock top"
+        onClick={() => onChange('top')}
+      >
+        Top
+      </button>
+      <button
+        type="button"
         className={value === 'right' ? 'is-selected' : ''}
         aria-pressed={value === 'right'}
         aria-label="Dock right"
         onClick={() => onChange('right')}
       >
         Right
-      </button>
-      <button
-        type="button"
-        className={value === 'top' ? 'is-selected is-wide' : 'is-wide'}
-        aria-pressed={value === 'top'}
-        aria-label="Dock top"
-        onClick={() => onChange('top')}
-      >
-        Top
       </button>
     </div>
   )
@@ -3181,20 +3244,63 @@ function DockEdgeSetting({
 function SectionOrderSetting({
   order,
   onMove,
+  onReorder,
 }: {
   order: SectionId[]
   onMove: (section: SectionId, direction: -1 | 1) => void
+  onReorder: (section: SectionId, targetIndex: number) => void
 }) {
+  const [draggingSection, setDraggingSection] = useState<SectionId | null>(null)
   const labels: Record<SectionId, string> = {
     calendar: 'Calendar',
     lists: 'Lists',
     today: 'Today',
   }
+  const onDragOverRow = (
+    event: DragEvent<HTMLDivElement>,
+    section: SectionId,
+  ) => {
+    if (!draggingSection || draggingSection === section) {
+      return
+    }
+
+    event.preventDefault()
+    event.dataTransfer.dropEffect = 'move'
+  }
 
   return (
     <div className="section-order-list" aria-label="Section order">
       {order.map((section, index) => (
-        <div className="section-order-row" key={section}>
+        <div
+          className={`section-order-row ${
+            draggingSection === section ? 'is-dragging' : ''
+          }`}
+          draggable
+          key={section}
+          onDragStart={(event) => {
+            setDraggingSection(section)
+            event.dataTransfer.effectAllowed = 'move'
+            event.dataTransfer.setData('text/plain', section)
+          }}
+          onDragEnd={() => setDraggingSection(null)}
+          onDragOver={(event) => onDragOverRow(event, section)}
+          onDrop={(event) => {
+            event.preventDefault()
+
+            const droppedSection =
+              (event.dataTransfer.getData('text/plain') as SectionId) ||
+              draggingSection
+
+            if (droppedSection) {
+              onReorder(droppedSection, index)
+            }
+
+            setDraggingSection(null)
+          }}
+        >
+          <span className="section-order-grip" aria-hidden="true">
+            <GripVertical size={13} />
+          </span>
           <span>{labels[section]}</span>
           <div>
             <button

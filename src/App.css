@@ -798,6 +798,36 @@ kbd {
   display: block;
 }
 
+.handle-badge {
+  position: absolute;
+  top: 8px;
+  left: 6px;
+  z-index: 2;
+  min-width: 15px;
+  height: 15px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  color: #fff;
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 800;
+  border: 2px solid var(--dock-bg);
+  border-radius: 999px;
+  background: #e3342f;
+  box-shadow: 0 5px 14px rgba(227, 52, 47, 0.32);
+}
+
+.workspace.dock-left .handle-badge {
+  right: 6px;
+  left: auto;
+}
+
+.workspace.dock-top .handle-badge {
+  top: 5px;
+  left: 8px;
+}
+
 .handle-symbol {
   position: relative;
   z-index: 1;
@@ -983,13 +1013,23 @@ kbd {
 
 .reminder-toast-stack {
   position: fixed;
-  z-index: 38;
-  top: 64px;
-  right: calc(var(--tab-width) + 14px);
-  width: min(300px, calc(100vw - var(--tab-width) - 28px));
+  z-index: 60;
+  right: calc(var(--tab-width) + 16px);
+  bottom: 22px;
+  width: min(320px, calc(100vw - var(--tab-width) - 32px));
   display: grid;
   gap: 8px;
+  opacity: 1;
   pointer-events: none;
+  transform: translateY(0);
+  transition:
+    opacity 170ms ease,
+    transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.workspace.is-sidebar-closed .reminder-toast-stack {
+  opacity: 0;
+  transform: translateY(12px);
 }
 
 .workspace.dock-left .reminder-toast-stack {
@@ -998,7 +1038,8 @@ kbd {
 }
 
 .workspace.dock-top .reminder-toast-stack {
-  top: calc(var(--tab-width) + 18px);
+  top: auto;
+  bottom: 18px;
   right: 14px;
 }
 
@@ -1289,7 +1330,7 @@ kbd {
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 6px 13px;
+  padding: 14px 5px 13px;
   border-left: 1px solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 34%),
@@ -1303,18 +1344,23 @@ kbd {
 
 .sidebar-rail button {
   min-width: 0;
-  height: 38px;
+  inline-size: 36px;
+  block-size: 36px;
   display: grid;
   place-items: center;
   padding: 0;
   color: var(--muted);
-  border: 1px solid transparent;
+  border: 1px solid var(--line);
   border-radius: 12px;
-  background: transparent;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
   transition:
     background 160ms ease,
     border-color 160ms ease,
+    box-shadow 160ms ease,
     color 160ms ease,
     transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
@@ -1336,6 +1382,7 @@ kbd {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent),
     var(--accent-soft);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .sidebar-rail button:active {
@@ -1503,10 +1550,11 @@ kbd {
   right: auto;
   margin-top: 4px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) 32px;
   align-items: end;
-  gap: 8px;
-  padding: 9px;
+  column-gap: 8px;
+  row-gap: 9px;
+  padding: 10px;
   border: 1px solid var(--task-border);
   border-radius: 15px;
   background:
@@ -1522,21 +1570,45 @@ kbd {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px;
+  gap: 6px;
 }
 
 .reminder-presets button {
+  inline-size: auto;
+  block-size: 38px;
+  width: 100%;
+  height: 38px;
+  aspect-ratio: auto;
+  flex: initial;
   min-width: 0;
-  height: 26px;
+  min-height: 38px;
+  display: grid;
+  place-items: center;
+  gap: 2px;
   color: var(--ink);
-  font-size: 9.5px;
-  font-weight: 780;
+  line-height: 1.05;
   border: 1px solid var(--line);
   border-radius: 8px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent),
     var(--control-bg);
   box-shadow: var(--control-shadow);
+}
+
+.reminder-presets button strong {
+  color: var(--ink);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 790;
+}
+
+.reminder-presets button span {
+  color: var(--muted);
+  font-size: 8.5px;
+  line-height: 1;
+  font-weight: 720;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .reminder-presets button:hover {
@@ -1561,13 +1633,21 @@ kbd {
 
 .reminder-popover input {
   width: 100%;
-  height: 30px;
-  padding: 0 8px;
+  height: 34px;
+  padding: 0 9px;
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 7px;
   outline: 0;
   background: var(--control-bg);
+}
+
+.reminder-popover > button[aria-label='Clear reminder'] {
+  inline-size: 32px;
+  block-size: 34px;
+  flex-basis: 32px;
+  border-radius: 10px;
+  align-self: end;
 }
 
 .reminder-popover input:focus-visible {
@@ -1656,8 +1736,8 @@ kbd {
 }
 
 .settings-actions button {
-  width: 27px;
-  height: 27px;
+  inline-size: 30px;
+  block-size: 30px;
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -1755,14 +1835,14 @@ kbd {
 }
 
 .apply-setting {
-  min-width: 58px;
+  min-width: 62px;
   height: 34px;
-  padding: 0 11px;
+  padding: 0 12px;
   color: var(--sidebar-solid-bg);
   font-size: 10.5px;
   font-weight: 780;
   border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
-  border-radius: 11px;
+  border-radius: 999px;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent),
     var(--accent);
@@ -1777,7 +1857,9 @@ kbd {
 .apply-setting:disabled {
   color: var(--muted);
   border-color: var(--line);
-  background: var(--control-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--control-bg);
   box-shadow: var(--control-shadow);
   cursor: default;
   opacity: 0.58;
@@ -1927,10 +2009,10 @@ kbd {
   right: 0;
   left: 0;
   display: grid;
-  gap: 4px;
+  gap: 0;
   max-height: min(340px, calc(100vh - 220px));
   overflow: auto;
-  padding: 6px;
+  padding: 5px;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--settings-surface);
@@ -1948,13 +2030,18 @@ kbd {
 
 .theme-dropdown-menu button {
   min-height: 44px;
-  padding: 5px 8px 5px 5px;
+  padding: 6px 8px 6px 5px;
+  border-color: transparent;
   border-radius: 10px;
   background: transparent;
   transition:
     background 140ms ease,
     border-color 140ms ease,
     color 140ms ease;
+}
+
+.theme-dropdown-menu button + button {
+  margin-top: 2px;
 }
 
 .theme-dropdown-menu button:hover,
@@ -2178,7 +2265,7 @@ kbd {
 
 .toggle-setting {
   position: relative;
-  min-height: 31px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2192,8 +2279,12 @@ kbd {
 }
 
 .toggle-setting strong {
+  display: flex;
+  align-items: center;
+  min-height: 22px;
   color: var(--ink);
   font-size: 12px;
+  line-height: 1;
   font-weight: 650;
 }
 
@@ -2210,9 +2301,13 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--control-bg);
+  box-shadow:
+    inset 0 1px 2px rgba(17, 24, 39, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.45);
   transition:
     background 170ms ease,
-    border-color 170ms ease;
+    border-color 170ms ease,
+    box-shadow 170ms ease;
 }
 
 .toggle-setting em::after {
@@ -2222,9 +2317,14 @@ kbd {
   display: block;
   margin: 2px;
   border-radius: 999px;
-  background: var(--muted);
+  background:
+    linear-gradient(180deg, #ffffff, #eceff2);
+  box-shadow:
+    0 2px 5px rgba(17, 24, 39, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
   transition:
     background 170ms ease,
+    box-shadow 170ms ease,
     transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -2235,6 +2335,9 @@ kbd {
 
 .toggle-setting input:checked + em::after {
   background: #fff;
+  box-shadow:
+    0 2px 7px rgba(17, 24, 39, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.86);
   transform: translateX(16px);
 }
 
@@ -2254,7 +2357,7 @@ kbd {
 
 .dock-edge-setting {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -2289,11 +2392,6 @@ kbd {
   box-shadow: var(--control-shadow-hover);
 }
 
-.dock-edge-setting button.is-wide {
-  grid-column: 1 / -1;
-  height: 38px;
-}
-
 .workspace.theme-dark .dock-edge-setting button {
   color: var(--muted);
   border-color: var(--line);
@@ -2319,13 +2417,32 @@ kbd {
 .section-order-row {
   min-height: 34px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 10px;
-  padding: 4px 5px 4px 10px;
+  gap: 8px;
+  padding: 5px 5px 5px 8px;
   border: 1px solid var(--line);
   border-radius: var(--control-radius);
-  background: var(--control-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
+  cursor: grab;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 170ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 160ms ease;
+}
+
+.section-order-row:hover {
+  border-color: var(--accent-line);
+  box-shadow: var(--control-shadow-hover);
+}
+
+.section-order-row.is-dragging {
+  opacity: 0.58;
+  transform: scale(0.985);
 }
 
 .section-order-row span {
@@ -2335,6 +2452,12 @@ kbd {
   font-weight: 680;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.section-order-grip {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
 }
 
 .section-order-row div {
@@ -2423,22 +2546,6 @@ kbd {
   color: var(--muted);
   font-size: 11px;
   line-height: 1.35;
-}
-
-.section-meter {
-  height: 3px;
-  overflow: hidden;
-  border-radius: 999px;
-  margin: 0 1px 9px;
-  background: rgba(24, 26, 32, 0.08);
-}
-
-.section-meter span {
-  display: block;
-  height: 100%;
-  border-radius: inherit;
-  background: var(--accent);
-  transition: width 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .calendar-section {
@@ -2892,8 +2999,6 @@ kbd {
   box-shadow: var(--row-shadow);
   animation: task-row-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
   animation-delay: var(--row-delay, 0ms);
-  content-visibility: auto;
-  contain-intrinsic-size: var(--task-row-height);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -2917,8 +3022,13 @@ kbd {
 }
 
 .task-row:hover {
+  z-index: 6;
   background: var(--row-hover-bg);
   box-shadow: var(--row-shadow-hover);
+}
+
+.task-row:focus-within {
+  z-index: 8;
 }
 
 .task-row:hover::before,
@@ -3073,16 +3183,17 @@ kbd {
   position: absolute;
   right: 50%;
   bottom: calc(100% + 7px);
-  z-index: 60;
-  padding: 4px 7px;
-  color: var(--sidebar-solid-bg);
-  font-size: 9.5px;
+  z-index: 140;
+  padding: 5px 8px;
+  color: #fff;
+  font-size: 10px;
   font-weight: 760;
   line-height: 1;
   white-space: nowrap;
-  border-radius: 7px;
-  background: var(--ink);
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: #111318;
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.22);
   opacity: 0;
   pointer-events: none;
   transform: translate(50%, 3px) scale(0.96);
@@ -3122,7 +3233,7 @@ kbd {
 
 .delete-confirm-popover {
   position: absolute;
-  z-index: 35;
+  z-index: 130;
   right: 8px;
   top: 50%;
   bottom: auto;
@@ -3284,7 +3395,7 @@ kbd {
 @keyframes toast-in {
   from {
     opacity: 0;
-    transform: translateY(-8px) scale(0.985);
+    transform: translateY(14px) scale(0.985);
   }
 
   to {
@@ -3384,7 +3495,8 @@ kbd {
   }
 
   .sidebar-rail button {
-    height: 38px;
+    inline-size: 34px;
+    block-size: 34px;
   }
 
   .edge-handle.is-open {

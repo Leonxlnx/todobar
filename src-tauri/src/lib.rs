@@ -104,7 +104,18 @@ pub fn run() {
                 let _ = window.set_skip_taskbar(true);
                 let _ = window.set_background_color(Some(tauri::utils::config::Color(0, 0, 0, 0)));
 
-                if let Ok(Some(monitor)) = window.current_monitor() {
+                let monitor = window
+                    .cursor_position()
+                    .ok()
+                    .and_then(|position| {
+                        window
+                            .monitor_from_point(position.x, position.y)
+                            .ok()
+                            .flatten()
+                    })
+                    .or_else(|| window.current_monitor().ok().flatten());
+
+                if let Some(monitor) = monitor {
                     let monitor_size = monitor.size();
                     let monitor_position = monitor.position();
                     let scale_factor = monitor.scale_factor();
