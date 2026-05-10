@@ -38,6 +38,22 @@
   and keep the panel calmer.
 - Replaced handle top/middle/bottom presets with clearer screen-edge docking
   controls for right, left, and top placement.
+- Replaced the top stats strip with a single quiet Today progress bar.
+- Reworked settings sizing so panel width is staged with an Apply action instead
+  of resizing the window while the slider moves.
+- Combined window and handle controls into a tighter settings group and ordered
+  Screen Edge controls as Left, Right, then Top.
+- Refined task, calendar, settings, and list buttons with square hit targets,
+  soft-ui bevels, pressed states, and task action tooltips.
+
+### Fixed
+
+- Fixed clipped quick reminder controls by letting the reminder editor expand in
+  flow instead of rendering outside its section.
+- Fixed reminder date focus styling so it no longer shows a harsh blue ring that
+  appears cut off.
+- Fixed native monitor targeting by resolving the monitor under the cursor before
+  falling back to the current window monitor.
 
 ## 0.1.5 - Native Shortcut Fix
 

@@ -46,6 +46,15 @@
   --task-radius: 10px;
   --row-shadow: none;
   --row-shadow-hover: none;
+  --control-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.72),
+    0 1px 1px rgba(17, 24, 39, 0.04);
+  --control-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.82),
+    0 8px 18px rgba(17, 24, 39, 0.08);
+  --control-shadow-pressed:
+    inset 0 2px 5px rgba(17, 24, 39, 0.12),
+    0 1px 0 rgba(255, 255, 255, 0.5);
   --panel-shadow: -28px 0 72px rgba(19, 25, 35, 0.16);
   --codex-black: #0d0d0e;
   --codex-slate: #18181b;
@@ -95,6 +104,15 @@
   --row-hover-border: rgba(255, 255, 255, 0.12);
   --row-shadow: none;
   --row-shadow-hover: none;
+  --control-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 1px 1px rgba(0, 0, 0, 0.18);
+  --control-shadow-hover:
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    0 10px 24px rgba(0, 0, 0, 0.22);
+  --control-shadow-pressed:
+    inset 0 2px 7px rgba(0, 0, 0, 0.36),
+    0 1px 0 rgba(255, 255, 255, 0.04);
   --panel-shadow: -30px 0 80px rgba(0, 0, 0, 0.38);
   --handle-bg:
     linear-gradient(180deg, #26262b 0%, #151518 100%);
@@ -186,7 +204,7 @@
   --handle-hover-bg: linear-gradient(180deg, #1b1e25 0%, #0d0f13 100%);
 }
 
-.workspace.style-graphite .focus-strip div,
+.workspace.style-graphite .focus-strip,
 .workspace.style-graphite .custom-list-title {
   background: var(--section-bg);
 }
@@ -338,7 +356,7 @@
 .workspace.theme-dark .quick-add {
   background: var(--task-bg);
   border-color: var(--task-border);
-  box-shadow: none;
+  box-shadow: var(--control-shadow);
 }
 
 .workspace.theme-dark .quick-add input::placeholder {
@@ -359,8 +377,9 @@
   border-color: rgba(255, 255, 255, 0.18);
   background: #18181b;
   box-shadow:
-    0 0 0 3px rgba(255, 255, 255, 0.055),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.13),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    var(--control-shadow-hover);
 }
 
 .workspace.theme-dark .task-row.is-complete {
@@ -382,11 +401,13 @@
     var(--rail-bg);
 }
 
-.workspace.theme-dark .focus-strip div {
-  box-shadow: none;
+.workspace.theme-dark .focus-strip {
+  box-shadow:
+    inset 0 1px 2px rgba(0, 0, 0, 0.32),
+    0 1px 0 rgba(255, 255, 255, 0.04);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42px),
-    var(--section-bg);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent),
+    var(--range-track);
 }
 
 .workspace.theme-dark .task-list {
@@ -520,21 +541,28 @@ button {
 .priority-button,
 .reminder-button,
 .delete-button,
+.custom-list-pin,
 .custom-list-toggle {
-  width: 30px;
-  height: 30px;
+  inline-size: 30px;
+  block-size: 30px;
+  aspect-ratio: 1;
+  flex: 0 0 30px;
   display: inline-grid;
   place-items: center;
   color: var(--muted);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
   transition:
     background 160ms ease,
     border-color 160ms ease,
+    box-shadow 160ms ease,
     color 160ms ease,
-    transform 160ms ease;
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .system-actions button:hover,
@@ -547,10 +575,12 @@ button {
 .priority-button:hover,
 .reminder-button:hover,
 .delete-button:hover,
+.custom-list-pin:hover,
 .custom-list-toggle:hover {
   color: var(--ink);
   background: var(--surface-hover);
   border-color: var(--line);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .workspace.theme-dark .system-actions button:hover,
@@ -563,10 +593,12 @@ button {
 .workspace.theme-dark .priority-button:hover,
 .workspace.theme-dark .reminder-button:hover,
 .workspace.theme-dark .delete-button:hover,
+.workspace.theme-dark .custom-list-pin:hover,
 .workspace.theme-dark .custom-list-toggle:hover {
   color: var(--ink);
   background: var(--surface-hover);
   border-color: rgba(255, 255, 255, 0.105);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .system-actions button:focus-visible,
@@ -581,6 +613,7 @@ button {
 .reminder-button:focus-visible,
 .delete-button:focus-visible,
 .custom-list-title:focus-visible,
+.custom-list-pin:focus-visible,
 .custom-list-toggle:focus-visible {
   outline: 2px solid rgba(31, 33, 38, 0.32);
   outline-offset: 2px;
@@ -598,6 +631,7 @@ button {
 .workspace.theme-dark .reminder-button:focus-visible,
 .workspace.theme-dark .delete-button:focus-visible,
 .workspace.theme-dark .custom-list-title:focus-visible,
+.workspace.theme-dark .custom-list-pin:focus-visible,
 .workspace.theme-dark .custom-list-toggle:focus-visible {
   outline-color: rgba(244, 244, 245, 0.28);
 }
@@ -1328,17 +1362,21 @@ kbd {
 }
 
 .app-icon {
-  width: 31px;
-  height: 31px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
   color: #fff;
   flex: 0 0 auto;
-  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 11px;
   background:
+    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.24), transparent 28%),
     linear-gradient(145deg, #202126 0%, #0c0d10 100%),
     #111216;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 8px 18px rgba(17, 24, 39, 0.12);
 }
 
 .app-lockup div {
@@ -1364,44 +1402,29 @@ kbd {
 }
 
 .focus-strip {
-  display: grid;
-  grid-template-columns: 0.8fr 0.78fr 1.2fr;
-  gap: 1px;
+  height: 6px;
   overflow: hidden;
   border: 1px solid var(--line);
-  border-radius: 13px;
-  background: var(--line);
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--range-track);
+  box-shadow:
+    inset 0 1px 2px rgba(17, 24, 39, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.42);
   animation: panel-piece-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.focus-strip div {
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-  padding: 10px 9px;
+.focus-strip > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.46), transparent),
-    var(--section-bg);
-}
-
-.focus-strip strong {
-  overflow: hidden;
-  color: var(--ink);
-  font-size: 12.5px;
-  line-height: 1.1;
-  font-weight: 760;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.focus-strip span {
-  overflow: hidden;
-  color: var(--muted);
-  font-size: 9.5px;
-  line-height: 1.1;
-  font-weight: 700;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+    linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 78%, white));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 0 18px var(--accent-soft);
+  transition: width 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .view-stack {
@@ -1427,7 +1450,7 @@ kbd {
   border: 1px solid var(--task-border);
   border-radius: 12px;
   background: var(--control-bg);
-  box-shadow: none;
+  box-shadow: var(--control-shadow);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -1437,6 +1460,7 @@ kbd {
 .quick-add:hover {
   border-color: var(--accent-line);
   background: var(--surface-hover);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .quick-add input {
@@ -1456,7 +1480,13 @@ kbd {
 .quick-add:focus-within {
   border-color: var(--accent-line);
   background: var(--task-bg);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow:
+    inset 0 0 0 1px var(--accent-line),
+    var(--control-shadow-hover);
+}
+
+.quick-add.is-reminder-open {
+  z-index: 45;
 }
 
 .quick-add.has-reminder .reminder-toggle {
@@ -1465,20 +1495,26 @@ kbd {
 }
 
 .reminder-popover {
-  position: absolute;
+  position: relative;
+  grid-column: 1 / -1;
   z-index: 30;
-  top: calc(100% + 6px);
-  left: 10px;
-  right: 5px;
+  top: auto;
+  left: auto;
+  right: auto;
+  margin-top: 4px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
   gap: 8px;
   padding: 9px;
   border: 1px solid var(--task-border);
-  border-radius: var(--control-radius);
-  background: var(--task-bg);
-  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.12);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.44), transparent),
+    var(--task-bg);
+  box-shadow:
+    0 18px 42px rgba(15, 23, 42, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
   animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
@@ -1492,12 +1528,15 @@ kbd {
 .reminder-presets button {
   min-width: 0;
   height: 26px;
-  color: var(--muted);
+  color: var(--ink);
   font-size: 9.5px;
   font-weight: 780;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--control-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
 }
 
 .reminder-presets button:hover {
@@ -1527,13 +1566,21 @@ kbd {
   color: var(--ink);
   border: 1px solid var(--line);
   border-radius: 7px;
+  outline: 0;
   background: var(--control-bg);
+}
+
+.reminder-popover input:focus-visible {
+  border-color: var(--accent-line);
+  box-shadow:
+    inset 0 0 0 1px var(--accent-line),
+    var(--control-shadow);
 }
 
 .settings-panel {
   display: grid;
   align-content: start;
-  gap: 14px;
+  gap: 12px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -1676,21 +1723,69 @@ kbd {
 
 .settings-group {
   display: grid;
-  gap: 12px;
-  padding: 0 0 17px;
+  gap: 9px;
+  padding: 0;
   border: 0;
-  border-bottom: 1px solid var(--line);
   border-radius: 0;
   background: transparent;
 }
 
-.settings-group:last-child {
-  padding-bottom: 0;
-  border-bottom: 0;
+.settings-group + .settings-group {
+  margin-top: 3px;
 }
 
 .settings-appearance {
-  gap: 9px;
+  gap: 8px;
+}
+
+.settings-size-group {
+  gap: 10px;
+}
+
+.deferred-setting {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 8px;
+}
+
+.settings-range-grid {
+  display: grid;
+  gap: 8px;
+}
+
+.apply-setting {
+  min-width: 58px;
+  height: 34px;
+  padding: 0 11px;
+  color: var(--sidebar-solid-bg);
+  font-size: 10.5px;
+  font-weight: 780;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 11px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent),
+    var(--accent);
+  box-shadow: var(--control-shadow-hover);
+  cursor: pointer;
+  transition:
+    opacity 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 160ms ease;
+}
+
+.apply-setting:disabled {
+  color: var(--muted);
+  border-color: var(--line);
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
+  cursor: default;
+  opacity: 0.58;
+}
+
+.apply-setting:not(:disabled):active {
+  transform: scale(0.97);
+  box-shadow: var(--control-shadow-pressed);
 }
 
 .mode-toggle {
@@ -1996,11 +2091,15 @@ kbd {
 .slider-setting {
   display: grid;
   gap: 7px;
-  padding: 0;
+  padding: 9px 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
 }
 
 .slider-setting + .slider-setting {
-  margin-top: 3px;
+  margin-top: 0;
 }
 
 .slider-setting span {
@@ -2043,15 +2142,17 @@ kbd {
 }
 
 .slider-setting input::-webkit-slider-runnable-track {
-  height: 3px;
+  height: 4px;
   border-radius: 999px;
-  background: var(--range-track);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent),
+    var(--range-track);
 }
 
 .slider-setting input::-webkit-slider-thumb {
-  width: 14px;
-  height: 14px;
-  margin-top: -5.5px;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
   -webkit-appearance: none;
   appearance: none;
   border: 1px solid var(--range-thumb-border);
@@ -2061,14 +2162,14 @@ kbd {
 }
 
 .slider-setting input::-moz-range-track {
-  height: 3px;
+  height: 4px;
   border-radius: 999px;
   background: var(--range-track);
 }
 
 .slider-setting input::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border: 1px solid var(--range-thumb-border);
   border-radius: 999px;
   background: var(--range-thumb);
@@ -2082,7 +2183,11 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
 }
 
@@ -2154,7 +2259,7 @@ kbd {
 }
 
 .dock-edge-setting button {
-  height: 32px;
+  height: 34px;
   -webkit-appearance: none;
   appearance: none;
   color: var(--muted);
@@ -2162,12 +2267,17 @@ kbd {
   font-weight: 760;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: var(--control-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--control-bg);
   background-color: var(--control-bg);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
   transition:
     border-color 160ms ease,
-    color 160ms ease;
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .dock-edge-setting button:hover,
@@ -2176,11 +2286,12 @@ kbd {
   border-color: var(--accent-line);
   background: var(--accent-soft);
   background-color: var(--accent-soft);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .dock-edge-setting button.is-wide {
   grid-column: 1 / -1;
-  height: 34px;
+  height: 38px;
 }
 
 .workspace.theme-dark .dock-edge-setting button {
@@ -2188,6 +2299,7 @@ kbd {
   border-color: var(--line);
   background: var(--settings-row) !important;
   background-color: var(--settings-row) !important;
+  box-shadow: var(--control-shadow);
 }
 
 .workspace.theme-dark .dock-edge-setting button:hover,
@@ -2196,6 +2308,7 @@ kbd {
   border-color: var(--accent-line);
   background: var(--accent-soft) !important;
   background-color: var(--accent-soft) !important;
+  box-shadow: var(--control-shadow-hover);
 }
 
 .section-order-list {
@@ -2256,7 +2369,7 @@ kbd {
 .panel-section {
   display: grid;
   gap: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 0;
   border-radius: 0;
   background: transparent;
@@ -2279,15 +2392,16 @@ kbd {
 .section-heading {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 4px 2px 9px;
 }
 
 .section-heading button {
-  width: 26px;
-  height: 26px;
-  border-radius: 7px;
+  inline-size: 28px;
+  block-size: 28px;
+  flex-basis: 28px;
+  border-radius: 9px;
 }
 
 .section-heading span {
@@ -2331,6 +2445,11 @@ kbd {
   gap: 10px;
 }
 
+.calendar-section .section-heading {
+  align-items: center;
+  padding-bottom: 10px;
+}
+
 .calendar-toolbar {
   display: flex;
   align-items: center;
@@ -2340,30 +2459,40 @@ kbd {
 .calendar-nav {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 4px;
   padding: 2px;
   border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--control-bg);
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
 }
 
 .calendar-nav button {
-  width: 25px;
-  height: 25px;
-  border-radius: 8px;
+  inline-size: 28px;
+  block-size: 28px;
+  flex-basis: 28px;
+  border-radius: 9px;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
 }
 
 .calendar-today-button {
   width: auto !important;
   min-width: 48px;
-  height: 31px !important;
+  height: 34px !important;
   padding: 0 10px !important;
   color: var(--ink) !important;
   font-size: 10.5px;
   font-weight: 760;
   border-color: var(--line) !important;
-  border-radius: 10px !important;
-  background: var(--control-bg) !important;
+  border-radius: 11px !important;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--control-bg) !important;
+  box-shadow: var(--control-shadow);
 }
 
 .calendar-board {
@@ -2373,8 +2502,11 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 16px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
     var(--section-bg);
+  box-shadow:
+    var(--control-shadow),
+    0 12px 28px rgba(17, 24, 39, 0.045);
   animation: panel-piece-in 230ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
@@ -2531,7 +2663,7 @@ kbd {
 .section-content {
   display: grid;
   grid-template-rows: 1fr;
-  overflow: hidden;
+  overflow: visible;
   transition:
     grid-template-rows 230ms cubic-bezier(0.2, 0.8, 0.2, 1),
     opacity 180ms ease;
@@ -2539,6 +2671,7 @@ kbd {
 
 .section-content.is-collapsed {
   grid-template-rows: 0fr;
+  overflow: hidden;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
@@ -2560,7 +2693,7 @@ kbd {
 .task-list {
   display: grid;
   gap: 0;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--task-bg);
@@ -2643,16 +2776,18 @@ kbd {
 }
 
 .custom-list-pin,
-.custom-list-toggle,
-.delete-button {
-  width: 30px;
-  height: 30px;
+.custom-list-toggle {
+  inline-size: 30px;
+  block-size: 30px;
   display: grid;
   place-items: center;
   color: var(--muted);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
 }
 
@@ -2662,6 +2797,7 @@ kbd {
   color: var(--ink);
   border-color: var(--line);
   background: var(--surface-hover);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .custom-list-pin.is-pinned {
@@ -2747,6 +2883,7 @@ kbd {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
+  overflow: visible;
   padding: 7px 7px 7px 8px;
   border: 0;
   border-bottom: 1px solid var(--line);
@@ -2820,6 +2957,7 @@ kbd {
 .quick-add button:active,
 .section-heading button:active {
   transform: scale(0.96);
+  box-shadow: var(--control-shadow-pressed);
 }
 
 .task-body {
@@ -2875,22 +3013,25 @@ kbd {
 }
 
 .priority-button {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+  inline-size: 26px;
+  block-size: 26px;
+  flex-basis: 26px;
+  border-radius: 9px;
 }
 
 .edit-button {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+  inline-size: 26px;
+  block-size: 26px;
+  flex-basis: 26px;
+  border-radius: 9px;
 }
 
 .reminder-button {
-  width: 24px;
-  height: 24px;
+  inline-size: 26px;
+  block-size: 26px;
+  flex-basis: 26px;
   color: #7d8b9a;
-  border-radius: 7px;
+  border-radius: 9px;
 }
 
 .reminder-button.is-set {
@@ -2899,10 +3040,11 @@ kbd {
 }
 
 .row-actions {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 1px;
-  min-width: 96px;
+  gap: 3px;
+  min-width: 113px;
   justify-content: flex-end;
   opacity: 0.54;
   transition: opacity 160ms ease;
@@ -2914,11 +3056,45 @@ kbd {
 }
 
 .task-row .delete-button {
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
+  inline-size: 26px;
+  block-size: 26px;
+  flex-basis: 26px;
+  border-radius: 9px;
   opacity: 0.48;
   transform: translateX(1px);
+}
+
+.row-actions button {
+  position: relative;
+}
+
+.row-actions button::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  right: 50%;
+  bottom: calc(100% + 7px);
+  z-index: 60;
+  padding: 4px 7px;
+  color: var(--sidebar-solid-bg);
+  font-size: 9.5px;
+  font-weight: 760;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 7px;
+  background: var(--ink);
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(50%, 3px) scale(0.96);
+  transition:
+    opacity 140ms ease,
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.row-actions button:hover::after,
+.row-actions button:focus-visible::after {
+  opacity: 1;
+  transform: translate(50%, 0) scale(1);
 }
 
 .task-edit-input {

@@ -636,11 +636,6 @@ function App() {
     () => customLists.filter((list) => list.showOnToday),
     [customLists],
   )
-  const totalOpenTasks = useMemo(
-    () =>
-      reminderTasks.filter(({ task }) => !task.done).length,
-    [reminderTasks],
-  )
   const calendarDays = useMemo(
     () => buildCalendarDays(calendarCursor, reminderTasks),
     [calendarCursor, reminderTasks],
@@ -1075,10 +1070,22 @@ function App() {
           PhysicalPosition,
           PhysicalSize,
           currentMonitor,
+          cursorPosition,
           getCurrentWindow,
+          monitorFromPoint,
         } = await import('@tauri-apps/api/window')
         const appWindow = getCurrentWindow()
-        const monitor = await currentMonitor()
+        let monitor = null
+
+        try {
+          const cursor = await cursorPosition()
+
+          monitor = await monitorFromPoint(cursor.x, cursor.y)
+        } catch {
+          monitor = null
+        }
+
+        monitor ??= await currentMonitor()
 
         if (!monitor) {
           return
@@ -1242,14 +1249,16 @@ function App() {
       isChecking = true
 
       try {
-        const { cursorPosition, currentMonitor, getCurrentWindow } =
+        const { cursorPosition, currentMonitor, getCurrentWindow, monitorFromPoint } =
           await import('@tauri-apps/api/window')
         const appWindow = getCurrentWindow()
-        const [cursor, position, monitor] = await Promise.all([
+        const [cursor, position] = await Promise.all([
           cursorPosition(),
           appWindow.outerPosition(),
-          currentMonitor(),
         ])
+        let monitor = await monitorFromPoint(cursor.x, cursor.y)
+
+        monitor ??= await currentMonitor()
         const scaleFactor = monitor?.scaleFactor || 1
         const relativeX = cursor.x - position.x
         const relativeY = cursor.y - position.y
@@ -1989,19 +1998,11 @@ function App() {
               </div>
             </header>
 
-            <section className="focus-strip" aria-label="Planning status">
-              <div>
-                <strong>{progressPercent}%</strong>
-                <span>today</span>
-              </div>
-              <div>
-                <strong>{totalOpenTasks}</strong>
-                <span>open</span>
-              </div>
-              <div>
-                <strong>{customLists.length}</strong>
-                <span>lists</span>
-              </div>
+            <section
+              className="focus-strip"
+              aria-label={`Today progress ${progressPercent}%`}
+            >
+              <span style={{ width: `${progressPercent}%` }} />
             </section>
 
             <div className="view-stack" data-view={activeRailSection}>
@@ -2764,11 +2765,33 @@ function SidebarSettingsPanel({
   onClose: () => void
 }) {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false)
+  const [panelWidthDraft, setPanelWidthDraft] = useState(() => ({
+    base: settings.panelWidth,
+    value: settings.panelWidth,
+  }))
   const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
     availableThemes.find((preset) => preset.id === settings.visualStyle) ??
     availableThemes[0] ??
     THEME_PRESETS[0]
+  const draftPanelWidth =
+    panelWidthDraft.base === settings.panelWidth
+      ? panelWidthDraft.value
+      : settings.panelWidth
+  const hasPanelWidthDraft = draftPanelWidth !== settings.panelWidth
+  const updateDraftPanelWidth = (value: number) => {
+    setPanelWidthDraft({
+      base: settings.panelWidth,
+      value,
+    })
+  }
+  const applyPanelWidth = () => {
+    onChange({ panelWidth: draftPanelWidth })
+    setPanelWidthDraft({
+      base: draftPanelWidth,
+      value: draftPanelWidth,
+    })
+  }
 
   return (
     <section className="settings-panel" aria-label="Sidebar settings">
@@ -2888,48 +2911,56 @@ function SidebarSettingsPanel({
         />
       </div>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Window</div>
-        <SliderSetting
-          label="Panel width"
-          value={settings.panelWidth}
-          min={320}
-          max={560}
-          step={4}
-          suffix="px"
-          onChange={(panelWidth) => onChange({ panelWidth })}
-        />
-        <SliderSetting
-          label="Visible tab"
-          value={settings.tabWidth}
-          min={26}
-          max={88}
-          step={2}
-          suffix="px"
-          onChange={(tabWidth) => onChange({ tabWidth })}
-        />
-      </div>
-
-      <div className="settings-group">
-        <div className="settings-group-title">Handle</div>
-        <SliderSetting
-          label="Button height"
-          value={settings.handleHeight}
-          min={56}
-          max={176}
-          step={2}
-          suffix="px"
-          onChange={(handleHeight) => onChange({ handleHeight })}
-        />
-        <SliderSetting
-          label="Edge position"
-          value={settings.handleY}
-          min={0}
-          max={100}
-          step={1}
-          suffix="%"
-          onChange={(handleY) => onChange({ handleY })}
-        />
+      <div className="settings-group settings-size-group">
+        <div className="settings-group-title">Window & handle</div>
+        <div className="deferred-setting">
+          <SliderSetting
+            label="Panel width"
+            value={draftPanelWidth}
+            min={320}
+            max={560}
+            step={4}
+            suffix="px"
+            onChange={updateDraftPanelWidth}
+          />
+          <button
+            type="button"
+            className="apply-setting"
+            disabled={!hasPanelWidthDraft}
+            onClick={applyPanelWidth}
+          >
+            Apply
+          </button>
+        </div>
+        <div className="settings-range-grid">
+          <SliderSetting
+            label="Visible tab"
+            value={settings.tabWidth}
+            min={26}
+            max={88}
+            step={2}
+            suffix="px"
+            onChange={(tabWidth) => onChange({ tabWidth })}
+          />
+          <SliderSetting
+            label="Button height"
+            value={settings.handleHeight}
+            min={56}
+            max={176}
+            step={2}
+            suffix="px"
+            onChange={(handleHeight) => onChange({ handleHeight })}
+          />
+          <SliderSetting
+            label="Edge position"
+            value={settings.handleY}
+            min={0}
+            max={100}
+            step={1}
+            suffix="%"
+            onChange={(handleY) => onChange({ handleY })}
+          />
+        </div>
       </div>
 
       <div className="settings-group">
@@ -3118,21 +3149,21 @@ function DockEdgeSetting({
     <div className="dock-edge-setting" aria-label="Dock edge">
       <button
         type="button"
-        className={value === 'right' ? 'is-selected' : ''}
-        aria-pressed={value === 'right'}
-        aria-label="Dock right"
-        onClick={() => onChange('right')}
-      >
-        Right
-      </button>
-      <button
-        type="button"
         className={value === 'left' ? 'is-selected' : ''}
         aria-pressed={value === 'left'}
         aria-label="Dock left"
         onClick={() => onChange('left')}
       >
         Left
+      </button>
+      <button
+        type="button"
+        className={value === 'right' ? 'is-selected' : ''}
+        aria-pressed={value === 'right'}
+        aria-label="Dock right"
+        onClick={() => onChange('right')}
+      >
+        Right
       </button>
       <button
         type="button"
@@ -3354,6 +3385,7 @@ const TaskRow = memo(function TaskRow({
           <button
             type="button"
             className="edit-button"
+            data-tooltip="Edit"
             aria-label={`Edit ${task.title}`}
             onClick={() => {
               setDraft(task.title)
@@ -3366,6 +3398,7 @@ const TaskRow = memo(function TaskRow({
         <button
           type="button"
           className="priority-button"
+          data-tooltip="Priority"
           aria-label={`Priority: ${priorityLabel}. Click to change`}
           onClick={() => onPriority?.(task.id)}
         >
@@ -3374,6 +3407,7 @@ const TaskRow = memo(function TaskRow({
         <button
           type="button"
           className={`reminder-button ${task.reminderAt ? 'is-set' : ''}`}
+          data-tooltip={task.reminderAt ? 'Reminder set' : 'Remind'}
           aria-label={
             task.reminderAt
               ? `Reminder set for ${reminderLabel}. Click to change`
@@ -3386,6 +3420,7 @@ const TaskRow = memo(function TaskRow({
         <button
           type="button"
           className="delete-button"
+          data-tooltip="Delete"
           aria-label={`Delete ${task.title}`}
           aria-expanded={isDeleteConfirmOpen}
           onClick={requestDelete}

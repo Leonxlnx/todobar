@@ -12,6 +12,7 @@
     "core:window:allow-set-focus",
     "core:window:allow-outer-position",
     "core:window:allow-current-monitor",
+    "core:window:allow-monitor-from-point",
     "core:window:allow-cursor-position",
     "core:window:allow-set-ignore-cursor-events"
   ]
