@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.6 - Sidebar Polish and Reminder Badges
+
 ### Added
 
 - Added a redesigned sidebar shell with a right-side command rail and compact
@@ -66,6 +68,13 @@
   row layers.
 - Fixed startup monitor targeting in the native shell by using the cursor monitor
   before falling back to the current window monitor.
+
+### Verified
+
+- Local Windows checks cover project verification, linting, production build,
+  Playwright smoke tests, and the no-bundle native Tauri build.
+- Release automation publishes Windows, macOS Apple Silicon, and macOS Intel
+  artifacts from the `v0.1.6` tag.
 
 ## 0.1.5 - Native Shortcut Fix
 
