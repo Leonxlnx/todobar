@@ -7,10 +7,25 @@ and reminder badge release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.6
-- CI workflow run for release commit: recorded after publication
-- Release workflow run: recorded after publication
+- CI workflow run for release commit:
+  https://github.com/Leonxlnx/todobar/actions/runs/25632225284
+- Release workflow run:
+  https://github.com/Leonxlnx/todobar/actions/runs/25632428998
 
-Published assets are recorded after the GitHub release workflow finishes.
+Published assets:
+
+- `Todobar_0.1.6_x64-setup.exe`
+  `sha256:5a67757b94b6133f9fb9b9761315ac430d84131669310ec06b1b9ae9eeaf0199`
+- `Todobar_0.1.6_x64_en-US.msi`
+  `sha256:9dacd40b2e70d38e6aad2e32c4b276616328d61d162d5a1ee408e1d9783bbb7a`
+- `Todobar_0.1.6_aarch64.dmg`
+  `sha256:ee4678fab3e37c6243503daa0f17eda7532a49853113c311f800d44352bae116`
+- `Todobar_0.1.6_x64.dmg`
+  `sha256:93fbc1faec6a121e430acc92b56d5106607deaf99c23d1f3d7d1697e720bd8ab`
+- `Todobar_aarch64.app.tar.gz`
+  `sha256:3afa366a8af07dcf0134d05f21cef358c71c5b74d456c4403ad6256e0e9dc1af`
+- `Todobar_x64.app.tar.gz`
+  `sha256:b3098a80f6da01d6ae7a46cd30804ee95153589c7b6feb697cd9c1b0a8e24c6f`
 
 ## Release Scope
 
