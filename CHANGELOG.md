@@ -26,6 +26,8 @@
   edge.
 - Tuned dark-mode settings scrollbars and the Calendar Today button to match
   the active theme more cleanly.
+- Reduced native hover/click-through hit-test polling frequency to lower idle
+  CPU use while keeping the edge reveal responsive.
 - Made task completion and reopening feel smoother without replaying the row
   entrance animation.
 - Flattened pinned list and custom list sections to avoid card-in-card layouts.

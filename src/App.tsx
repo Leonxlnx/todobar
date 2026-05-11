@@ -56,6 +56,7 @@ import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
 
 const DRAG_THRESHOLD = 5
+const NATIVE_HIT_TEST_INTERVAL_MS = 128
 const TASK_STORAGE_KEYS = {
   today: 'todobar.today.v1',
   month: 'todobar.month.v1',
@@ -1495,7 +1496,10 @@ function App() {
     }
 
     void syncHitTest()
-    const interval = window.setInterval(syncHitTest, 32)
+    const interval = window.setInterval(
+      syncHitTest,
+      NATIVE_HIT_TEST_INTERVAL_MS,
+    )
 
     return () => {
       cancelled = true
