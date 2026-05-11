@@ -64,6 +64,9 @@ const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
 const SETTINGS_GROUPS_STORAGE_KEY = 'todobar.settings.groups.v1'
 const GMAIL_CONNECTOR_STORAGE_KEY = 'todobar.gmail-connector.v1'
+const DEFAULT_GMAIL_MCP_ENDPOINT = 'https://gmailmcp.googleapis.com/mcp/v1'
+const GMAIL_MCP_GUIDE_URL =
+  'https://developers.google.com/workspace/guides/configure-mcp-servers'
 const TOP_DOCK_MIN_PANEL_WIDTH = 720
 const TOP_DOCK_MAX_PANEL_WIDTH = 1120
 const TOP_DOCK_WIDTH_MULTIPLIER = 2
@@ -2026,6 +2029,7 @@ function App() {
     '--motion-ms': `${settings.motionMs}ms`,
     '--panel-radius': `${settings.panelRadius}px`,
     '--surface-alpha': `${settings.surfaceAlpha / 100}`,
+    '--surface-alpha-percent': `${settings.surfaceAlpha}%`,
     '--task-row-height': `${settings.taskRowHeight}px`,
     '--task-gap': `${settings.taskGap}px`,
     '--task-title-size': `${settings.taskTextSize}px`,
@@ -2113,7 +2117,37 @@ function App() {
           preserveAspectRatio="none"
           aria-hidden="true"
         >
-          <path d={dockSurface.path} />
+          {settings.backdropImage ? (
+            <defs>
+              <pattern
+                id="todobar-dock-backdrop"
+                patternUnits="userSpaceOnUse"
+                width={dockSurface.width}
+                height={dockSurface.height}
+              >
+                <rect
+                  className="dock-backdrop-base"
+                  width={dockSurface.width}
+                  height={dockSurface.height}
+                />
+                <image
+                  href={settings.backdropImage}
+                  width={dockSurface.width}
+                  height={dockSurface.height}
+                  preserveAspectRatio="xMidYMid slice"
+                  opacity={Math.max(0.24, settings.backdropOpacity / 100)}
+                />
+              </pattern>
+            </defs>
+          ) : null}
+          <path
+            d={dockSurface.path}
+            style={
+              settings.backdropImage
+                ? { fill: 'url(#todobar-dock-backdrop)' }
+                : undefined
+            }
+          />
         </svg>
       ) : null}
 
@@ -3475,7 +3509,7 @@ function SidebarSettingsPanel({
         <SliderSetting
           label="Surface opacity"
           value={settings.surfaceAlpha}
-          min={86}
+          min={58}
           max={100}
           step={1}
           suffix="%"
@@ -3531,39 +3565,66 @@ function ConnectorSetting() {
     try {
       const stored = window.localStorage.getItem(GMAIL_CONNECTOR_STORAGE_KEY)
       const parsed = stored
-        ? (JSON.parse(stored) as { serverTarget?: string })
+        ? (JSON.parse(stored) as { clientId?: string; serverTarget?: string })
         : {}
 
-      return typeof parsed.serverTarget === 'string' ? parsed.serverTarget : ''
+      return typeof parsed.serverTarget === 'string'
+        ? parsed.serverTarget
+        : DEFAULT_GMAIL_MCP_ENDPOINT
+    } catch {
+      return DEFAULT_GMAIL_MCP_ENDPOINT
+    }
+  })
+  const [clientId, setClientId] = useState(() => {
+    try {
+      const stored = window.localStorage.getItem(GMAIL_CONNECTOR_STORAGE_KEY)
+      const parsed = stored
+        ? (JSON.parse(stored) as { clientId?: string; serverTarget?: string })
+        : {}
+
+      return typeof parsed.clientId === 'string' ? parsed.clientId : ''
     } catch {
       return ''
     }
   })
   const hasServerTarget = serverTarget.trim().length > 0
-  const updateServerTarget = (value: string) => {
-    setServerTarget(value)
-
+  const hasClientId = clientId.trim().length > 0
+  const persistConnector = (next: {
+    clientId?: string
+    serverTarget?: string
+  }) => {
     try {
       window.localStorage.setItem(
         GMAIL_CONNECTOR_STORAGE_KEY,
         JSON.stringify({
-          serverTarget: value.trim(),
+          clientId: next.clientId ?? clientId.trim(),
+          serverTarget: next.serverTarget ?? serverTarget.trim(),
         }),
       )
     } catch {
       // Connector setup can still be edited even if local persistence fails.
     }
   }
+  const updateServerTarget = (value: string) => {
+    setServerTarget(value)
+    persistConnector({ serverTarget: value.trim() })
+  }
+  const updateClientId = (value: string) => {
+    setClientId(value)
+    persistConnector({ clientId: value.trim() })
+  }
+
 
   useEffect(() => {
     return scheduleLocalStorageWrite(
       GMAIL_CONNECTOR_STORAGE_KEY,
       JSON.stringify({
+        clientId: clientId.trim(),
         serverTarget: serverTarget.trim(),
       }),
       220,
     )
-  }, [serverTarget])
+  }, [clientId, serverTarget])
 
   return (
     <div className={`connector-setting ${isSetupOpen ? 'is-open' : ''}`}>
@@ -3573,15 +3634,19 @@ function ConnectorSetting() {
         </div>
         <div className="connector-copy">
           <strong>Gmail MCP</strong>
-          <span>Connect a local or HTTP MCP server before inbox context is used.</span>
-          <em>{hasServerTarget ? 'Setup saved · not authorized' : 'No email data is read yet.'}</em>
+          <span>Connect Google's Gmail MCP endpoint before inbox context is used.</span>
+          <em>
+            {hasClientId
+              ? 'OAuth client saved · not authorized'
+              : 'No email data is read yet.'}
+          </em>
         </div>
         <button
           type="button"
           aria-expanded={isSetupOpen}
           onClick={() => setIsSetupOpen((current) => !current)}
         >
-          {isSetupOpen ? 'Close' : hasServerTarget ? 'Edit' : 'Setup'}
+          {isSetupOpen ? 'Close' : hasClientId ? 'Edit' : 'Setup'}
         </button>
       </div>
       {isSetupOpen ? (
@@ -3591,17 +3656,32 @@ function ConnectorSetting() {
             <input
               type="text"
               value={serverTarget}
-              placeholder="http://localhost:3333/mcp or stdio command"
+              placeholder={DEFAULT_GMAIL_MCP_ENDPOINT}
               onChange={(event) => updateServerTarget(event.target.value)}
             />
           </label>
+          <label>
+            <span>OAuth client ID</span>
+            <input
+              type="text"
+              value={clientId}
+              placeholder="Paste a Google OAuth desktop client ID"
+              onChange={(event) => updateClientId(event.target.value)}
+            />
+          </label>
           <p>
-            Gmail sign-in needs a real Gmail MCP server or Google OAuth client.
-            Todobar stores only this endpoint/command until the native MCP runner is added.
+            Gmail sign-in opens in the system browser through OAuth. Todobar
+            stores only the endpoint and client ID until the native MCP runner
+            and secure token store are added.
           </p>
+          <a href={GMAIL_MCP_GUIDE_URL} target="_blank" rel="noreferrer">
+            Google MCP setup guide
+          </a>
           <div className="connector-status" role="status">
-            <span className={hasServerTarget ? 'is-ready' : ''} />
-            {hasServerTarget ? 'Ready for native MCP auth' : 'Waiting for MCP target'}
+            <span className={hasServerTarget && hasClientId ? 'is-ready' : ''} />
+            {hasServerTarget && hasClientId
+              ? 'Ready for native MCP auth'
+              : 'Waiting for OAuth client ID'}
           </div>
         </div>
       ) : null}

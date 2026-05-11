@@ -151,7 +151,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
     ),
     surfaceAlpha: clamp(
       value.surfaceAlpha ?? defaultSidebarSettings.surfaceAlpha,
-      86,
+      58,
       100,
     ),
     taskRowHeight: clamp(

@@ -12,6 +12,8 @@
 - Added a hover-only visible tab setting for users who want the edge handle to
   stay hidden until the screen edge is hovered.
 - Added persistent settings group collapse state.
+- Added custom backdrop texture support to the visible edge tab/native dock
+  surface, not just the open sidebar.
 
 ### Changed
 
@@ -27,6 +29,10 @@
 - Added pointer-based section reordering in settings so Today, Calendar, and
   Lists can be dragged more reliably.
 - Clarified the Surface opacity setting and the Gmail MCP permission boundary.
+- Made Surface opacity visibly affect the settings drawer/native panel instead
+  of only subtly changing the main task panel.
+- Prefilled Gmail MCP setup with Google's Workspace MCP endpoint and an OAuth
+  client ID field for the future native auth runner.
 
 ## 0.1.7 - Performance and Personalization
 

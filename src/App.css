@@ -8,6 +8,7 @@
   --motion-ms: 230ms;
   --panel-radius: 18px;
   --surface-alpha: 0.96;
+  --surface-alpha-percent: 96%;
   --task-row-height: 44px;
   --task-gap: 7px;
   --task-title-size: 12.5px;
@@ -494,6 +495,14 @@
   vector-effect: non-scaling-stroke;
 }
 
+.dock-backdrop-base {
+  fill: var(--dock-bg);
+}
+
+.workspace.has-custom-backdrop .native-dock-surface path {
+  stroke: color-mix(in srgb, var(--dock-stroke) 68%, transparent);
+}
+
 .desktop-preview {
   position: relative;
   min-height: 100svh;
@@ -965,6 +974,37 @@ kbd {
   opacity: 1;
 }
 
+.workspace.has-custom-backdrop .edge-handle {
+  color: #f8fafc;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.5)),
+    var(--custom-backdrop-image),
+    var(--handle-bg);
+  background-position: center;
+  background-size: auto, cover, auto;
+  border-color: color-mix(in srgb, var(--accent-line) 42%, transparent);
+  box-shadow:
+    -9px 16px 30px rgba(15, 23, 42, 0.18),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.workspace.theme-dark.has-custom-backdrop .edge-handle {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.52)),
+    var(--custom-backdrop-image),
+    var(--handle-bg);
+}
+
+.workspace.has-custom-backdrop .edge-handle:hover {
+  color: #ffffff;
+  background:
+    linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.42)),
+    var(--custom-backdrop-image),
+    var(--handle-hover-bg);
+  background-position: center;
+  background-size: auto, cover, auto;
+}
+
 .workspace.tab-hover.is-sidebar-closed .edge-handle {
   opacity: 0;
 }
@@ -1363,7 +1403,11 @@ kbd {
 
 .todo-sidebar.is-settings-open {
   overflow: hidden;
-  background: var(--settings-surface);
+  background: color-mix(
+    in srgb,
+    var(--settings-surface) var(--surface-alpha-percent),
+    transparent
+  );
 }
 
 .workspace.dock-left .todo-sidebar {
@@ -1424,9 +1468,9 @@ kbd {
   display: grid;
   border-left: 0;
   border-radius: var(--panel-radius) 0 0 var(--panel-radius);
-  background: var(--sidebar-solid-bg);
+  background: var(--sidebar-bg);
   box-shadow: none;
-  backdrop-filter: none;
+  backdrop-filter: blur(22px) saturate(1.08);
   transform: none;
 }
 
@@ -1855,12 +1899,21 @@ kbd {
   overflow-y: auto;
   margin: 0;
   padding: 18px 18px 22px 20px;
-  background: var(--settings-surface);
+  background: color-mix(
+    in srgb,
+    var(--settings-surface) var(--surface-alpha-percent),
+    transparent
+  );
   animation: settings-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  backdrop-filter: blur(22px) saturate(1.08);
 }
 
 .workspace.theme-dark .settings-drawer {
-  background: var(--settings-surface);
+  background: color-mix(
+    in srgb,
+    var(--settings-surface) var(--surface-alpha-percent),
+    transparent
+  );
 }
 
 .settings-drawer .settings-panel {
@@ -2573,6 +2626,18 @@ kbd {
   font-size: 10.4px;
   line-height: 1.35;
   font-weight: 620;
+}
+
+.connector-setup a {
+  justify-self: start;
+  color: var(--accent);
+  font-size: 10.5px;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.connector-setup a:hover {
+  text-decoration: underline;
 }
 
 .connector-status {

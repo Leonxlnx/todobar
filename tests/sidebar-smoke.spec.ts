@@ -49,6 +49,9 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page
     .getByLabel('MCP server')
     .fill('http://localhost:3333/mcp')
+  await page
+    .getByLabel('OAuth client ID')
+    .fill('desktop-client-id.apps.googleusercontent.com')
   await expect(page.getByText('Ready for native MCP auth')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Priority' })).toBeVisible()
   await page.getByRole('button', { name: 'Newest' }).click()
@@ -66,6 +69,10 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     name: 'backdrop.png',
   })
   await expect(page.locator('.workspace')).toHaveClass(/has-custom-backdrop/)
+  await expect(page.locator('.edge-handle')).toHaveCSS(
+    'background-image',
+    /data:image\/png/,
+  )
   await expect(page.getByText('Image strength', { exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Theme preset' }).click()
