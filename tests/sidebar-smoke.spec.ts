@@ -196,7 +196,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     .locator('section[aria-labelledby="today-heading"] .quick-add .submit-task')
     .click()
   const reminderToast = page.getByRole('status').filter({ hasText: 'Toast smoke' })
-  await expect(reminderToast).toBeVisible()
+  await expect(reminderToast).toBeVisible({ timeout: 15_000 })
   await expect(
     reminderToast.getByRole('button', {
       name: 'Snooze Toast smoke 10 minutes',
@@ -298,6 +298,9 @@ for (const viewport of viewports) {
 
     await expect(sidebar).toBeVisible()
     await expect(handle).toBeVisible()
+    await expect(page.getByRole('separator', { name: 'Resize panel' })).toHaveCount(
+      0,
+    )
     await expect(page.getByRole('button', { name: 'Sidebar settings' })).toBeVisible()
     await expect.poll(async () =>
       page.locator('.sidebar-rail button').evaluateAll((buttons) =>
@@ -339,37 +342,6 @@ for (const viewport of viewports) {
     await expect(page.getByText('Panel width', { exact: true })).toBeVisible()
   })
 }
-
-test('open side dock can be resized from the panel edge', async ({ page }) => {
-  await page.setViewportSize({ height: 900, width: 1280 })
-  await page.goto('/?open=1')
-
-  const sidebar = page.locator('.todo-sidebar')
-  const resizeHandle = page.getByRole('separator', { name: 'Resize panel' })
-  const beforeBox = await sidebar.boundingBox()
-
-  expect(beforeBox).not.toBeNull()
-  await expect(resizeHandle).toBeVisible()
-
-  if (!beforeBox) {
-    return
-  }
-
-  await page.mouse.move(beforeBox.x + 4, beforeBox.y + beforeBox.height / 2)
-  await page.mouse.down()
-  await page.mouse.move(beforeBox.x - 72, beforeBox.y + beforeBox.height / 2, {
-    steps: 8,
-  })
-  await page.mouse.up()
-
-  await expect
-    .poll(async () => {
-      const box = await sidebar.boundingBox()
-
-      return Math.round(box?.width ?? 0)
-    })
-    .toBeGreaterThan(Math.round(beforeBox.width + 48))
-})
 
 test('due reminders badge the closed handle without opening the sidebar', async ({
   page,

@@ -488,28 +488,28 @@
   display: block;
   width: 100vw;
   height: 100vh;
-  filter: drop-shadow(-18px 22px 38px rgba(19, 25, 35, 0.16));
+  filter: drop-shadow(-10px 18px 30px rgba(19, 25, 35, 0.1));
   pointer-events: none;
 }
 
 .workspace.is-native.dock-left .native-dock-surface {
-  filter: drop-shadow(18px 22px 38px rgba(19, 25, 35, 0.16));
+  filter: drop-shadow(10px 18px 30px rgba(19, 25, 35, 0.1));
 }
 
 .workspace.is-native.dock-top .native-dock-surface {
-  filter: drop-shadow(0 20px 34px rgba(19, 25, 35, 0.14));
+  filter: drop-shadow(0 12px 24px rgba(19, 25, 35, 0.1));
 }
 
 .workspace.theme-dark.is-native .native-dock-surface {
-  filter: drop-shadow(-20px 24px 42px rgba(0, 0, 0, 0.36));
+  filter: drop-shadow(-10px 18px 30px rgba(0, 0, 0, 0.24));
 }
 
 .workspace.theme-dark.is-native.dock-left .native-dock-surface {
-  filter: drop-shadow(20px 24px 42px rgba(0, 0, 0, 0.36));
+  filter: drop-shadow(10px 18px 30px rgba(0, 0, 0, 0.24));
 }
 
 .workspace.theme-dark.is-native.dock-top .native-dock-surface {
-  filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.34));
+  filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.22));
 }
 
 .native-dock-surface path {
@@ -1514,54 +1514,6 @@ kbd {
   );
 }
 
-.panel-resize-handle {
-  position: absolute;
-  z-index: 5;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 12px;
-  display: block;
-  cursor: ew-resize;
-  touch-action: none;
-  outline: none;
-}
-
-.panel-resize-handle::before {
-  content: '';
-  position: absolute;
-  top: 20px;
-  bottom: 20px;
-  left: 2px;
-  width: 2px;
-  border-radius: 999px;
-  background: var(--accent-line);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sidebar-solid-bg) 65%, transparent);
-  opacity: 0;
-  transform: scaleY(0.985);
-  transition:
-    opacity 140ms ease,
-    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-
-.todo-sidebar:hover .panel-resize-handle::before,
-.panel-resize-handle:focus-visible::before,
-.workspace.is-panel-resizing .panel-resize-handle::before {
-  opacity: 0.88;
-  transform: scaleY(1);
-}
-
-.workspace.is-panel-resizing,
-.workspace.is-panel-resizing * {
-  cursor: ew-resize !important;
-  user-select: none;
-}
-
-.workspace.is-panel-resizing .todo-sidebar,
-.workspace.is-panel-resizing .edge-handle {
-  transition: none;
-}
-
 .workspace.dock-left .todo-sidebar {
   right: auto;
   left: 0;
@@ -1574,16 +1526,6 @@ kbd {
 
 .workspace.dock-left .todo-sidebar.is-open {
   transform: translateX(0);
-}
-
-.workspace.dock-left .panel-resize-handle {
-  right: 0;
-  left: auto;
-}
-
-.workspace.dock-left .panel-resize-handle::before {
-  right: 2px;
-  left: auto;
 }
 
 .workspace.dock-top .todo-sidebar,
@@ -1619,11 +1561,6 @@ kbd {
 .workspace.dock-top .todo-sidebar.is-open,
 .workspace.dock-bottom .todo-sidebar.is-open {
   transform: translateY(0);
-}
-
-.workspace.dock-top .panel-resize-handle,
-.workspace.dock-bottom .panel-resize-handle {
-  display: none;
 }
 
 .workspace.is-native .todo-sidebar {

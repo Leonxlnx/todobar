@@ -72,8 +72,6 @@ const GMAIL_MCP_GUIDE_URL =
 const TOP_DOCK_MIN_PANEL_WIDTH = 720
 const TOP_DOCK_MAX_PANEL_WIDTH = 1120
 const TOP_DOCK_WIDTH_MULTIPLIER = 2
-const PANEL_WIDTH_MIN = 320
-const PANEL_WIDTH_MAX = 560
 const PRIORITY_ORDER: Record<Task['priority'], number> = {
   focus: 0,
   normal: 1,
@@ -218,16 +216,6 @@ type HandleDragState = {
   moved: boolean
   latestHandleY: number | null
 }
-type PanelResizeDragState = {
-  dockEdge: DockEdge
-  startScreenX: number
-  startWidth: number
-  moved: boolean
-  latestWidth: number
-}
-
-const clampPanelWidth = (value: number) =>
-  Math.min(PANEL_WIDTH_MAX, Math.max(PANEL_WIDTH_MIN, Math.round(value)))
 
 function sortTasks(tasks: Task[], sortMode: TaskSortMode = 'priority') {
   return [...tasks].sort((a, b) => {
@@ -642,12 +630,10 @@ function App() {
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
   const [dragHandleY, setDragHandleY] = useState<number | null>(null)
-  const [panelResizeWidth, setPanelResizeWidth] = useState<number | null>(null)
   const [edgeRevealVisible, setEdgeRevealVisible] = useState(false)
   const didNativeLayout = useRef(false)
   const previousOpenState = useRef(isOpen)
   const dragState = useRef<HandleDragState | null>(null)
-  const panelResizeState = useRef<PanelResizeDragState | null>(null)
   const hoverRevealUntil = useRef(0)
   const edgeRevealVisibleRef = useRef(false)
   const suppressNextClick = useRef(false)
@@ -807,25 +793,24 @@ function App() {
     [monthTasks],
   )
   const visibleHandleY = dragHandleY ?? settings.handleY
-  const panelSettingWidth = panelResizeWidth ?? settings.panelWidth
   const effectivePanelWidth = useMemo(() => {
     return getDockPanelWidth(
       settings.dockEdge,
-      panelSettingWidth,
+      settings.panelWidth,
       settings.tabWidth,
       viewportWidth,
     )
   }, [
     settings.dockEdge,
-    panelSettingWidth,
+    settings.panelWidth,
     settings.tabWidth,
     viewportWidth,
   ])
   const effectivePanelDepth = useMemo(() => {
     const availableHeight = Math.max(280, viewportHeight - settings.tabWidth - 8)
 
-    return Math.min(panelSettingWidth, availableHeight, 560)
-  }, [panelSettingWidth, settings.tabWidth, viewportHeight])
+    return Math.min(settings.panelWidth, availableHeight, 560)
+  }, [settings.panelWidth, settings.tabWidth, viewportHeight])
   const nativeHandleCenter = useMemo(() => {
     const height = Math.max(settings.handleHeight, viewportHeight || 0)
     const half = settings.handleHeight / 2
@@ -1259,12 +1244,12 @@ function App() {
           settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
         const panelCssWidth = getDockPanelWidth(
           settings.dockEdge,
-          panelSettingWidth,
+          settings.panelWidth,
           settings.tabWidth,
           fullCssWidth,
         )
         const panelCssDepth = Math.min(
-          panelSettingWidth,
+          settings.panelWidth,
           Math.max(280, fullCssHeight - settings.tabWidth - 8),
           560,
         )
@@ -1385,9 +1370,9 @@ function App() {
   }, [
     isNative,
     isOpen,
-    panelSettingWidth,
     settings.dockEdge,
     settings.motionMs,
+    settings.panelWidth,
     settings.tabWidth,
     visibleHandleY,
   ])
@@ -1520,7 +1505,7 @@ function App() {
           relativeX <= panelRight &&
           relativeY >= panelTop &&
           relativeY <= panelBottom
-        const shouldIgnore = dragState.current || panelResizeState.current
+        const shouldIgnore = dragState.current
           ? false
           : !(isHandleActive || isOnPanel || isRevealStripActive)
 
@@ -2089,96 +2074,6 @@ function App() {
     setIsOpen((current) => !current)
   }
 
-  const onPanelResizePointerDown = (event: PointerEvent<HTMLSpanElement>) => {
-    if (!isOpen || settings.dockEdge === 'top' || settings.dockEdge === 'bottom') {
-      return
-    }
-
-    event.preventDefault()
-    event.stopPropagation()
-    event.currentTarget.setPointerCapture(event.pointerId)
-
-    const startWidth = clampPanelWidth(panelResizeWidth ?? settings.panelWidth)
-
-    panelResizeState.current = {
-      dockEdge: settings.dockEdge,
-      latestWidth: startWidth,
-      moved: false,
-      startScreenX: event.screenX,
-      startWidth,
-    }
-    setPanelResizeWidth(startWidth)
-  }
-
-  const onPanelResizePointerMove = (event: PointerEvent<HTMLSpanElement>) => {
-    const resize = panelResizeState.current
-
-    if (!resize) {
-      return
-    }
-
-    const deltaX =
-      resize.dockEdge === 'right'
-        ? resize.startScreenX - event.screenX
-        : event.screenX - resize.startScreenX
-    const nextWidth = clampPanelWidth(resize.startWidth + deltaX)
-
-    if (Math.abs(nextWidth - resize.startWidth) >= DRAG_THRESHOLD) {
-      resize.moved = true
-    }
-
-    if (nextWidth !== resize.latestWidth) {
-      resize.latestWidth = nextWidth
-      setPanelResizeWidth(nextWidth)
-    }
-  }
-
-  const onPanelResizePointerUp = (event: PointerEvent<HTMLSpanElement>) => {
-    const resize = panelResizeState.current
-
-    if (!resize) {
-      return
-    }
-
-    const nextWidth = clampPanelWidth(resize.latestWidth)
-
-    panelResizeState.current = null
-    setPanelResizeWidth(null)
-    updateSettings({ panelWidth: nextWidth })
-
-    try {
-      event.currentTarget.releasePointerCapture(event.pointerId)
-    } catch {
-      // Pointer capture can already be gone after native pointer handoff.
-    }
-  }
-
-  const onPanelResizeKeyDown = (event: KeyboardEvent<HTMLSpanElement>) => {
-    if (settings.dockEdge === 'top' || settings.dockEdge === 'bottom') {
-      return
-    }
-
-    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') {
-      return
-    }
-
-    event.preventDefault()
-
-    const direction =
-      settings.dockEdge === 'right'
-        ? event.key === 'ArrowLeft'
-          ? 1
-          : -1
-        : event.key === 'ArrowRight'
-          ? 1
-          : -1
-    const step = event.shiftKey ? 24 : 12
-
-    updateSettings({
-      panelWidth: clampPanelWidth(settings.panelWidth + direction * step),
-    })
-  }
-
   const appStyle = {
     '--panel-width': `${effectivePanelWidth}px`,
     '--panel-half': `${effectivePanelWidth / 2}px`,
@@ -2211,8 +2106,6 @@ function App() {
       className={`workspace ${isNative ? 'is-native' : 'is-web-preview'} ${
         isOpen ? 'is-sidebar-open' : 'is-sidebar-closed'
       } ${edgeRevealVisible ? 'is-edge-revealed' : ''} ${
-        panelResizeWidth !== null ? 'is-panel-resizing' : ''
-      } ${
         settings.backdropImage ? 'has-custom-backdrop' : ''
       } dock-${settings.dockEdge} tab-${settings.tabVisibility} theme-${settings.theme} style-${settings.visualStyle}`}
       style={appStyle}
@@ -2299,7 +2192,7 @@ function App() {
                   width={dockSurface.width}
                   height={dockSurface.height}
                   preserveAspectRatio="xMidYMid slice"
-                  opacity={Math.max(0.24, settings.backdropOpacity / 100)}
+                  opacity={Math.min(0.18, settings.backdropOpacity / 420)}
                 />
               </pattern>
             </defs>
@@ -2353,18 +2246,6 @@ function App() {
         aria-label="Todobar sidebar"
         aria-hidden={!isOpen}
       >
-        <span
-          className="panel-resize-handle"
-          role="separator"
-          aria-label="Resize panel"
-          aria-orientation="vertical"
-          tabIndex={isOpen ? 0 : -1}
-          onKeyDown={onPanelResizeKeyDown}
-          onPointerDown={onPanelResizePointerDown}
-          onPointerMove={onPanelResizePointerMove}
-          onPointerUp={onPanelResizePointerUp}
-          onPointerCancel={onPanelResizePointerUp}
-        />
         {isSettingsOpen ? (
           <div className="settings-drawer" role="dialog" aria-label="Settings">
             <SidebarSettingsPanel

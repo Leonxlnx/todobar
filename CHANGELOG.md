@@ -7,7 +7,6 @@
 - Added collapsible settings groups to keep the settings drawer easier to scan.
 - Added a non-connected Gmail MCP connector surface that documents the
   permission boundary without reading email data.
-- Added direct side-panel resizing from the open panel edge.
 - Added Calendar entry mode controls so selected-day capture can create tasks
   or events.
 - Added a hover-only visible tab setting for users who want the edge handle to
@@ -30,6 +29,11 @@
 - Reduced native hover/click-through hit-test polling frequency to lower idle
   CPU use while keeping the edge reveal responsive.
 - Made native edge hover detection faster while keeping the idle polling slower.
+- Reduced native dock shadow weight so the tab column does not leave a heavy
+  dark strip beside the panel.
+- Toned down custom backdrop imagery inside the native dock/tab surface so the
+  open button stays visually attached to the sidebar instead of picking up a
+  strong blue image cast.
 - Made task completion and reopening feel smoother without replaying the row
   entrance animation.
 - Flattened pinned list and custom list sections to avoid card-in-card layouts.
@@ -53,6 +57,8 @@
   top docks expose the invisible edge trigger inside the visible tab strip.
 - Fixed hover-only native reveal so moving the mouse anywhere along the screen
   edge reveals the button instead of requiring the button itself to be hovered.
+- Removed the experimental panel-edge resize handle after it proved too easy to
+  trigger accidentally and visually too noisy for the dock edge.
 
 ## 0.1.7 - Performance and Personalization
 
