@@ -340,6 +340,37 @@ for (const viewport of viewports) {
   })
 }
 
+test('open side dock can be resized from the panel edge', async ({ page }) => {
+  await page.setViewportSize({ height: 900, width: 1280 })
+  await page.goto('/?open=1')
+
+  const sidebar = page.locator('.todo-sidebar')
+  const resizeHandle = page.getByRole('separator', { name: 'Resize panel' })
+  const beforeBox = await sidebar.boundingBox()
+
+  expect(beforeBox).not.toBeNull()
+  await expect(resizeHandle).toBeVisible()
+
+  if (!beforeBox) {
+    return
+  }
+
+  await page.mouse.move(beforeBox.x + 4, beforeBox.y + beforeBox.height / 2)
+  await page.mouse.down()
+  await page.mouse.move(beforeBox.x - 72, beforeBox.y + beforeBox.height / 2, {
+    steps: 8,
+  })
+  await page.mouse.up()
+
+  await expect
+    .poll(async () => {
+      const box = await sidebar.boundingBox()
+
+      return Math.round(box?.width ?? 0)
+    })
+    .toBeGreaterThan(Math.round(beforeBox.width + 48))
+})
+
 test('due reminders badge the closed handle without opening the sidebar', async ({
   page,
 }) => {
@@ -505,6 +536,8 @@ test('native hover-only reveal zone stays inside the visible tab strip', async (
   await expect(page.locator('.workspace')).toHaveClass(/tab-hover/)
   await expect(page.locator('.edge-hover-zone')).toHaveCSS('left', '0px')
   await expect(page.locator('.edge-hover-zone')).toHaveCSS('width', '42px')
+  await page.mouse.move(2, 450)
+  await expect(page.locator('.edge-handle')).toHaveCSS('opacity', '1')
 
   await page.goto('/?runtime=tauri&dock=left')
   await expect(page.locator('.edge-hover-zone')).toHaveCSS('left', '392px')

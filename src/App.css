@@ -488,7 +488,28 @@
   display: block;
   width: 100vw;
   height: 100vh;
+  filter: drop-shadow(-18px 22px 38px rgba(19, 25, 35, 0.16));
   pointer-events: none;
+}
+
+.workspace.is-native.dock-left .native-dock-surface {
+  filter: drop-shadow(18px 22px 38px rgba(19, 25, 35, 0.16));
+}
+
+.workspace.is-native.dock-top .native-dock-surface {
+  filter: drop-shadow(0 20px 34px rgba(19, 25, 35, 0.14));
+}
+
+.workspace.theme-dark.is-native .native-dock-surface {
+  filter: drop-shadow(-20px 24px 42px rgba(0, 0, 0, 0.36));
+}
+
+.workspace.theme-dark.is-native.dock-left .native-dock-surface {
+  filter: drop-shadow(20px 24px 42px rgba(0, 0, 0, 0.36));
+}
+
+.workspace.theme-dark.is-native.dock-top .native-dock-surface {
+  filter: drop-shadow(0 22px 38px rgba(0, 0, 0, 0.34));
 }
 
 .native-dock-surface path {
@@ -1059,6 +1080,7 @@ kbd {
 }
 
 .workspace.tab-hover.is-sidebar-closed .edge-hover-zone:hover + .edge-handle,
+.workspace.tab-hover.is-sidebar-closed.is-edge-revealed .edge-handle,
 .workspace.tab-hover.is-sidebar-closed .edge-handle:hover,
 .workspace.tab-hover.is-sidebar-closed .edge-handle:focus-visible,
 .workspace.tab-hover.is-sidebar-closed .edge-handle:has(.handle-badge) {
@@ -1157,6 +1179,8 @@ kbd {
 
 .workspace.is-native.tab-hover.is-sidebar-closed:has(.edge-hover-zone:hover)
   .native-dock-surface,
+.workspace.is-native.tab-hover.is-sidebar-closed.is-edge-revealed
+  .native-dock-surface,
 .workspace.is-native.tab-hover.is-sidebar-closed:focus-within .native-dock-surface {
   opacity: 1;
 }
@@ -1207,6 +1231,12 @@ kbd {
 .workspace.is-native.is-sidebar-open .edge-handle:hover {
   color: #40556e;
   border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+
+.workspace.is-native.has-custom-backdrop .edge-handle,
+.workspace.is-native.has-custom-backdrop .edge-handle:hover {
   background: transparent;
   box-shadow: none;
 }
@@ -1484,6 +1514,54 @@ kbd {
   );
 }
 
+.panel-resize-handle {
+  position: absolute;
+  z-index: 5;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 12px;
+  display: block;
+  cursor: ew-resize;
+  touch-action: none;
+  outline: none;
+}
+
+.panel-resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 20px;
+  left: 2px;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--accent-line);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sidebar-solid-bg) 65%, transparent);
+  opacity: 0;
+  transform: scaleY(0.985);
+  transition:
+    opacity 140ms ease,
+    transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.todo-sidebar:hover .panel-resize-handle::before,
+.panel-resize-handle:focus-visible::before,
+.workspace.is-panel-resizing .panel-resize-handle::before {
+  opacity: 0.88;
+  transform: scaleY(1);
+}
+
+.workspace.is-panel-resizing,
+.workspace.is-panel-resizing * {
+  cursor: ew-resize !important;
+  user-select: none;
+}
+
+.workspace.is-panel-resizing .todo-sidebar,
+.workspace.is-panel-resizing .edge-handle {
+  transition: none;
+}
+
 .workspace.dock-left .todo-sidebar {
   right: auto;
   left: 0;
@@ -1496,6 +1574,16 @@ kbd {
 
 .workspace.dock-left .todo-sidebar.is-open {
   transform: translateX(0);
+}
+
+.workspace.dock-left .panel-resize-handle {
+  right: 0;
+  left: auto;
+}
+
+.workspace.dock-left .panel-resize-handle::before {
+  right: 2px;
+  left: auto;
 }
 
 .workspace.dock-top .todo-sidebar,
@@ -1531,6 +1619,11 @@ kbd {
 .workspace.dock-top .todo-sidebar.is-open,
 .workspace.dock-bottom .todo-sidebar.is-open {
   transform: translateY(0);
+}
+
+.workspace.dock-top .panel-resize-handle,
+.workspace.dock-bottom .panel-resize-handle {
+  display: none;
 }
 
 .workspace.is-native .todo-sidebar {
