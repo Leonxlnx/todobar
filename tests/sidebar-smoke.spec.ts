@@ -440,6 +440,10 @@ test('native closed dock keeps a rounded tab shape', async ({ page }) => {
 
   expect(path).toContain('C')
   expect(path).toContain('Q 42')
+  await expect(page.locator('.todo-sidebar')).toHaveCSS(
+    'background-color',
+    'rgba(0, 0, 0, 0)',
+  )
   await expect(page.locator('.edge-handle')).toHaveCSS(
     'border-top-left-radius',
     '16px',

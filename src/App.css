@@ -1572,10 +1572,14 @@ kbd {
   display: grid;
   border-left: 0;
   border-radius: var(--panel-radius) 0 0 var(--panel-radius);
-  background: var(--sidebar-bg);
+  background: transparent;
   box-shadow: none;
-  backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: none;
   transform: none;
+}
+
+.workspace.is-native .todo-sidebar::before {
+  opacity: 0;
 }
 
 .workspace.is-native.dock-left .todo-sidebar {
@@ -2012,12 +2016,46 @@ kbd {
   backdrop-filter: blur(22px) saturate(1.08);
 }
 
+.workspace.has-custom-backdrop .settings-drawer {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--settings-surface) 90%, transparent),
+      color-mix(in srgb, var(--settings-surface) 94%, transparent)
+    ),
+    var(--custom-backdrop-image),
+    color-mix(
+      in srgb,
+      var(--settings-surface) var(--surface-alpha-percent),
+      transparent
+    );
+  background-position: center;
+  background-size: auto, cover, auto;
+}
+
 .workspace.theme-dark .settings-drawer {
   background: color-mix(
     in srgb,
     var(--settings-surface) var(--surface-alpha-percent),
     transparent
   );
+}
+
+.workspace.theme-dark.has-custom-backdrop .settings-drawer {
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--settings-surface) 88%, rgba(0, 0, 0, 0.38)),
+      color-mix(in srgb, var(--settings-surface) 94%, rgba(0, 0, 0, 0.52))
+    ),
+    var(--custom-backdrop-image),
+    color-mix(
+      in srgb,
+      var(--settings-surface) var(--surface-alpha-percent),
+      transparent
+    );
+  background-position: center;
+  background-size: auto, cover, auto;
 }
 
 .settings-drawer .settings-panel {
@@ -3779,13 +3817,13 @@ kbd {
 
 .pinned-list-stack {
   display: grid;
-  gap: 0;
+  gap: 10px;
 }
 
 .today-goal-list {
   display: grid;
   gap: 8px;
-  padding: 10px 0 0;
+  padding: 12px 0 0;
   border: 0;
   border-top: 1px solid var(--line);
   border-radius: 0;

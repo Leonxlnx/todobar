@@ -34,6 +34,12 @@
 - Toned down custom backdrop imagery inside the native dock/tab surface so the
   open button stays visually attached to the sidebar instead of picking up a
   strong blue image cast.
+- Let the native SVG dock surface own the sidebar material instead of covering
+  it with a rectangular sidebar background, so the tab connection reads as one
+  continuous shape.
+- Added a dimmed custom backdrop treatment to the settings drawer.
+- Increased spacing between pinned Today list groups so dividers do not sit too
+  close to the previous task row.
 - Made task completion and reopening feel smoother without replaying the row
   entrance animation.
 - Flattened pinned list and custom list sections to avoid card-in-card layouts.

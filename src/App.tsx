@@ -56,8 +56,8 @@ import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
 
 const DRAG_THRESHOLD = 5
-const NATIVE_HIT_TEST_EDGE_INTERVAL_MS = 80
-const NATIVE_HIT_TEST_IDLE_INTERVAL_MS = 160
+const NATIVE_HIT_TEST_EDGE_INTERVAL_MS = 96
+const NATIVE_HIT_TEST_IDLE_INTERVAL_MS = 220
 const TASK_STORAGE_KEYS = {
   today: 'todobar.today.v1',
   month: 'todobar.month.v1',
@@ -940,11 +940,11 @@ function App() {
     const bottom = center + half
     const topDockRadius = Math.max(
       0,
-      Math.min(18, settings.tabWidth * 0.5, top),
+      Math.min(22, settings.tabWidth * 0.58, top),
     )
     const bottomDockRadius = Math.max(
       0,
-      Math.min(18, settings.tabWidth * 0.5, height - bottom),
+      Math.min(22, settings.tabWidth * 0.58, height - bottom),
     )
     const topPanelRadius = Math.max(
       0,
@@ -2192,7 +2192,7 @@ function App() {
                   width={dockSurface.width}
                   height={dockSurface.height}
                   preserveAspectRatio="xMidYMid slice"
-                  opacity={Math.min(0.18, settings.backdropOpacity / 420)}
+                  opacity={Math.min(0.14, settings.backdropOpacity / 620)}
                 />
               </pattern>
             </defs>
