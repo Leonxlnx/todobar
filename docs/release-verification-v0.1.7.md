@@ -7,15 +7,25 @@ personalization, and reminder polish release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.7
+- CI workflow run for release commit:
+  https://github.com/Leonxlnx/todobar/actions/runs/25672477149
+- Release workflow run:
+  https://github.com/Leonxlnx/todobar/actions/runs/25672479025
 
-Expected published assets after the release workflow completes:
+Published assets:
 
 - `Todobar_0.1.7_x64-setup.exe`
+  `sha256:3e415ce9a5f7df8a5fbd112ad83e1e4733a0fc143cd308d80e7ab4289c4158ff`
 - `Todobar_0.1.7_x64_en-US.msi`
+  `sha256:e7b5a6efd4cfeac859176ebc52e2c768037401fa76401345f2daca289e71e079`
 - `Todobar_0.1.7_aarch64.dmg`
+  `sha256:f727565fa5ba634c5027029253968208ac7fe6b55355d19bd30f0ee293995982`
 - `Todobar_0.1.7_x64.dmg`
+  `sha256:5f9b3e22d3b7358b8b3e625bf9854f79445da06eb95c1c4b0f057296cb947c32`
 - `Todobar_aarch64.app.tar.gz`
+  `sha256:d1ca144d405a996f94aa267ede6e5be6a70c4d89148c1c62ea740c2630ce5bd1`
 - `Todobar_x64.app.tar.gz`
+  `sha256:a28c7cfd9d4b054f62720c68579981dcab6908a4cc3ff6fa436d40242fa59e8a`
 
 ## Release Scope
 
