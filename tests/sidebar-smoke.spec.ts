@@ -264,6 +264,14 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     page.locator('.today-goal-list-title strong').filter({ hasText: 'Planner' }),
   ).toBeVisible()
   await expect(page.getByText('Pinned task', { exact: true })).toBeVisible()
+  await expect(page.locator('.pinned-task-list')).toHaveCSS(
+    'border-top-style',
+    'solid',
+  )
+  await expect(page.locator('.pinned-task-list')).toHaveCSS(
+    'border-top-left-radius',
+    '14px',
+  )
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
   await page.getByText('Show completed', { exact: true }).click()

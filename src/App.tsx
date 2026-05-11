@@ -631,6 +631,7 @@ function App() {
   const didNativeLayout = useRef(false)
   const previousOpenState = useRef(isOpen)
   const dragState = useRef<HandleDragState | null>(null)
+  const hoverRevealUntil = useRef(0)
   const suppressNextClick = useRef(false)
   const [todayTasks, setTodayTasks] = usePersistentTasks(
     initialToday,
@@ -1406,6 +1407,7 @@ function App() {
         const panelWidth = effectivePanelWidth * scaleFactor
         const panelDepth = effectivePanelDepth * scaleFactor
         const handleHitSlop = 3 * scaleFactor
+        const edgeRevealSlop = 8 * scaleFactor
         const isHorizontalDock =
           settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
         const horizontalHandleLength =
@@ -1450,6 +1452,27 @@ function App() {
           relativeX <= handleRight + handleHitSlop &&
           relativeY >= handleTop - handleHitSlop &&
           relativeY <= handleBottom + handleHitSlop
+        const isHoverOnlyClosed =
+          settings.tabVisibility === 'hover' && !isOpen
+        const isOnRevealEdge = isHorizontalDock
+          ? settings.dockEdge === 'top'
+            ? relativeY >= panelDepth - edgeRevealSlop &&
+              relativeY <= panelDepth + edgeRevealSlop
+            : relativeY >= tabWidth - edgeRevealSlop &&
+              relativeY <= tabWidth + edgeRevealSlop
+          : settings.dockEdge === 'left'
+            ? relativeX >= panelWidth - edgeRevealSlop &&
+              relativeX <= panelWidth + edgeRevealSlop
+            : relativeX >= tabWidth - edgeRevealSlop &&
+              relativeX <= tabWidth + edgeRevealSlop
+
+        if (isHoverOnlyClosed && isOnRevealEdge) {
+          hoverRevealUntil.current = Date.now() + 900
+        }
+
+        const isHandleActive = isHoverOnlyClosed
+          ? isOnHandle && Date.now() <= hoverRevealUntil.current
+          : isOnHandle
         const isOnPanel =
           isOpen &&
           relativeX >= panelLeft &&
@@ -1458,7 +1481,7 @@ function App() {
           relativeY <= panelBottom
         const shouldIgnore = dragState.current
           ? false
-          : !(isOnHandle || isOnPanel)
+          : !(isHandleActive || isOnPanel)
 
         if (!cancelled && shouldIgnore !== lastIgnored) {
           lastIgnored = shouldIgnore
@@ -1490,6 +1513,7 @@ function App() {
     settings.dockEdge,
     settings.handleHeight,
     settings.tabWidth,
+    settings.tabVisibility,
     effectivePanelDepth,
     effectivePanelWidth,
   ])
@@ -2150,6 +2174,8 @@ function App() {
           />
         </svg>
       ) : null}
+
+      <span className="edge-hover-zone" aria-hidden="true" />
 
       <button
         className={`edge-handle ${isOpen ? 'is-open' : ''}`}

@@ -42,6 +42,7 @@
   --range-thumb-border: rgba(255, 255, 255, 0.9);
   --scrollbar-thumb: rgba(91, 106, 125, 0.32);
   --scrollbar-thumb-hover: rgba(91, 106, 125, 0.52);
+  --scrollbar-track: transparent;
   --surface-hover: #eff3f7;
   --row-hover-bg: rgba(37, 99, 235, 0.045);
   --row-hover-border: rgba(37, 99, 235, 0.18);
@@ -117,6 +118,7 @@
   --range-thumb-border: rgba(255, 255, 255, 0.2);
   --scrollbar-thumb: rgba(154, 166, 186, 0.28);
   --scrollbar-thumb-hover: rgba(154, 166, 186, 0.48);
+  --scrollbar-track: transparent;
   --surface-hover: #1a1a1d;
   --row-hover-bg: rgba(116, 168, 255, 0.08);
   --row-hover-border: rgba(255, 255, 255, 0.12);
@@ -437,7 +439,8 @@
 }
 
 .workspace.theme-dark .task-list {
-  background: rgba(255, 255, 255, 0.025);
+  background: color-mix(in srgb, var(--task-bg) 82%, transparent);
+  border-color: rgba(148, 163, 184, 0.13);
 }
 
 .workspace.theme-dark .custom-list-title {
@@ -974,6 +977,10 @@ kbd {
   opacity: 1;
 }
 
+.edge-hover-zone {
+  display: none;
+}
+
 .workspace.has-custom-backdrop .edge-handle {
   color: #f8fafc;
   background:
@@ -1005,15 +1012,41 @@ kbd {
   background-size: auto, cover, auto;
 }
 
-.workspace.tab-hover.is-sidebar-closed .edge-handle {
-  opacity: 0;
+.workspace.tab-hover.is-sidebar-closed .edge-hover-zone {
+  position: fixed;
+  z-index: 19;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  display: block;
+  background: transparent;
 }
 
+.workspace.dock-left.tab-hover.is-sidebar-closed .edge-hover-zone {
+  right: auto;
+  left: 0;
+}
+
+.workspace.dock-top.tab-hover.is-sidebar-closed .edge-hover-zone {
+  right: 0;
+  bottom: auto;
+  left: 0;
+  width: auto;
+  height: 8px;
+}
+
+.workspace.tab-hover.is-sidebar-closed .edge-handle {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.workspace.tab-hover.is-sidebar-closed .edge-hover-zone:hover + .edge-handle,
 .workspace.tab-hover.is-sidebar-closed .edge-handle:hover,
 .workspace.tab-hover.is-sidebar-closed .edge-handle:focus-visible,
-.workspace.tab-hover.is-sidebar-closed .edge-handle:has(.handle-badge),
-.workspace.tab-hover.is-sidebar-closed:hover .edge-handle {
+.workspace.tab-hover.is-sidebar-closed .edge-handle:has(.handle-badge) {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .edge-handle.is-open {
@@ -1105,7 +1138,8 @@ kbd {
   transition: opacity 180ms ease;
 }
 
-.workspace.is-native.tab-hover.is-sidebar-closed:hover .native-dock-surface,
+.workspace.is-native.tab-hover.is-sidebar-closed:has(.edge-hover-zone:hover)
+  .native-dock-surface,
 .workspace.is-native.tab-hover.is-sidebar-closed:focus-within .native-dock-surface {
   opacity: 1;
 }
@@ -1369,6 +1403,12 @@ kbd {
   scrollbar-color: var(--scrollbar-thumb) transparent;
 }
 
+.workspace.theme-dark .settings-drawer,
+.workspace.theme-dark .theme-dropdown-menu,
+.workspace.theme-dark .sidebar-content {
+  scrollbar-color: rgba(226, 232, 240, 0.24) transparent;
+}
+
 .sidebar-content::-webkit-scrollbar,
 .settings-drawer::-webkit-scrollbar,
 .theme-dropdown-menu::-webkit-scrollbar {
@@ -1378,7 +1418,7 @@ kbd {
 .sidebar-content::-webkit-scrollbar-track,
 .settings-drawer::-webkit-scrollbar-track,
 .theme-dropdown-menu::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--scrollbar-track);
 }
 
 .sidebar-content::-webkit-scrollbar-thumb,
@@ -1394,6 +1434,23 @@ kbd {
 .settings-drawer::-webkit-scrollbar-thumb:hover,
 .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
   background: var(--scrollbar-thumb-hover);
+  background-clip: padding-box;
+}
+
+.workspace.theme-dark .sidebar-content::-webkit-scrollbar-thumb,
+.workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb,
+.workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb {
+  border-width: 3px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.16));
+  background-clip: padding-box;
+}
+
+.workspace.theme-dark .sidebar-content::-webkit-scrollbar-thumb:hover,
+.workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb:hover,
+.workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.22));
   background-clip: padding-box;
 }
 
@@ -3255,6 +3312,19 @@ kbd {
   box-shadow: var(--control-shadow);
 }
 
+.workspace.theme-dark .calendar-today-button {
+  color: var(--ink) !important;
+  border-color: rgba(148, 163, 184, 0.13) !important;
+  background: var(--control-bg) !important;
+  box-shadow: var(--control-shadow) !important;
+}
+
+.workspace.theme-dark .calendar-today-button:hover {
+  color: var(--accent-strong) !important;
+  border-color: var(--accent-line) !important;
+  background: var(--accent-soft) !important;
+}
+
 .calendar-board {
   display: grid;
   gap: 7px;
@@ -3526,6 +3596,20 @@ kbd {
   background: var(--task-bg);
 }
 
+.task-list > .task-row:first-child {
+  border-top-left-radius: 13px;
+  border-top-right-radius: 13px;
+}
+
+.task-list > .task-row:last-child {
+  border-bottom-right-radius: 13px;
+  border-bottom-left-radius: 13px;
+}
+
+.task-list > .task-row:only-child {
+  border-radius: 13px;
+}
+
 .list-section {
   padding-top: 2px;
 }
@@ -3699,13 +3783,13 @@ kbd {
 }
 
 .pinned-task-list {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--task-bg);
 }
 
 .pinned-task-list .task-row {
-  padding-inline: 2px;
+  padding-inline: 7px;
 }
 
 .compact-task-list .task-row {

@@ -17,6 +17,15 @@
 
 ### Changed
 
+- Refined task list row radii so hover and completed states keep rounded
+  corners in Today, Calendar, Lists, and pinned list sections.
+- Restored a lightweight border around pinned task groups without bringing back
+  card-in-card list containers.
+- Made hover-only tab mode use a narrow invisible edge reveal zone so the full
+  hidden button area can stay click-through until the cursor reaches the screen
+  edge.
+- Tuned dark-mode settings scrollbars and the Calendar Today button to match
+  the active theme more cleanly.
 - Made task completion and reopening feel smoother without replaying the row
   entrance animation.
 - Flattened pinned list and custom list sections to avoid card-in-card layouts.
