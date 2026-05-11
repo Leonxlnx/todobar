@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.8 - Native Dock Polish
+
 ### Added
 
 - Added collapsible settings groups to keep the settings drawer easier to scan.
