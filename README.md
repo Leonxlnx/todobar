@@ -36,7 +36,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Planning status strip with today's progress, open task count, and list count
 - Today tasks
 - Real calendar view with month navigation, selected-day capture, and scheduled
-  task actions
+  task and event actions
 - Custom task lists
 - Pin custom lists onto Today as goal groups
 - Add, edit, complete, prioritize, collapse, and delete tasks
@@ -54,6 +54,9 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
   presets
 - Optional custom backdrop image with strength, dim, and blur controls
 - Rearrange Today, Calendar, and Lists from settings
+- Collapse settings groups while tuning the sidebar
+- Gmail MCP connector surface for future permissioned inbox context. It does
+  not read email data in the current build.
 - Adjustable panel width, visible tab size, handle height, edge position,
   motion speed, corner radius, task sort mode, task row height, task spacing,
   task text size, completed-task visibility, launch-at-login, notifications,

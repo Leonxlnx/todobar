@@ -118,11 +118,10 @@
   --row-shadow: none;
   --row-shadow-hover: none;
   --control-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.06),
-    0 1px 1px rgba(0, 0, 0, 0.18);
+    inset 0 1px 0 rgba(255, 255, 255, 0.035);
   --control-shadow-hover:
-    inset 0 1px 0 rgba(255, 255, 255, 0.09),
-    0 10px 24px rgba(0, 0, 0, 0.22);
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 8px 18px rgba(0, 0, 0, 0.18);
   --control-shadow-pressed:
     inset 0 2px 7px rgba(0, 0, 0, 0.36),
     0 1px 0 rgba(255, 255, 255, 0.04);
@@ -446,6 +445,12 @@
   background: var(--surface-hover);
 }
 
+.workspace.theme-dark .custom-list,
+.workspace.theme-dark .today-goal-list {
+  background: rgba(255, 255, 255, 0.026);
+  box-shadow: var(--control-shadow);
+}
+
 .workspace.is-native {
   --native-handle-y: clamp(
     calc(var(--handle-half) + 8px),
@@ -663,6 +668,22 @@ button {
   background: var(--surface-hover);
   border-color: rgba(255, 255, 255, 0.105);
   box-shadow: var(--control-shadow-hover);
+}
+
+.workspace.theme-dark .system-actions button,
+.workspace.theme-dark .icon-cluster button,
+.workspace.theme-dark .section-heading button,
+.workspace.theme-dark .settings-actions button,
+.workspace.theme-dark .quick-add button,
+.workspace.theme-dark .check-button,
+.workspace.theme-dark .edit-button,
+.workspace.theme-dark .priority-button,
+.workspace.theme-dark .reminder-button,
+.workspace.theme-dark .delete-button,
+.workspace.theme-dark .custom-list-pin,
+.workspace.theme-dark .custom-list-toggle {
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
 }
 
 .system-actions button:focus-visible,
@@ -1242,6 +1263,8 @@ kbd {
   isolation: isolate;
   transform: translateX(calc(100% + 18px));
   transition:
+    width var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    height var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     transform var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow var(--motion-ms) ease;
 }
@@ -1908,7 +1931,7 @@ kbd {
 
 .settings-group {
   display: grid;
-  gap: 9px;
+  gap: 7px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -1925,6 +1948,57 @@ kbd {
 
 .settings-size-group {
   gap: 10px;
+}
+
+.settings-group-toggle {
+  width: 100%;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0;
+  color: var(--muted);
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.settings-group-toggle > svg {
+  flex: 0 0 auto;
+  color: var(--muted);
+  opacity: 0.72;
+  transition: transform 170ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.settings-group-toggle:hover .settings-group-title,
+.settings-group-toggle:hover > svg {
+  color: var(--ink);
+  opacity: 1;
+}
+
+.settings-group.is-collapsed .settings-group-toggle > svg {
+  transform: rotate(-90deg);
+}
+
+.settings-group-content {
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 170ms ease,
+    transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.settings-group.is-collapsed .settings-group-content {
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  visibility: hidden;
 }
 
 .deferred-setting {
@@ -1944,15 +2018,13 @@ kbd {
   min-width: 74px;
   height: 30px;
   padding: 0 12px;
-  color: var(--sidebar-solid-bg);
+  color: var(--accent-strong);
   font-size: 10.5px;
   font-weight: 780;
-  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border: 1px solid var(--accent-line);
   border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent),
-    var(--accent);
-  box-shadow: var(--control-shadow-hover);
+  background: var(--accent-soft);
+  box-shadow: var(--control-shadow);
   cursor: pointer;
   transition:
     opacity 160ms ease,
@@ -1974,6 +2046,13 @@ kbd {
 .apply-setting:not(:disabled):active {
   transform: scale(0.97);
   box-shadow: var(--control-shadow-pressed);
+}
+
+.apply-setting.is-applied {
+  color: var(--sidebar-solid-bg);
+  border-color: var(--accent);
+  background: var(--accent);
+  box-shadow: var(--control-shadow-hover);
 }
 
 .mode-toggle {
@@ -2134,6 +2213,25 @@ kbd {
     inset 0 1px 0 rgba(255, 255, 255, 0.045);
 }
 
+.workspace.theme-dark .theme-dropdown-trigger,
+.workspace.theme-dark .theme-dropdown-menu,
+.workspace.theme-dark .backdrop-setting,
+.workspace.theme-dark .connector-setting,
+.workspace.theme-dark .slider-setting,
+.workspace.theme-dark .toggle-setting,
+.workspace.theme-dark .section-order-row {
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
+}
+
+.workspace.theme-dark .backdrop-actions label,
+.workspace.theme-dark .backdrop-actions button,
+.workspace.theme-dark .task-sort-setting button,
+.workspace.theme-dark .connector-setting button {
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
+}
+
 .theme-dropdown-menu button {
   min-height: 44px;
   padding: 6px 8px 6px 5px;
@@ -2279,6 +2377,73 @@ kbd {
 
 .theme-preview-blueprint i:not(:first-child) {
   background: rgba(255, 255, 255, 0.36);
+}
+
+.connector-setting {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
+}
+
+.connector-mark {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: 12px;
+  background: var(--accent-soft);
+}
+
+.connector-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.connector-copy strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connector-copy strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 760;
+}
+
+.connector-copy span,
+.connector-copy em {
+  color: var(--muted);
+  font-size: 10.4px;
+  line-height: 1.25;
+  font-style: normal;
+  font-weight: 640;
+}
+
+.connector-copy em {
+  color: var(--accent);
+}
+
+.connector-setting button {
+  min-width: 88px;
+  height: 30px;
+  padding: 0 10px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 760;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--control-bg);
+  opacity: 0.78;
 }
 
 .backdrop-setting {
@@ -2692,6 +2857,7 @@ kbd {
 .section-order-row.is-dragging {
   opacity: 0.58;
   transform: scale(0.985);
+  cursor: grabbing;
 }
 
 .section-order-row span {
@@ -2707,6 +2873,12 @@ kbd {
   display: grid;
   place-items: center;
   color: var(--muted);
+  cursor: grab;
+  touch-action: none;
+}
+
+.section-order-row.is-dragging .section-order-grip {
+  cursor: grabbing;
 }
 
 .section-order-row div {
@@ -2825,6 +2997,14 @@ kbd {
   box-shadow: var(--control-shadow);
 }
 
+.workspace.theme-dark .calendar-nav,
+.workspace.theme-dark .calendar-board,
+.workspace.theme-dark .calendar-entry-mode,
+.workspace.theme-dark .calendar-day-summary span {
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
+}
+
 .calendar-nav button {
   inline-size: 28px;
   block-size: 28px;
@@ -2933,6 +3113,10 @@ kbd {
   box-shadow: inset 0 0 0 1px var(--accent-line);
 }
 
+.calendar-grid button.has-event {
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+}
+
 .calendar-grid button span {
   font-size: 11px;
   font-weight: 740;
@@ -2976,6 +3160,69 @@ kbd {
   color: var(--muted);
   font-size: 10.5px;
   font-weight: 680;
+}
+
+.calendar-day-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calendar-day-summary span {
+  min-width: 0;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 720;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--section-bg);
+}
+
+.calendar-day-summary svg {
+  color: var(--accent);
+}
+
+.calendar-entry-mode {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
+}
+
+.calendar-entry-mode button {
+  height: 30px;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 780;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.calendar-entry-mode button:hover,
+.calendar-entry-mode button.is-selected {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+}
+
+.calendar-entry-mode button:active {
+  transform: scale(0.98);
 }
 
 .calendar-agenda {
@@ -3074,10 +3321,11 @@ kbd {
 .custom-list {
   display: grid;
   gap: 7px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--section-bg) 74%, transparent);
+  box-shadow: var(--control-shadow);
 }
 
 .custom-list-header {
@@ -3090,7 +3338,7 @@ kbd {
 
 .custom-list-title {
   min-width: 0;
-  height: 30px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3098,8 +3346,8 @@ kbd {
   padding: 0 8px;
   color: var(--ink);
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background: transparent;
+  border-radius: 10px;
+  background: var(--task-bg);
   cursor: pointer;
 }
 
@@ -3176,6 +3424,10 @@ kbd {
 .today-goal-list {
   display: grid;
   gap: 7px;
+  padding: 7px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--section-bg) 76%, transparent);
 }
 
 .today-goal-list-title {
@@ -3246,12 +3498,11 @@ kbd {
   border-radius: 0;
   background: transparent;
   box-shadow: var(--row-shadow);
-  animation: task-row-in 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: var(--row-delay, 0ms);
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
-    background 180ms ease;
+    background 180ms ease,
+    transform 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .task-row:last-child {
@@ -3365,6 +3616,21 @@ kbd {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.task-kind-pill {
+  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  padding: 1px 5px;
+  color: var(--accent);
+  font-size: 9.5px;
+  font-style: normal;
+  font-weight: 800;
+  border: 1px solid var(--accent-line);
+  border-radius: 999px;
+  background: var(--accent-soft);
 }
 
 .task-reminder svg {
@@ -3560,9 +3826,6 @@ kbd {
 
 .task-row.is-complete {
   background: rgba(125, 139, 154, 0.06);
-  animation-name: task-complete;
-  animation-duration: 260ms;
-  animation-delay: 0ms;
 }
 
 .task-row.is-complete .check-button {
@@ -3571,8 +3834,17 @@ kbd {
   border-color: rgba(31, 33, 38, 0.12);
 }
 
-.task-row.is-complete .check-button svg {
+.task-row.is-pulse-complete .check-button svg,
+.task-row.is-pulse-open .check-button svg {
   animation: check-pop 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.task-row.is-pulse-complete {
+  animation: task-complete 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.task-row.is-pulse-open {
+  animation: task-reopen 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .month-list .task-row {
@@ -3624,6 +3896,20 @@ kbd {
 
   42% {
     transform: scale(0.985);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes task-reopen {
+  0% {
+    transform: scale(1);
+  }
+
+  40% {
+    transform: scale(1.008);
   }
 
   100% {

@@ -37,6 +37,11 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
+  await expect(page.getByText('Gmail MCP', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Connectors' }).click()
+  await expect(page.getByText('Gmail MCP', { exact: true })).toBeHidden()
+  await page.getByRole('button', { name: 'Connectors' }).click()
+  await expect(page.getByText('Gmail MCP', { exact: true })).toBeVisible()
   await expect(page.getByRole('button', { name: 'Priority' })).toBeVisible()
   await page.getByRole('button', { name: 'Newest' }).click()
   await expect(page.getByRole('button', { name: 'Newest' })).toHaveAttribute(
@@ -83,7 +88,30 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(
     page.getByRole('alertdialog', { name: 'Reset settings confirmation' }),
   ).toHaveCount(0)
-  await page.getByRole('button', { name: 'Move Calendar up' }).click()
+  const todayLayoutRow = page.locator('.section-order-row').filter({
+    hasText: 'Today',
+  })
+  const listsLayoutRow = page.locator('.section-order-row').filter({
+    hasText: 'Lists',
+  })
+  const todayLayoutBox = await todayLayoutRow.boundingBox()
+  const listsLayoutBox = await listsLayoutRow.boundingBox()
+
+  expect(todayLayoutBox).not.toBeNull()
+  expect(listsLayoutBox).not.toBeNull()
+
+  if (todayLayoutBox && listsLayoutBox) {
+    await page.mouse.move(todayLayoutBox.x + 12, todayLayoutBox.y + 17)
+    await page.mouse.down()
+    await page.mouse.move(listsLayoutBox.x + 12, listsLayoutBox.y + 17, {
+      steps: 6,
+    })
+    await page.mouse.up()
+    await expect(page.locator('.section-order-row').nth(2)).toContainText(
+      'Today',
+    )
+  }
+  await page.getByRole('button', { name: 'Move Today up' }).click()
 
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
@@ -174,6 +202,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page
     .getByLabel('Add a task to selected calendar day')
     .fill('Calendar smoke')
+  await page.getByRole('button', { name: 'Event' }).click()
   await page
     .locator('section[aria-labelledby="calendar-heading"] .quick-add .submit-task')
     .click()
@@ -181,6 +210,12 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     page
       .locator('section[aria-labelledby="calendar-heading"]')
       .getByText('Calendar smoke', { exact: true }),
+  ).toBeVisible()
+  await expect(
+    page
+      .locator('section[aria-labelledby="calendar-heading"]')
+      .locator('.task-kind-pill')
+      .filter({ hasText: 'Event' }),
   ).toBeVisible()
   await page
     .locator('section[aria-labelledby="calendar-heading"]')
@@ -207,7 +242,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await customList.locator('.submit-task').click()
   await customList.getByRole('button', { name: 'Show Planner on Today' }).click()
   await page.getByRole('button', { name: 'Jump to Today' }).click()
-  await expect(page.getByText('Today goals', { exact: true })).toBeVisible()
+  await expect(page.getByText('Pinned lists', { exact: true })).toBeVisible()
   await expect(
     page.locator('.today-goal-list-title strong').filter({ hasText: 'Planner' }),
   ).toBeVisible()

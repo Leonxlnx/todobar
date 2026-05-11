@@ -3,6 +3,7 @@ export type Task = {
   title: string
   meta: string
   priority: 'focus' | 'normal' | 'later'
+  kind?: 'task' | 'event'
   reminderAt?: string
   done?: boolean
 }

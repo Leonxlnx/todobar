@@ -2,6 +2,24 @@
 
 ## Unreleased
 
+### Added
+
+- Added collapsible settings groups to keep the settings drawer easier to scan.
+- Added a non-connected Gmail MCP connector surface that documents the
+  permission boundary without reading email data.
+- Added Calendar entry mode controls so selected-day capture can create tasks
+  or events.
+
+### Changed
+
+- Made task completion and reopening feel smoother without replaying the row
+  entrance animation.
+- Improved pinned list copy and list surfaces so custom lists are easier to
+  distinguish while editing.
+- Reduced heavy dark-mode gradients and bevel lines on settings controls.
+- Added pointer-based section reordering in settings so Today, Calendar, and
+  Lists can be dragged more reliably.
+
 ## 0.1.7 - Performance and Personalization
 
 ### Added

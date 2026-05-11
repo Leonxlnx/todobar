@@ -37,6 +37,7 @@ import type {
   KeyboardEvent,
   MouseEvent,
   PointerEvent,
+  ReactNode,
 } from 'react'
 import './App.css'
 import { themePresetsByMode, useSidebarSettings } from './sidebarSettings'
@@ -146,6 +147,17 @@ type TaskListId = keyof typeof TASK_STORAGE_KEYS
 type TaskDrafts = Record<TaskListId, string>
 type ReminderDrafts = Record<TaskListId, string>
 type CollapsedSections = Record<TaskListId, boolean>
+type CalendarEntryMode = 'task' | 'event'
+type SettingsGroupId =
+  | 'theme'
+  | 'edge'
+  | 'layout'
+  | 'desktop'
+  | 'connectors'
+  | 'backdrop'
+  | 'window'
+  | 'tasks'
+  | 'feel'
 type CustomTaskList = {
   id: string
   title: string
@@ -240,6 +252,24 @@ function createTask(title: string, meta: string, reminderAt?: string): Task {
     meta,
     priority: 'normal',
     reminderAt: reminderAt || undefined,
+  }
+}
+
+function createCalendarTask(
+  title: string,
+  date: Date,
+  reminderAt: string,
+  kind: CalendarEntryMode,
+): Task {
+  const isEvent = kind === 'event'
+
+  return {
+    id: Date.now(),
+    title,
+    kind,
+    meta: `${formatCalendarDay(date)} · ${isEvent ? 'Event' : 'Calendar'}`,
+    priority: isEvent ? 'focus' : 'normal',
+    reminderAt,
   }
 }
 
@@ -364,6 +394,7 @@ function buildCalendarDays(
     string,
     {
       doneCount: number
+      eventCount: number
       taskCount: number
     }
   >()
@@ -378,11 +409,13 @@ function buildCalendarDays(
     const key = formatDateKey(reminderDate)
     const counts = taskCountsByDate.get(key) ?? {
       doneCount: 0,
+      eventCount: 0,
       taskCount: 0,
     }
 
     counts.taskCount += 1
     counts.doneCount += task.done ? 1 : 0
+    counts.eventCount += task.kind === 'event' ? 1 : 0
     taskCountsByDate.set(key, counts)
   }
 
@@ -398,6 +431,7 @@ function buildCalendarDays(
     return {
       date,
       doneCount: counts?.doneCount ?? 0,
+      eventCount: counts?.eventCount ?? 0,
       isCurrentMonth: date.getMonth() === cursor.getMonth(),
       isToday: key === todayKey,
       key,
@@ -582,6 +616,8 @@ function App() {
   const [selectedCalendarKey, setSelectedCalendarKey] = useState(() =>
     formatDateKey(new Date()),
   )
+  const [calendarEntryMode, setCalendarEntryMode] =
+    useState<CalendarEntryMode>('task')
   const [settings, updateSettings, resetSettings] = useSidebarSettings()
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
@@ -716,14 +752,30 @@ function App() {
   )
   const selectedCalendarTasks = useMemo(
     () =>
-      reminderTasks.filter(({ task }) => {
-        const reminderDate = parseReminderDate(task.reminderAt)
+      reminderTasks
+        .filter(({ task }) => {
+          const reminderDate = parseReminderDate(task.reminderAt)
 
-        return reminderDate
-          ? formatDateKey(reminderDate) === selectedCalendarKey
-          : false
-      }),
+          return reminderDate
+            ? formatDateKey(reminderDate) === selectedCalendarKey
+            : false
+        })
+        .sort((a, b) => {
+          const aTime = parseReminderDate(a.task.reminderAt)?.getTime() ?? 0
+          const bTime = parseReminderDate(b.task.reminderAt)?.getTime() ?? 0
+
+          return aTime - bTime
+        }),
     [reminderTasks, selectedCalendarKey],
+  )
+  const selectedCalendarEventCount = useMemo(
+    () =>
+      selectedCalendarTasks.filter(({ task }) => task.kind === 'event').length,
+    [selectedCalendarTasks],
+  )
+  const selectedCalendarOpenCount = useMemo(
+    () => selectedCalendarTasks.filter(({ task }) => !task.done).length,
+    [selectedCalendarTasks],
   )
   const unscheduledMonthTasks = useMemo(
     () => monthTasks.filter((task) => !task.reminderAt),
@@ -1484,10 +1536,11 @@ function App() {
     const fallbackReminder = `${selectedCalendarKey}T09:00`
 
     setMonthTasks((tasks) => [
-      createTask(
+      createCalendarTask(
         title,
-        `${formatCalendarDay(selectedCalendarDate)} · Calendar`,
+        selectedCalendarDate,
         reminderDrafts.month || fallbackReminder,
+        calendarEntryMode,
       ),
       ...tasks,
     ])
@@ -2202,7 +2255,7 @@ function App() {
                           aria-label="Pinned lists on Today"
                         >
                           <div className="mini-heading">
-                            <strong>Today goals</strong>
+                            <strong>Pinned lists</strong>
                             <span>{pinnedTodayLists.length} pinned</span>
                           </div>
                           <div className="pinned-list-stack">
@@ -2223,7 +2276,7 @@ function App() {
                                 >
                                   <div className="today-goal-list-title">
                                     <strong>{list.title}</strong>
-                                    <span>{list.tasks.length}</span>
+                                    <span>{list.tasks.length} tasks</span>
                                   </div>
                                   {visibleTasks.length > 0 ? (
                                     <div className="task-list compact-task-list">
@@ -2334,6 +2387,7 @@ function App() {
                             day.isToday ? 'is-today' : '',
                             day.key === selectedCalendarKey ? 'is-selected' : '',
                             day.taskCount > 0 ? 'has-task' : '',
+                            day.eventCount > 0 ? 'has-event' : '',
                           ]
                             .filter(Boolean)
                             .join(' ')}
@@ -2373,8 +2427,36 @@ function App() {
                       <span>
                         {selectedCalendarTasks.length === 0
                           ? 'No reminders'
-                          : `${selectedCalendarTasks.length} scheduled`}
+                          : `${selectedCalendarOpenCount} open · ${selectedCalendarEventCount} events`}
                       </span>
+                    </div>
+                    <div className="calendar-day-summary" aria-label="Selected day summary">
+                      <span>
+                        <Clock3 size={11} />
+                        {selectedCalendarTasks.length} scheduled
+                      </span>
+                      <span>
+                        <CalendarDays size={11} />
+                        {selectedCalendarEventCount} events
+                      </span>
+                    </div>
+                    <div className="calendar-entry-mode" aria-label="Calendar entry type">
+                      <button
+                        type="button"
+                        className={calendarEntryMode === 'task' ? 'is-selected' : ''}
+                        aria-pressed={calendarEntryMode === 'task'}
+                        onClick={() => setCalendarEntryMode('task')}
+                      >
+                        Task
+                      </button>
+                      <button
+                        type="button"
+                        className={calendarEntryMode === 'event' ? 'is-selected' : ''}
+                        aria-pressed={calendarEntryMode === 'event'}
+                        onClick={() => setCalendarEntryMode('event')}
+                      >
+                        Event
+                      </button>
                     </div>
                     <QuickAdd
                       ariaLabel="Add a task to selected calendar day"
@@ -2383,7 +2465,11 @@ function App() {
                         reminderDrafts.month
                       }
                       suggestedReminderValue={`${selectedCalendarKey}T09:00`}
-                      placeholder="Add to this day..."
+                      placeholder={
+                        calendarEntryMode === 'event'
+                          ? 'Add event...'
+                          : 'Add task...'
+                      }
                       onChange={(value) => updateDraft('month', value)}
                       onReminderChange={(value) =>
                         updateReminderDraft('month', value)
@@ -2400,7 +2486,9 @@ function App() {
                                 key={`${source}-${listId ?? 'base'}-${task.id}`}
                                 task={{
                                   ...task,
-                                  meta: `${formatReminder(task.reminderAt)} · ${listTitle}`,
+                                  meta: `${formatReminder(task.reminderAt)} · ${
+                                    task.kind === 'event' ? 'Event' : listTitle
+                                  }`,
                                 }}
                                 index={index}
                                 onToggle={(id) =>
@@ -2617,7 +2705,7 @@ function App() {
                                 reminderValue={
                                   customReminderDrafts[list.id] ?? ''
                                 }
-                                placeholder="Add task..."
+                                placeholder={`Add to ${list.title}...`}
                                 onChange={(value) =>
                                   updateCustomDraft(list.id, value)
                                 }
@@ -2927,10 +3015,14 @@ function SidebarSettingsPanel({
   onClose: () => void
 }) {
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false)
+  const [collapsedSettingsGroups, setCollapsedSettingsGroups] = useState<
+    Partial<Record<SettingsGroupId, boolean>>
+  >({})
   const [panelWidthDraft, setPanelWidthDraft] = useState(() => ({
     base: settings.panelWidth,
     value: settings.panelWidth,
   }))
+  const [isPanelWidthApplied, setIsPanelWidthApplied] = useState(false)
   const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
     availableThemes.find((preset) => preset.id === settings.visualStyle) ??
@@ -2942,6 +3034,7 @@ function SidebarSettingsPanel({
       : settings.panelWidth
   const hasPanelWidthDraft = draftPanelWidth !== settings.panelWidth
   const updateDraftPanelWidth = (value: number) => {
+    setIsPanelWidthApplied(false)
     setPanelWidthDraft({
       base: settings.panelWidth,
       value,
@@ -2949,10 +3042,18 @@ function SidebarSettingsPanel({
   }
   const applyPanelWidth = () => {
     onChange({ panelWidth: draftPanelWidth })
+    setIsPanelWidthApplied(true)
+    window.setTimeout(() => setIsPanelWidthApplied(false), 900)
     setPanelWidthDraft({
       base: draftPanelWidth,
       value: draftPanelWidth,
     })
+  }
+  const toggleSettingsGroup = (group: SettingsGroupId) => {
+    setCollapsedSettingsGroups((current) => ({
+      ...current,
+      [group]: !current[group],
+    }))
   }
   const [backdropError, setBackdropError] = useState('')
   const onBackdropUpload = (event: ChangeEvent<HTMLInputElement>) => {
@@ -3053,11 +3154,14 @@ function SidebarSettingsPanel({
         </div>
       ) : null}
 
-      <div className="settings-group settings-appearance">
-        <div className="settings-group-title">
-          <Palette size={12} />
-          Theme
-        </div>
+      <SettingsGroup
+        id="theme"
+        title="Theme"
+        icon={<Palette size={12} />}
+        collapsed={Boolean(collapsedSettingsGroups.theme)}
+        className="settings-appearance"
+        onToggle={toggleSettingsGroup}
+      >
         <div className="theme-picker-panel">
           <div className="theme-mode-row" aria-label="Color mode">
             <span>{settings.theme === 'dark' ? 'Dark mode' : 'Light mode'}</span>
@@ -3072,18 +3176,26 @@ function SidebarSettingsPanel({
             onChange={(visualStyle) => onChange({ visualStyle })}
           />
         </div>
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Screen edge</div>
+      <SettingsGroup
+        id="edge"
+        title="Screen edge"
+        collapsed={Boolean(collapsedSettingsGroups.edge)}
+        onToggle={toggleSettingsGroup}
+      >
         <DockEdgeSetting
           value={settings.dockEdge}
           onChange={(dockEdge) => onChange({ dockEdge })}
         />
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Layout</div>
+      <SettingsGroup
+        id="layout"
+        title="Layout"
+        collapsed={Boolean(collapsedSettingsGroups.layout)}
+        onToggle={toggleSettingsGroup}
+      >
         <SectionOrderSetting
           order={settings.sectionOrder}
           onReorder={(section, targetIndex) =>
@@ -3105,10 +3217,14 @@ function SidebarSettingsPanel({
             })
           }
         />
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Desktop</div>
+      <SettingsGroup
+        id="desktop"
+        title="Desktop"
+        collapsed={Boolean(collapsedSettingsGroups.desktop)}
+        onToggle={toggleSettingsGroup}
+      >
         <ToggleSetting
           label="Launch at login"
           checked={settings.launchAtLogin}
@@ -3119,13 +3235,25 @@ function SidebarSettingsPanel({
           checked={settings.notificationsEnabled}
           onChange={(notificationsEnabled) => onChange({ notificationsEnabled })}
         />
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group settings-backdrop-group">
-        <div className="settings-group-title">
-          <ImagePlus size={12} />
-          Backdrop
-        </div>
+      <SettingsGroup
+        id="connectors"
+        title="Connectors"
+        collapsed={Boolean(collapsedSettingsGroups.connectors)}
+        onToggle={toggleSettingsGroup}
+      >
+        <ConnectorSetting />
+      </SettingsGroup>
+
+      <SettingsGroup
+        id="backdrop"
+        title="Backdrop"
+        icon={<ImagePlus size={12} />}
+        collapsed={Boolean(collapsedSettingsGroups.backdrop)}
+        className="settings-backdrop-group"
+        onToggle={toggleSettingsGroup}
+      >
         <BackdropSetting
           error={backdropError}
           settings={settings}
@@ -3168,10 +3296,15 @@ function SidebarSettingsPanel({
             />
           </div>
         ) : null}
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group settings-size-group">
-        <div className="settings-group-title">Window & handle</div>
+      <SettingsGroup
+        id="window"
+        title="Window & handle"
+        collapsed={Boolean(collapsedSettingsGroups.window)}
+        className="settings-size-group"
+        onToggle={toggleSettingsGroup}
+      >
         <div className="deferred-setting">
           <SliderSetting
             label="Panel width"
@@ -3184,11 +3317,11 @@ function SidebarSettingsPanel({
           />
           <button
             type="button"
-            className="apply-setting"
+            className={`apply-setting ${isPanelWidthApplied ? 'is-applied' : ''}`}
             disabled={!hasPanelWidthDraft}
             onClick={applyPanelWidth}
           >
-            Apply
+            {isPanelWidthApplied ? 'Done' : 'Apply'}
           </button>
         </div>
         <div className="settings-range-grid">
@@ -3220,10 +3353,14 @@ function SidebarSettingsPanel({
             onChange={(handleY) => onChange({ handleY })}
           />
         </div>
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Tasks</div>
+      <SettingsGroup
+        id="tasks"
+        title="Tasks"
+        collapsed={Boolean(collapsedSettingsGroups.tasks)}
+        onToggle={toggleSettingsGroup}
+      >
         <TaskSortSetting
           value={settings.taskSortMode}
           onChange={(taskSortMode) => onChange({ taskSortMode })}
@@ -3260,10 +3397,14 @@ function SidebarSettingsPanel({
           suffix="px"
           onChange={(taskTextSize) => onChange({ taskTextSize })}
         />
-      </div>
+      </SettingsGroup>
 
-      <div className="settings-group">
-        <div className="settings-group-title">Feel</div>
+      <SettingsGroup
+        id="feel"
+        title="Feel"
+        collapsed={Boolean(collapsedSettingsGroups.feel)}
+        onToggle={toggleSettingsGroup}
+      >
         <SliderSetting
           label="Motion"
           value={settings.motionMs}
@@ -3291,8 +3432,64 @@ function SidebarSettingsPanel({
           suffix="%"
           onChange={(surfaceAlpha) => onChange({ surfaceAlpha })}
         />
+      </SettingsGroup>
+    </section>
+  )
+}
+
+function SettingsGroup({
+  children,
+  className = '',
+  collapsed,
+  icon,
+  id,
+  title,
+  onToggle,
+}: {
+  children: ReactNode
+  className?: string
+  collapsed: boolean
+  icon?: ReactNode
+  id: SettingsGroupId
+  title: string
+  onToggle: (id: SettingsGroupId) => void
+}) {
+  return (
+    <section className={`settings-group ${className} ${collapsed ? 'is-collapsed' : ''}`}>
+      <button
+        type="button"
+        className="settings-group-toggle"
+        aria-expanded={!collapsed}
+        onClick={() => onToggle(id)}
+      >
+        <span className="settings-group-title">
+          {icon}
+          {title}
+        </span>
+        <ChevronDown size={14} aria-hidden="true" />
+      </button>
+      <div className="settings-group-content" aria-hidden={collapsed}>
+        {children}
       </div>
     </section>
+  )
+}
+
+function ConnectorSetting() {
+  return (
+    <div className="connector-setting">
+      <div className="connector-mark" aria-hidden="true">
+        <Inbox size={17} />
+      </div>
+      <div className="connector-copy">
+        <strong>Gmail MCP</strong>
+        <span>Permissioned inbox context for future planning suggestions.</span>
+        <em>No email data is read in this build.</em>
+      </div>
+      <button type="button" disabled>
+        Locked
+      </button>
+    </div>
   )
 }
 
@@ -3539,6 +3736,8 @@ function SectionOrderSetting({
   onReorder: (section: SectionId, targetIndex: number) => void
 }) {
   const [draggingSection, setDraggingSection] = useState<SectionId | null>(null)
+  const [pointerDraggingSection, setPointerDraggingSection] =
+    useState<SectionId | null>(null)
   const labels: Record<SectionId, string> = {
     calendar: 'Calendar',
     lists: 'Lists',
@@ -3556,12 +3755,30 @@ function SectionOrderSetting({
     event.dataTransfer.dropEffect = 'move'
   }
 
+  useEffect(() => {
+    if (!pointerDraggingSection) {
+      return undefined
+    }
+
+    const stopDragging = () => setPointerDraggingSection(null)
+
+    window.addEventListener('pointerup', stopDragging)
+    window.addEventListener('pointercancel', stopDragging)
+
+    return () => {
+      window.removeEventListener('pointerup', stopDragging)
+      window.removeEventListener('pointercancel', stopDragging)
+    }
+  }, [pointerDraggingSection])
+
   return (
     <div className="section-order-list" aria-label="Section order">
       {order.map((section, index) => (
         <div
           className={`section-order-row ${
-            draggingSection === section ? 'is-dragging' : ''
+            draggingSection === section || pointerDraggingSection === section
+              ? 'is-dragging'
+              : ''
           }`}
           draggable
           key={section}
@@ -3572,6 +3789,11 @@ function SectionOrderSetting({
           }}
           onDragEnd={() => setDraggingSection(null)}
           onDragOver={(event) => onDragOverRow(event, section)}
+          onPointerEnter={() => {
+            if (pointerDraggingSection && pointerDraggingSection !== section) {
+              onReorder(pointerDraggingSection, index)
+            }
+          }}
           onDrop={(event) => {
             event.preventDefault()
 
@@ -3586,7 +3808,14 @@ function SectionOrderSetting({
             setDraggingSection(null)
           }}
         >
-          <span className="section-order-grip" aria-hidden="true">
+          <span
+            className="section-order-grip"
+            aria-hidden="true"
+            onPointerDown={(event) => {
+              event.preventDefault()
+              setPointerDraggingSection(section)
+            }}
+          >
             <GripVertical size={13} />
           </span>
           <span>{labels[section]}</span>
@@ -3695,7 +3924,9 @@ const TaskRow = memo(function TaskRow({
 }) {
   const [isEditing, setIsEditing] = useState(false)
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false)
+  const [togglePulse, setTogglePulse] = useState<'complete' | 'open' | null>(null)
   const [draft, setDraft] = useState(task.title)
+  const pulseTimeout = useRef<number | null>(null)
   const priorityLabel =
     task.priority === 'focus'
       ? 'Focus'
@@ -3726,19 +3957,40 @@ const TaskRow = memo(function TaskRow({
 
     setIsDeleteConfirmOpen(true)
   }
+  const toggleTaskDone = () => {
+    if (pulseTimeout.current) {
+      window.clearTimeout(pulseTimeout.current)
+    }
+
+    setTogglePulse(task.done ? 'open' : 'complete')
+    pulseTimeout.current = window.setTimeout(() => {
+      setTogglePulse(null)
+      pulseTimeout.current = null
+    }, 340)
+    onToggle?.(task.id)
+  }
+
+  useEffect(
+    () => () => {
+      if (pulseTimeout.current) {
+        window.clearTimeout(pulseTimeout.current)
+      }
+    },
+    [],
+  )
 
   return (
     <article
       className={`task-row priority-${task.priority} ${
         task.done ? 'is-complete' : ''
-      }`}
+      } ${togglePulse ? `is-pulse-${togglePulse}` : ''}`}
       style={{ '--row-delay': `${Math.min(index, 8) * 18}ms` } as CSSProperties}
     >
       <button
         type="button"
         className="check-button"
         aria-label={task.done ? `Mark ${task.title} open` : `Complete ${task.title}`}
-        onClick={() => onToggle?.(task.id)}
+        onClick={toggleTaskDone}
       >
         {task.done ? <Check size={13} /> : <Circle size={13} />}
       </button>
@@ -3766,6 +4018,9 @@ const TaskRow = memo(function TaskRow({
         )}
         <span>
           {task.meta}
+          {task.kind === 'event' ? (
+            <em className="task-kind-pill">Event</em>
+          ) : null}
           {reminderLabel ? (
             <em className="task-reminder">
               <Bell size={10} />
