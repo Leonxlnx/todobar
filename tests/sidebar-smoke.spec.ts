@@ -37,6 +37,23 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Priority' })).toBeVisible()
+  await page.getByRole('button', { name: 'Newest' }).click()
+  await expect(page.getByRole('button', { name: 'Newest' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(page.getByText('No custom backdrop', { exact: true })).toBeVisible()
+  await page.locator('.backdrop-actions input[type="file"]').setInputFiles({
+    buffer: Buffer.from(
+      'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAFgwJ/lFPccwAAAABJRU5ErkJggg==',
+      'base64',
+    ),
+    mimeType: 'image/png',
+    name: 'backdrop.png',
+  })
+  await expect(page.locator('.workspace')).toHaveClass(/has-custom-backdrop/)
+  await expect(page.getByText('Image strength', { exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Theme preset' }).click()
   await expect(page.getByRole('option')).toHaveCount(5)
@@ -135,6 +152,11 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     .click()
   const reminderToast = page.getByRole('status').filter({ hasText: 'Toast smoke' })
   await expect(reminderToast).toBeVisible()
+  await expect(
+    reminderToast.getByRole('button', {
+      name: 'Snooze Toast smoke 10 minutes',
+    }),
+  ).toBeVisible()
   await reminderToast.getByRole('button', { name: 'Open' }).click()
   await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
     'aria-current',
@@ -261,8 +283,7 @@ for (const viewport of viewports) {
 test('due reminders badge the closed handle without opening the sidebar', async ({
   page,
 }) => {
-  await page.goto('/')
-  await page.evaluate(() => {
+  await page.addInitScript(() => {
     window.localStorage.setItem('todobar.notified-reminders.v1', '{}')
     window.localStorage.setItem(
       'todobar.today.v1',
@@ -277,7 +298,7 @@ test('due reminders badge the closed handle without opening the sidebar', async 
       ]),
     )
   })
-  await page.reload()
+  await page.goto('/')
 
   await expect(page.locator('.workspace')).toHaveClass(/is-sidebar-closed/)
   await expect(page.locator('.handle-badge')).toHaveText('1')
@@ -289,11 +310,63 @@ test('due reminders badge the closed handle without opening the sidebar', async 
   })
 
   await expect(reminderToast).toBeVisible()
+  await expect(reminderToast.locator('.reminder-toast-copy strong')).toHaveCSS(
+    'color',
+    'rgb(17, 19, 24)',
+  )
+  await expect(
+    reminderToast.getByRole('button', {
+      name: 'Snooze Closed reminder 10 minutes',
+    }),
+  ).toBeVisible()
   await reminderToast.getByRole('button', { name: 'Open' }).click()
   await expect(page.getByRole('button', { name: 'Jump to Calendar' })).toHaveAttribute(
     'aria-current',
     'true',
   )
+})
+
+test('reminder toast snooze moves the reminder forward', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('todobar.notified-reminders.v1', '{}')
+    window.localStorage.setItem(
+      'todobar.today.v1',
+      JSON.stringify([
+        {
+          id: 99002,
+          meta: 'Today',
+          priority: 'normal',
+          reminderAt: '2020-01-01T09:00',
+          title: 'Snooze reminder',
+        },
+      ]),
+    )
+  })
+  await page.goto('/?open=1')
+
+  const reminderToast = page.getByRole('status').filter({
+    hasText: 'Snooze reminder',
+  })
+
+  await expect(reminderToast).toBeVisible()
+  await reminderToast
+    .getByRole('button', { name: 'Snooze Snooze reminder 10 minutes' })
+    .click()
+  await expect(reminderToast).toHaveCount(0)
+  await expect
+    .poll(async () =>
+      page.evaluate(() => {
+        const tasks = JSON.parse(
+          window.localStorage.getItem('todobar.today.v1') ?? '[]',
+        ) as Array<{ reminderAt?: string }>
+        const reminderAt = tasks[0]?.reminderAt
+
+        return Boolean(
+          reminderAt && new Date(reminderAt).getTime() > Date.now(),
+        )
+      }),
+    )
+    .toBe(true)
 })
 
 test('native closed dock keeps a rounded tab shape', async ({ page }) => {

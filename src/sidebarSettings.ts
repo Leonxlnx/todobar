@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react'
+import { scheduleLocalStorageWrite } from './storage'
 
 const STORAGE_KEY = 'todobar.sidebar.settings.v27'
 
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
+export type TaskSortMode = 'priority' | 'newest' | 'oldest'
 export type ThemePreset =
   | 'codex'
   | 'frost'
@@ -34,9 +36,15 @@ export type SidebarSettings = {
   showCompleted: boolean
   launchAtLogin: boolean
   notificationsEnabled: boolean
+  taskSortMode: TaskSortMode
   theme: ThemeMode
   visualStyle: ThemePreset
   sectionOrder: SectionId[]
+  backdropImage: string
+  backdropImageName: string
+  backdropOpacity: number
+  backdropBlur: number
+  backdropDim: number
 }
 
 export const defaultSidebarSettings: SidebarSettings = {
@@ -54,9 +62,15 @@ export const defaultSidebarSettings: SidebarSettings = {
   showCompleted: true,
   launchAtLogin: true,
   notificationsEnabled: true,
+  taskSortMode: 'priority',
   theme: 'light',
   visualStyle: 'codex',
   sectionOrder: ['today', 'calendar', 'lists'],
+  backdropImage: '',
+  backdropImageName: '',
+  backdropOpacity: 76,
+  backdropBlur: 0,
+  backdropDim: 18,
 }
 
 const clamp = (value: number, min: number, max: number) =>
@@ -95,7 +109,20 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       ? value.dockEdge
       : value.dockEdge === 'bottom'
         ? 'top'
-        : 'right'
+      : 'right'
+  const taskSortMode =
+    value.taskSortMode === 'newest' || value.taskSortMode === 'oldest'
+      ? value.taskSortMode
+      : 'priority'
+  const backdropImage =
+    typeof value.backdropImage === 'string' &&
+    value.backdropImage.startsWith('data:image/')
+      ? value.backdropImage
+      : ''
+  const backdropImageName =
+    backdropImage && typeof value.backdropImageName === 'string'
+      ? value.backdropImageName.slice(0, 80)
+      : ''
 
   return {
     dockEdge,
@@ -139,9 +166,27 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
     notificationsEnabled:
       value.notificationsEnabled ??
       defaultSidebarSettings.notificationsEnabled,
+    taskSortMode,
     theme,
     visualStyle,
     sectionOrder: sanitizeSectionOrder(value.sectionOrder),
+    backdropImage,
+    backdropImageName,
+    backdropOpacity: clamp(
+      value.backdropOpacity ?? defaultSidebarSettings.backdropOpacity,
+      30,
+      100,
+    ),
+    backdropBlur: clamp(
+      value.backdropBlur ?? defaultSidebarSettings.backdropBlur,
+      0,
+      18,
+    ),
+    backdropDim: clamp(
+      value.backdropDim ?? defaultSidebarSettings.backdropDim,
+      0,
+      70,
+    ),
   }
 }
 
@@ -188,11 +233,7 @@ export function useSidebarSettings() {
   })
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-    } catch {
-      // Desktop builds can later move this into a settings repository.
-    }
+    return scheduleLocalStorageWrite(STORAGE_KEY, JSON.stringify(settings), 700)
   }, [settings])
 
   const updateSettings = (patch: Partial<SidebarSettings>) => {

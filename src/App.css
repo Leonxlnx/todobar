@@ -63,6 +63,19 @@
     linear-gradient(180deg, #ffffff 0%, #f6f6f5 100%);
   --handle-hover-bg:
     linear-gradient(180deg, #ffffff 0%, #eeeeed 100%);
+  --toast-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.54), transparent),
+    var(--task-bg);
+  --toast-ink: var(--ink);
+  --toast-muted: var(--muted);
+  --toast-border: var(--accent-line);
+  --toast-icon-bg: var(--accent-soft);
+  --toast-button-bg: var(--accent-strong);
+  --toast-button-ink: var(--sidebar-solid-bg);
+  --custom-backdrop-image: none;
+  --backdrop-opacity: 0;
+  --backdrop-blur: 0px;
+  --backdrop-dim: 0;
 
   min-height: 100svh;
   position: relative;
@@ -118,6 +131,15 @@
     linear-gradient(180deg, #26262b 0%, #151518 100%);
   --handle-hover-bg:
     linear-gradient(180deg, #303036 0%, #19191d 100%);
+  --toast-bg:
+    radial-gradient(circle at 18% 0%, var(--accent-soft), transparent 42%),
+    linear-gradient(180deg, #181a20 0%, #0f1115 100%);
+  --toast-ink: #ffffff;
+  --toast-muted: #b8c1cf;
+  --toast-border: rgba(255, 255, 255, 0.12);
+  --toast-icon-bg: rgba(147, 197, 253, 0.11);
+  --toast-button-bg: #f8fafc;
+  --toast-button-ink: #0f1115;
 }
 
 .workspace.style-frost {
@@ -464,9 +486,51 @@
 }
 
 .desktop-preview {
+  position: relative;
   min-height: 100svh;
   display: grid;
   grid-template-rows: auto 1fr;
+  overflow: hidden;
+}
+
+.desktop-preview::before,
+.desktop-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    opacity 240ms ease,
+    filter 240ms ease;
+}
+
+.desktop-preview::before {
+  z-index: 0;
+  background-image: var(--custom-backdrop-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(var(--backdrop-blur));
+  transform: scale(1.03);
+}
+
+.desktop-preview::after {
+  z-index: 0;
+  background: rgba(8, 10, 14, var(--backdrop-dim));
+}
+
+.workspace.has-custom-backdrop .desktop-preview::before {
+  opacity: var(--backdrop-opacity);
+}
+
+.workspace.has-custom-backdrop .desktop-preview::after {
+  opacity: 1;
+}
+
+.system-bar,
+.canvas {
+  position: relative;
+  z-index: 1;
 }
 
 .system-bar {
@@ -1046,21 +1110,20 @@ kbd {
 .reminder-toast {
   min-height: 72px;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr) auto;
+  grid-template-columns: 30px minmax(0, 1fr);
   align-items: center;
   gap: 10px;
   padding: 10px 10px 10px 11px;
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--toast-ink);
+  border: 1px solid var(--toast-border);
   border-radius: 16px;
-  background:
-    radial-gradient(circle at 18% 0%, rgba(116, 168, 255, 0.2), transparent 42%),
-    linear-gradient(180deg, #181a20 0%, #0f1115 100%);
+  background: var(--toast-bg);
   box-shadow:
-    0 22px 54px rgba(14, 23, 38, 0.32),
-    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    0 22px 54px rgba(14, 23, 38, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
   pointer-events: auto;
   animation: toast-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  backdrop-filter: blur(16px) saturate(132%);
 }
 
 .reminder-toast-icon {
@@ -1071,7 +1134,7 @@ kbd {
   color: #93c5fd;
   border: 1px solid rgba(147, 197, 253, 0.22);
   border-radius: 11px;
-  background: rgba(147, 197, 253, 0.11);
+  background: var(--toast-icon-bg);
 }
 
 .reminder-toast-copy {
@@ -1089,30 +1152,33 @@ kbd {
 }
 
 .reminder-toast-copy strong {
-  color: #ffffff;
+  color: var(--toast-ink);
   font-size: 12px;
   line-height: 1.25;
   font-weight: 780;
 }
 
 .reminder-toast-copy span {
-  color: #b8c1cf;
+  color: var(--toast-muted);
   font-size: 10.8px;
   line-height: 1.25;
   font-weight: 640;
 }
 
 .reminder-toast-copy em {
-  color: #93c5fd;
+  color: var(--accent);
   font-size: 10px;
   font-style: normal;
   font-weight: 760;
 }
 
 .reminder-toast-actions {
+  grid-column: 2;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 5px;
+  margin-top: 3px;
 }
 
 .reminder-toast-actions button {
@@ -1120,26 +1186,38 @@ kbd {
   display: grid;
   place-items: center;
   padding: 0 10px;
-  color: #0f1115;
+  color: var(--toast-button-ink);
   font-size: 10.5px;
   font-weight: 780;
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9px;
-  background: #f8fafc;
+  background: var(--toast-button-bg);
   cursor: pointer;
 }
 
 .reminder-toast-actions button:hover {
-  border-color: rgba(147, 197, 253, 0.32);
-  background: #eaf2ff;
+  border-color: var(--accent-line);
+  background: var(--accent);
+}
+
+.reminder-toast-actions button.is-subtle {
+  color: var(--toast-muted);
+  border-color: var(--line);
+  background: var(--control-bg);
+}
+
+.reminder-toast-actions button.is-subtle:hover {
+  color: var(--toast-button-ink);
+  border-color: var(--accent-line);
+  background: var(--accent);
 }
 
 .reminder-toast-actions button.is-icon {
   width: 28px;
   padding: 0;
-  color: #b8c1cf;
-  border-color: rgba(255, 255, 255, 0.09);
-  background: rgba(255, 255, 255, 0.06);
+  color: var(--toast-muted);
+  border-color: var(--line);
+  background: var(--control-bg);
 }
 
 .todo-sidebar {
@@ -1161,10 +1239,37 @@ kbd {
   background: var(--sidebar-bg);
   box-shadow: var(--panel-shadow);
   backdrop-filter: blur(22px);
+  isolation: isolate;
   transform: translateX(calc(100% + 18px));
   transition:
     transform var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
     box-shadow var(--motion-ms) ease;
+}
+
+.todo-sidebar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image: var(--custom-backdrop-image);
+  background-position: center;
+  background-size: cover;
+  filter: blur(var(--backdrop-blur));
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(1.03);
+  transition: opacity 240ms ease;
+}
+
+.workspace.has-custom-backdrop .todo-sidebar::before {
+  opacity: calc(var(--backdrop-opacity) * 0.16);
+}
+
+.sidebar-content,
+.settings-drawer,
+.sidebar-rail {
+  position: relative;
+  z-index: 1;
 }
 
 .sidebar-content,
@@ -1824,9 +1929,9 @@ kbd {
 
 .deferred-setting {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 7px;
 }
 
 .settings-range-grid {
@@ -1835,8 +1940,9 @@ kbd {
 }
 
 .apply-setting {
-  min-width: 62px;
-  height: 34px;
+  justify-self: end;
+  min-width: 74px;
+  height: 30px;
   padding: 0 12px;
   color: var(--sidebar-solid-bg);
   font-size: 10.5px;
@@ -2175,6 +2281,148 @@ kbd {
   background: rgba(255, 255, 255, 0.36);
 }
 
+.backdrop-setting {
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  grid-template-areas:
+    'preview copy'
+    'preview actions';
+  gap: 8px 10px;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--settings-row);
+  box-shadow: var(--control-shadow);
+}
+
+.backdrop-preview {
+  grid-area: preview;
+  width: 58px;
+  height: 58px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.42), transparent),
+    var(--control-bg);
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.32);
+}
+
+.backdrop-preview.has-image {
+  border-color: var(--accent-line);
+}
+
+.backdrop-copy {
+  grid-area: copy;
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.backdrop-copy strong,
+.backdrop-copy span,
+.backdrop-copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.backdrop-copy strong {
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 720;
+}
+
+.backdrop-copy span {
+  color: var(--muted);
+  font-size: 10.5px;
+  line-height: 1.25;
+  font-weight: 640;
+}
+
+.backdrop-copy em {
+  color: #b42318;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 720;
+}
+
+.workspace.theme-dark .backdrop-copy em {
+  color: #f2a29b;
+}
+
+.backdrop-actions {
+  grid-area: actions;
+  display: flex;
+  gap: 6px;
+}
+
+.backdrop-actions label,
+.backdrop-actions button,
+.task-sort-setting button {
+  height: 30px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 10px;
+  color: var(--ink);
+  font-size: 10.5px;
+  font-weight: 760;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
+    var(--control-bg);
+  box-shadow: var(--control-shadow);
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.backdrop-actions label:hover,
+.backdrop-actions button:not(:disabled):hover,
+.task-sort-setting button:hover,
+.task-sort-setting button.is-selected {
+  color: var(--accent-strong);
+  border-color: var(--accent-line);
+  background: var(--accent-soft);
+  box-shadow: var(--control-shadow-hover);
+}
+
+.backdrop-actions button:disabled {
+  color: var(--muted);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.backdrop-actions input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+}
+
+.task-sort-setting {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.task-sort-setting button {
+  width: 100%;
+}
+
 .slider-setting {
   display: grid;
   gap: 7px;
@@ -2194,6 +2442,7 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
 .slider-setting strong {
@@ -2205,7 +2454,7 @@ kbd {
 
 .slider-setting em {
   flex: 0 0 auto;
-  min-width: 54px;
+  min-width: 48px;
   padding: 0;
   color: var(--muted);
   font-size: 11px;

@@ -11,6 +11,7 @@ import {
   Circle,
   Clock3,
   GripVertical,
+  ImagePlus,
   Inbox,
   ListTodo,
   Moon,
@@ -30,6 +31,7 @@ import {
 } from 'lucide-react'
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type {
+  ChangeEvent,
   CSSProperties,
   DragEvent,
   KeyboardEvent,
@@ -42,9 +44,11 @@ import type {
   DockEdge,
   SectionId,
   SidebarSettings,
+  TaskSortMode,
   ThemeMode,
   ThemePreset,
 } from './sidebarSettings'
+import { scheduleLocalStorageWrite } from './storage'
 import { initialToday, monthPlan } from './tasks'
 import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
@@ -160,7 +164,10 @@ type ReminderToast = {
   title: string
   body: string
   dueLabel: string
+  listId?: string
   reminderAt?: string
+  source: CalendarTaskRef['source']
+  taskId: number
 }
 
 const defaultCustomLists: CustomTaskList[] = [
@@ -190,10 +197,18 @@ type HandleDragState = {
   latestHandleY: number | null
 }
 
-function sortTasks(tasks: Task[]) {
+function sortTasks(tasks: Task[], sortMode: TaskSortMode = 'priority') {
   return [...tasks].sort((a, b) => {
     if (Boolean(a.done) !== Boolean(b.done)) {
       return a.done ? 1 : -1
+    }
+
+    if (sortMode === 'newest') {
+      return b.id - a.id
+    }
+
+    if (sortMode === 'oldest') {
+      return a.id - b.id
     }
 
     const priorityDelta = PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]
@@ -345,6 +360,31 @@ function buildCalendarDays(
   const gridStart = new Date(monthStart)
   const mondayOffset = (monthStart.getDay() + 6) % 7
   const todayKey = formatDateKey(new Date())
+  const taskCountsByDate = new Map<
+    string,
+    {
+      doneCount: number
+      taskCount: number
+    }
+  >()
+
+  for (const { task } of tasks) {
+    const reminderDate = parseReminderDate(task.reminderAt)
+
+    if (!reminderDate) {
+      continue
+    }
+
+    const key = formatDateKey(reminderDate)
+    const counts = taskCountsByDate.get(key) ?? {
+      doneCount: 0,
+      taskCount: 0,
+    }
+
+    counts.taskCount += 1
+    counts.doneCount += task.done ? 1 : 0
+    taskCountsByDate.set(key, counts)
+  }
 
   gridStart.setDate(monthStart.getDate() - mondayOffset)
 
@@ -353,19 +393,15 @@ function buildCalendarDays(
     date.setDate(gridStart.getDate() + index)
 
     const key = formatDateKey(date)
-    const dayTasks = tasks.filter(({ task }) => {
-      const reminderDate = parseReminderDate(task.reminderAt)
-
-      return reminderDate ? formatDateKey(reminderDate) === key : false
-    })
+    const counts = taskCountsByDate.get(key)
 
     return {
       date,
-      doneCount: dayTasks.filter(({ task }) => task.done).length,
+      doneCount: counts?.doneCount ?? 0,
       isCurrentMonth: date.getMonth() === cursor.getMonth(),
       isToday: key === todayKey,
       key,
-      taskCount: dayTasks.length,
+      taskCount: counts?.taskCount ?? 0,
     }
   })
 }
@@ -585,14 +621,18 @@ function App() {
   const dismissReminderToast = useCallback((id: string) => {
     setReminderToasts((current) => current.filter((toast) => toast.id !== id))
   }, [])
-  const pushReminderToast = useCallback((task: Task, listTitle: string) => {
+  const pushReminderToast = useCallback((item: CalendarTaskRef) => {
+    const { listId, listTitle, source, task } = item
     const id = `${task.id}:${task.reminderAt ?? 'now'}`
     const toast: ReminderToast = {
       id,
+      listId,
       title: task.title,
       body: `${listTitle} · ${task.meta}`,
       dueLabel: formatReminder(task.reminderAt) || 'now',
       reminderAt: task.reminderAt,
+      source,
+      taskId: task.id,
     }
 
     setReminderToasts((current) => [
@@ -617,8 +657,14 @@ function App() {
   )
   const progressPercent =
     todayTasks.length === 0 ? 0 : Math.round((completed / todayTasks.length) * 100)
-  const sortedTodayTasks = useMemo(() => sortTasks(todayTasks), [todayTasks])
-  const sortedMonthTasks = useMemo(() => sortTasks(monthTasks), [monthTasks])
+  const sortedTodayTasks = useMemo(
+    () => sortTasks(todayTasks, settings.taskSortMode),
+    [settings.taskSortMode, todayTasks],
+  )
+  const sortedMonthTasks = useMemo(
+    () => sortTasks(monthTasks, settings.taskSortMode),
+    [monthTasks, settings.taskSortMode],
+  )
   const visibleTodayTasks = useMemo(
     () =>
       settings.showCompleted
@@ -948,14 +994,28 @@ function App() {
   }, [])
 
   useEffect(() => {
+    let frame = 0
     const syncViewportSize = () => {
-      setViewportWidth(window.innerWidth)
-      setViewportHeight(window.innerHeight)
+      if (frame) {
+        return
+      }
+
+      frame = window.requestAnimationFrame(() => {
+        frame = 0
+        setViewportWidth(window.innerWidth)
+        setViewportHeight(window.innerHeight)
+      })
     }
 
     syncViewportSize()
     window.addEventListener('resize', syncViewportSize)
-    return () => window.removeEventListener('resize', syncViewportSize)
+    return () => {
+      window.removeEventListener('resize', syncViewportSize)
+
+      if (frame) {
+        window.cancelAnimationFrame(frame)
+      }
+    }
   }, [])
 
   useEffect(() => {
@@ -967,14 +1027,10 @@ function App() {
   }, [isNative])
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(
-        CUSTOM_LISTS_STORAGE_KEY,
-        JSON.stringify(customLists),
-      )
-    } catch {
-      // Desktop builds can move custom lists into the same local store as tasks.
-    }
+    return scheduleLocalStorageWrite(
+      CUSTOM_LISTS_STORAGE_KEY,
+      JSON.stringify(customLists),
+    )
   }, [customLists])
 
   useEffect(() => {
@@ -985,7 +1041,9 @@ function App() {
     const checkReminders = () => {
       const now = Date.now()
 
-      for (const { listTitle, task } of reminderTasks) {
+      for (const item of reminderTasks) {
+        const { task } = item
+
         if (!task.reminderAt || task.done) {
           continue
         }
@@ -1007,7 +1065,7 @@ function App() {
           NOTIFIED_REMINDERS_STORAGE_KEY,
           JSON.stringify(notifiedReminderKeys.current),
         )
-        pushReminderToast(task, listTitle)
+        pushReminderToast(item)
       }
     }
 
@@ -1786,6 +1844,29 @@ function App() {
     dismissReminderToast(toast.id)
   }
 
+  const snoozeReminderToast = (toast: ReminderToast, minutes = 10) => {
+    const nextReminder = new Date()
+    nextReminder.setMinutes(nextReminder.getMinutes() + minutes)
+    nextReminder.setSeconds(0, 0)
+
+    const updateReminder = (tasks: Task[]) =>
+      tasks.map((task) =>
+        task.id === toast.taskId
+          ? { ...task, reminderAt: toLocalDateTimeValue(nextReminder) }
+          : task,
+      )
+
+    if (toast.source === 'custom') {
+      if (toast.listId) {
+        updateCustomListTasks(toast.listId, updateReminder)
+      }
+    } else {
+      updateTasks(toast.source, updateReminder)
+    }
+
+    dismissReminderToast(toast.id)
+  }
+
   const openSettings = () => {
     setIsOpen(true)
     setIsSettingsOpen(true)
@@ -1893,12 +1974,22 @@ function App() {
     '--task-gap': `${settings.taskGap}px`,
     '--task-title-size': `${settings.taskTextSize}px`,
     '--task-meta-size': `${Math.max(10, settings.taskTextSize - 1.5)}px`,
+    '--custom-backdrop-image': settings.backdropImage
+      ? `url("${settings.backdropImage}")`
+      : 'none',
+    '--backdrop-opacity': settings.backdropImage
+      ? `${settings.backdropOpacity / 100}`
+      : '0',
+    '--backdrop-blur': `${settings.backdropBlur}px`,
+    '--backdrop-dim': `${settings.backdropDim / 100}`,
   } as CSSProperties
 
   return (
     <main
       className={`workspace ${isNative ? 'is-native' : 'is-web-preview'} ${
         isOpen ? 'is-sidebar-open' : 'is-sidebar-closed'
+      } ${
+        settings.backdropImage ? 'has-custom-backdrop' : ''
       } dock-${settings.dockEdge} theme-${settings.theme} style-${settings.visualStyle}`}
       style={appStyle}
     >
@@ -1996,6 +2087,7 @@ function App() {
         toasts={reminderToasts}
         onClose={dismissReminderToast}
         onOpen={openReminderToast}
+        onSnooze={snoozeReminderToast}
       />
 
       <aside
@@ -2115,7 +2207,10 @@ function App() {
                           </div>
                           <div className="pinned-list-stack">
                             {pinnedTodayLists.map((list) => {
-                              const sortedTasks = sortTasks(list.tasks)
+                              const sortedTasks = sortTasks(
+                                list.tasks,
+                                settings.taskSortMode,
+                              )
                               const visibleTasks = settings.showCompleted
                                 ? sortedTasks
                                 : sortedTasks.filter((task) => !task.done)
@@ -2402,7 +2497,10 @@ function App() {
 
                   <div className="custom-list-stack">
                     {customLists.map((list) => {
-                      const sortedTasks = sortTasks(list.tasks)
+                      const sortedTasks = sortTasks(
+                        list.tasks,
+                        settings.taskSortMode,
+                      )
                       const visibleTasks = settings.showCompleted
                         ? sortedTasks
                         : sortedTasks.filter((task) => !task.done)
@@ -2584,10 +2682,12 @@ function ReminderToastStack({
   toasts,
   onClose,
   onOpen,
+  onSnooze,
 }: {
   toasts: ReminderToast[]
   onClose: (id: string) => void
   onOpen: (toast: ReminderToast) => void
+  onSnooze: (toast: ReminderToast) => void
 }) {
   return (
     <section
@@ -2607,6 +2707,14 @@ function ReminderToastStack({
             <em>Due {toast.dueLabel}</em>
           </div>
           <div className="reminder-toast-actions">
+            <button
+              type="button"
+              className="is-subtle"
+              aria-label={`Snooze ${toast.title} 10 minutes`}
+              onClick={() => onSnooze(toast)}
+            >
+              10m
+            </button>
             <button type="button" onClick={() => onOpen(toast)}>
               Open
             </button>
@@ -2846,6 +2954,45 @@ function SidebarSettingsPanel({
       value: draftPanelWidth,
     })
   }
+  const [backdropError, setBackdropError] = useState('')
+  const onBackdropUpload = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.currentTarget.files?.[0]
+    event.currentTarget.value = ''
+
+    if (!file) {
+      return
+    }
+
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setBackdropError('Use PNG, JPG, or WebP.')
+      return
+    }
+
+    if (file.size > 1_500_000) {
+      setBackdropError('Keep the image under 1.5 MB.')
+      return
+    }
+
+    const reader = new FileReader()
+
+    reader.onload = () => {
+      const result = typeof reader.result === 'string' ? reader.result : ''
+
+      if (!result.startsWith('data:image/')) {
+        setBackdropError('Could not read that image.')
+        return
+      }
+
+      setBackdropError('')
+      onChange({
+        backdropImage: result,
+        backdropImageName: file.name,
+      })
+    }
+
+    reader.onerror = () => setBackdropError('Could not read that image.')
+    reader.readAsDataURL(file)
+  }
 
   return (
     <section className="settings-panel" aria-label="Sidebar settings">
@@ -2974,6 +3121,55 @@ function SidebarSettingsPanel({
         />
       </div>
 
+      <div className="settings-group settings-backdrop-group">
+        <div className="settings-group-title">
+          <ImagePlus size={12} />
+          Backdrop
+        </div>
+        <BackdropSetting
+          error={backdropError}
+          settings={settings}
+          onClear={() =>
+            onChange({
+              backdropImage: '',
+              backdropImageName: '',
+            })
+          }
+          onUpload={onBackdropUpload}
+        />
+        {settings.backdropImage ? (
+          <div className="settings-range-grid">
+            <SliderSetting
+              label="Image strength"
+              value={settings.backdropOpacity}
+              min={30}
+              max={100}
+              step={1}
+              suffix="%"
+              onChange={(backdropOpacity) => onChange({ backdropOpacity })}
+            />
+            <SliderSetting
+              label="Background dim"
+              value={settings.backdropDim}
+              min={0}
+              max={70}
+              step={1}
+              suffix="%"
+              onChange={(backdropDim) => onChange({ backdropDim })}
+            />
+            <SliderSetting
+              label="Soft blur"
+              value={settings.backdropBlur}
+              min={0}
+              max={18}
+              step={1}
+              suffix="px"
+              onChange={(backdropBlur) => onChange({ backdropBlur })}
+            />
+          </div>
+        ) : null}
+      </div>
+
       <div className="settings-group settings-size-group">
         <div className="settings-group-title">Window & handle</div>
         <div className="deferred-setting">
@@ -3028,6 +3224,10 @@ function SidebarSettingsPanel({
 
       <div className="settings-group">
         <div className="settings-group-title">Tasks</div>
+        <TaskSortSetting
+          value={settings.taskSortMode}
+          onChange={(taskSortMode) => onChange({ taskSortMode })}
+        />
         <ToggleSetting
           label="Show completed"
           checked={settings.showCompleted}
@@ -3201,6 +3401,64 @@ function ThemePresetDropdown({
   )
 }
 
+function BackdropSetting({
+  error,
+  settings,
+  onClear,
+  onUpload,
+}: {
+  error: string
+  settings: SidebarSettings
+  onClear: () => void
+  onUpload: (event: ChangeEvent<HTMLInputElement>) => void
+}) {
+  return (
+    <div className="backdrop-setting">
+      <div
+        className={`backdrop-preview ${
+          settings.backdropImage ? 'has-image' : ''
+        }`}
+        style={
+          settings.backdropImage
+            ? { backgroundImage: `url("${settings.backdropImage}")` }
+            : undefined
+        }
+        aria-hidden="true"
+      >
+        {settings.backdropImage ? null : <ImagePlus size={18} />}
+      </div>
+      <div className="backdrop-copy">
+        <strong>
+          {settings.backdropImageName || 'No custom backdrop'}
+        </strong>
+        <span>
+          {settings.backdropImage
+            ? 'Used softly in preview and sidebar surfaces.'
+            : 'Upload a small local image for the workspace and panel texture.'}
+        </span>
+        {error ? <em>{error}</em> : null}
+      </div>
+      <div className="backdrop-actions">
+        <label>
+          Upload
+          <input
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            onChange={onUpload}
+          />
+        </label>
+        <button
+          type="button"
+          disabled={!settings.backdropImage}
+          onClick={onClear}
+        >
+          Clear
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function DockEdgeSetting({
   value,
   onChange,
@@ -3237,6 +3495,36 @@ function DockEdgeSetting({
       >
         Right
       </button>
+    </div>
+  )
+}
+
+function TaskSortSetting({
+  value,
+  onChange,
+}: {
+  value: TaskSortMode
+  onChange: (value: TaskSortMode) => void
+}) {
+  const options: Array<{ label: string; value: TaskSortMode }> = [
+    { label: 'Priority', value: 'priority' },
+    { label: 'Newest', value: 'newest' },
+    { label: 'Oldest', value: 'oldest' },
+  ]
+
+  return (
+    <div className="task-sort-setting" aria-label="Task sort order">
+      {options.map((option) => (
+        <button
+          type="button"
+          key={option.value}
+          className={value === option.value ? 'is-selected' : ''}
+          aria-pressed={value === option.value}
+          onClick={() => onChange(option.value)}
+        >
+          {option.label}
+        </button>
+      ))}
     </div>
   )
 }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Task } from './tasks'
+import { scheduleLocalStorageWrite } from './storage'
 
 export function usePersistentTasks(seedTasks: Task[], storageKey: string) {
   const [tasks, setTasks] = useState<Task[]>(() => {
@@ -18,11 +19,7 @@ export function usePersistentTasks(seedTasks: Task[], storageKey: string) {
   })
 
   useEffect(() => {
-    try {
-      window.localStorage.setItem(storageKey, JSON.stringify(tasks))
-    } catch {
-      // Desktop builds can swap this for SQLite or an encrypted local store.
-    }
+    return scheduleLocalStorageWrite(storageKey, JSON.stringify(tasks))
   }, [storageKey, tasks])
 
   return [tasks, setTasks] as const
