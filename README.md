@@ -46,15 +46,18 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Clean icon rail for Today, Calendar, Lists, and Settings
 - Custom Todobar reminder toasts that appear inside the overlay instead of the
   operating system notification tray
+- 10-minute snooze from reminder toasts
 - Optional completed-task visibility
 - Local persistence through browser storage
 - Light and dark modes with matching mode-specific theme presets
 - Custom theme dropdown with five matching light presets and five matching dark
   presets
+- Optional custom backdrop image with strength, dim, and blur controls
 - Rearrange Today, Calendar, and Lists from settings
 - Adjustable panel width, visible tab size, handle height, edge position,
-  motion speed, corner radius, task row height, task spacing, task text size,
-  completed-task visibility, launch-at-login, notifications, and surface opacity
+  motion speed, corner radius, task sort mode, task row height, task spacing,
+  task text size, completed-task visibility, launch-at-login, notifications,
+  and surface opacity
 - Responsive sizing for different monitor heights and widths
 
 ## Platform Status
@@ -113,7 +116,7 @@ The detailed plan lives in [Product vision](docs/product-vision.md) and
 Download the latest Windows or macOS build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.6`.
+Current stable release: `v0.1.7`.
 
 Windows:
 
@@ -140,7 +143,8 @@ choose Open.
 - Use the command rail to jump between Today, Calendar, Lists, and setup
   without turning the sidebar into a full dashboard.
 - Use the settings button to adjust appearance, dock edge, desktop startup,
-  window size, handle shape, task density, motion, radius, and opacity.
+  window size, handle shape, task density, sorting, backdrop image, motion,
+  radius, and opacity.
 
 ## Data and Privacy
 
@@ -286,7 +290,7 @@ Useful starting points:
 - [Product vision](docs/product-vision.md)
 - [UI direction](docs/ui-direction.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.6.md)
+- [Release verification](docs/release-verification-v0.1.7.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)

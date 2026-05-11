@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+## 0.1.7 - Performance and Personalization
+
+### Added
+
+- Added task sorting controls so lists can stay priority-first, newest-first,
+  or oldest-first without changing the stored tasks.
+- Added custom backdrop image support with strength, dim, and blur controls for
+  users who want a more personal desktop overlay.
+- Added a 10-minute snooze action to custom reminder toasts.
+
+### Changed
+
+- Debounced local task, custom-list, and settings persistence so normal typing
+  and slider movement do less synchronous storage work.
+- Indexed calendar reminder counts once per render instead of filtering all
+  tasks for every visible calendar day.
+- Reworked the staged panel-width setting so Apply no longer gets squeezed next
+  to the range control.
+
+### Fixed
+
+- Fixed light-mode reminder toast colors so in-app alerts follow the active
+  theme instead of looking like a dark OS notification.
+
 ## 0.1.6 - Sidebar Polish and Reminder Badges
 
 ### Added
