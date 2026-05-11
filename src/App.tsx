@@ -45,6 +45,7 @@ import type {
   DockEdge,
   SectionId,
   SidebarSettings,
+  TabVisibility,
   TaskSortMode,
   ThemeMode,
   ThemePreset,
@@ -61,6 +62,8 @@ const TASK_STORAGE_KEYS = {
 } as const
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
+const SETTINGS_GROUPS_STORAGE_KEY = 'todobar.settings.groups.v1'
+const GMAIL_CONNECTOR_STORAGE_KEY = 'todobar.gmail-connector.v1'
 const TOP_DOCK_MIN_PANEL_WIDTH = 720
 const TOP_DOCK_MAX_PANEL_WIDTH = 1120
 const TOP_DOCK_WIDTH_MULTIPLIER = 2
@@ -2043,7 +2046,7 @@ function App() {
         isOpen ? 'is-sidebar-open' : 'is-sidebar-closed'
       } ${
         settings.backdropImage ? 'has-custom-backdrop' : ''
-      } dock-${settings.dockEdge} theme-${settings.theme} style-${settings.visualStyle}`}
+      } dock-${settings.dockEdge} tab-${settings.tabVisibility} theme-${settings.theme} style-${settings.visualStyle}`}
       style={appStyle}
     >
       <section
@@ -2279,7 +2282,7 @@ function App() {
                                     <span>{list.tasks.length} tasks</span>
                                   </div>
                                   {visibleTasks.length > 0 ? (
-                                    <div className="task-list compact-task-list">
+                                    <div className="task-list compact-task-list pinned-task-list">
                                       {visibleTasks.map((task, index) => (
                                         <TaskRow
                                           key={task.id}
@@ -3017,7 +3020,18 @@ function SidebarSettingsPanel({
   const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false)
   const [collapsedSettingsGroups, setCollapsedSettingsGroups] = useState<
     Partial<Record<SettingsGroupId, boolean>>
-  >({})
+  >(() => {
+    try {
+      const stored = window.localStorage.getItem(SETTINGS_GROUPS_STORAGE_KEY)
+      const parsed = stored
+        ? (JSON.parse(stored) as Partial<Record<SettingsGroupId, boolean>>)
+        : {}
+
+      return parsed && typeof parsed === 'object' ? parsed : {}
+    } catch {
+      return {}
+    }
+  })
   const [panelWidthDraft, setPanelWidthDraft] = useState(() => ({
     base: settings.panelWidth,
     value: settings.panelWidth,
@@ -3050,11 +3064,32 @@ function SidebarSettingsPanel({
     })
   }
   const toggleSettingsGroup = (group: SettingsGroupId) => {
-    setCollapsedSettingsGroups((current) => ({
-      ...current,
-      [group]: !current[group],
-    }))
+    setCollapsedSettingsGroups((current) => {
+      const next = {
+        ...current,
+        [group]: !current[group],
+      }
+
+      try {
+        window.localStorage.setItem(
+          SETTINGS_GROUPS_STORAGE_KEY,
+          JSON.stringify(next),
+        )
+      } catch {
+        // A failed preference write should not block the settings UI.
+      }
+
+      return next
+    })
   }
+
+  useEffect(() => {
+    return scheduleLocalStorageWrite(
+      SETTINGS_GROUPS_STORAGE_KEY,
+      JSON.stringify(collapsedSettingsGroups),
+      180,
+    )
+  }, [collapsedSettingsGroups])
   const [backdropError, setBackdropError] = useState('')
   const onBackdropUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.currentTarget.files?.[0]
@@ -3321,10 +3356,24 @@ function SidebarSettingsPanel({
             disabled={!hasPanelWidthDraft}
             onClick={applyPanelWidth}
           >
-            {isPanelWidthApplied ? 'Done' : 'Apply'}
+            Apply
           </button>
+          {isPanelWidthApplied ? (
+            <span className="apply-feedback" role="status">
+              Applied
+            </span>
+          ) : null}
         </div>
         <div className="settings-range-grid">
+          <ToggleSetting
+            label="Hover-only tab"
+            checked={settings.tabVisibility === 'hover'}
+            onChange={(checked) =>
+              onChange({
+                tabVisibility: (checked ? 'hover' : 'always') as TabVisibility,
+              })
+            }
+          />
           <SliderSetting
             label="Visible tab"
             value={settings.tabWidth}
@@ -3424,12 +3473,13 @@ function SidebarSettingsPanel({
           onChange={(panelRadius) => onChange({ panelRadius })}
         />
         <SliderSetting
-          label="Surface"
+          label="Surface opacity"
           value={settings.surfaceAlpha}
           min={86}
           max={100}
           step={1}
           suffix="%"
+          description="Controls how solid the panel surface feels. Lower values show more of the workspace behind it."
           onChange={(surfaceAlpha) => onChange({ surfaceAlpha })}
         />
       </SettingsGroup>
@@ -3476,19 +3526,85 @@ function SettingsGroup({
 }
 
 function ConnectorSetting() {
+  const [isSetupOpen, setIsSetupOpen] = useState(false)
+  const [serverTarget, setServerTarget] = useState(() => {
+    try {
+      const stored = window.localStorage.getItem(GMAIL_CONNECTOR_STORAGE_KEY)
+      const parsed = stored
+        ? (JSON.parse(stored) as { serverTarget?: string })
+        : {}
+
+      return typeof parsed.serverTarget === 'string' ? parsed.serverTarget : ''
+    } catch {
+      return ''
+    }
+  })
+  const hasServerTarget = serverTarget.trim().length > 0
+  const updateServerTarget = (value: string) => {
+    setServerTarget(value)
+
+    try {
+      window.localStorage.setItem(
+        GMAIL_CONNECTOR_STORAGE_KEY,
+        JSON.stringify({
+          serverTarget: value.trim(),
+        }),
+      )
+    } catch {
+      // Connector setup can still be edited even if local persistence fails.
+    }
+  }
+
+  useEffect(() => {
+    return scheduleLocalStorageWrite(
+      GMAIL_CONNECTOR_STORAGE_KEY,
+      JSON.stringify({
+        serverTarget: serverTarget.trim(),
+      }),
+      220,
+    )
+  }, [serverTarget])
+
   return (
-    <div className="connector-setting">
-      <div className="connector-mark" aria-hidden="true">
-        <Inbox size={17} />
+    <div className={`connector-setting ${isSetupOpen ? 'is-open' : ''}`}>
+      <div className="connector-summary">
+        <div className="connector-mark" aria-hidden="true">
+          <Inbox size={17} />
+        </div>
+        <div className="connector-copy">
+          <strong>Gmail MCP</strong>
+          <span>Connect a local or HTTP MCP server before inbox context is used.</span>
+          <em>{hasServerTarget ? 'Setup saved · not authorized' : 'No email data is read yet.'}</em>
+        </div>
+        <button
+          type="button"
+          aria-expanded={isSetupOpen}
+          onClick={() => setIsSetupOpen((current) => !current)}
+        >
+          {isSetupOpen ? 'Close' : hasServerTarget ? 'Edit' : 'Setup'}
+        </button>
       </div>
-      <div className="connector-copy">
-        <strong>Gmail MCP</strong>
-        <span>Permissioned inbox context for future planning suggestions.</span>
-        <em>No email data is read in this build.</em>
-      </div>
-      <button type="button" disabled>
-        Locked
-      </button>
+      {isSetupOpen ? (
+        <div className="connector-setup">
+          <label>
+            <span>MCP server</span>
+            <input
+              type="text"
+              value={serverTarget}
+              placeholder="http://localhost:3333/mcp or stdio command"
+              onChange={(event) => updateServerTarget(event.target.value)}
+            />
+          </label>
+          <p>
+            Gmail sign-in needs a real Gmail MCP server or Google OAuth client.
+            Todobar stores only this endpoint/command until the native MCP runner is added.
+          </p>
+          <div className="connector-status" role="status">
+            <span className={hasServerTarget ? 'is-ready' : ''} />
+            {hasServerTarget ? 'Ready for native MCP auth' : 'Waiting for MCP target'}
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
@@ -3868,6 +3984,7 @@ function ToggleSetting({
 }
 
 function SliderSetting({
+  description,
   label,
   value,
   min,
@@ -3876,6 +3993,7 @@ function SliderSetting({
   suffix,
   onChange,
 }: {
+  description?: string
   label: string
   value: number
   min: number
@@ -3901,6 +4019,7 @@ function SliderSetting({
         value={value}
         onChange={(event) => onChange(Number(event.target.value))}
       />
+      {description ? <small>{description}</small> : null}
     </label>
   )
 }

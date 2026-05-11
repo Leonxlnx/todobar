@@ -53,10 +53,14 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Custom theme dropdown with five matching light presets and five matching dark
   presets
 - Optional custom backdrop image with strength, dim, and blur controls
+- Optional hover-only visible tab mode for a quieter desktop edge
+- Theme-matched custom scrollbars in the sidebar and settings surfaces
 - Rearrange Today, Calendar, and Lists from settings
-- Collapse settings groups while tuning the sidebar
-- Gmail MCP connector surface for future permissioned inbox context. It does
-  not read email data in the current build.
+- Collapse settings groups while tuning the sidebar, with the open/closed state
+  remembered locally
+- Gmail MCP setup surface for a future native MCP runner. It can store a local
+  or HTTP MCP target, but Gmail sign-in still requires a real MCP server or
+  Google OAuth client; the current build does not read email data.
 - Adjustable panel width, visible tab size, handle height, edge position,
   motion speed, corner radius, task sort mode, task row height, task spacing,
   task text size, completed-task visibility, launch-at-login, notifications,

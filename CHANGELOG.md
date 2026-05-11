@@ -9,16 +9,24 @@
   permission boundary without reading email data.
 - Added Calendar entry mode controls so selected-day capture can create tasks
   or events.
+- Added a hover-only visible tab setting for users who want the edge handle to
+  stay hidden until the screen edge is hovered.
+- Added persistent settings group collapse state.
 
 ### Changed
 
 - Made task completion and reopening feel smoother without replaying the row
   entrance animation.
-- Improved pinned list copy and list surfaces so custom lists are easier to
-  distinguish while editing.
-- Reduced heavy dark-mode gradients and bevel lines on settings controls.
+- Flattened pinned list and custom list sections to avoid card-in-card layouts.
+- Reduced heavy dark-mode gradients, rail icon bevels, and settings control
+  contrast.
+- Reworked the themed scrollbar styling for the sidebar, settings, and theme
+  picker surfaces.
+- Reworked panel-width Apply feedback to stay pale instead of switching to a
+  bright blue Done state.
 - Added pointer-based section reordering in settings so Today, Calendar, and
   Lists can be dragged more reliably.
+- Clarified the Surface opacity setting and the Gmail MCP permission boundary.
 
 ## 0.1.7 - Performance and Personalization
 

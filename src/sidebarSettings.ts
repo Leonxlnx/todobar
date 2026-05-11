@@ -6,6 +6,7 @@ const STORAGE_KEY = 'todobar.sidebar.settings.v27'
 export type DockEdge = 'right' | 'left' | 'top' | 'bottom'
 export type ThemeMode = 'light' | 'dark'
 export type TaskSortMode = 'priority' | 'newest' | 'oldest'
+export type TabVisibility = 'always' | 'hover'
 export type ThemePreset =
   | 'codex'
   | 'frost'
@@ -24,6 +25,7 @@ export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
 export type SidebarSettings = {
   dockEdge: DockEdge
   panelWidth: number
+  tabVisibility: TabVisibility
   tabWidth: number
   handleHeight: number
   handleY: number
@@ -50,6 +52,7 @@ export type SidebarSettings = {
 export const defaultSidebarSettings: SidebarSettings = {
   dockEdge: 'right',
   panelWidth: 400,
+  tabVisibility: 'always',
   tabWidth: 42,
   handleHeight: 84,
   handleY: 50,
@@ -114,6 +117,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
     value.taskSortMode === 'newest' || value.taskSortMode === 'oldest'
       ? value.taskSortMode
       : 'priority'
+  const tabVisibility = value.tabVisibility === 'hover' ? 'hover' : 'always'
   const backdropImage =
     typeof value.backdropImage === 'string' &&
     value.backdropImage.startsWith('data:image/')
@@ -131,6 +135,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       320,
       560,
     ),
+    tabVisibility,
     tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 26, 88),
     handleHeight: clamp(
       value.handleHeight ?? defaultSidebarSettings.handleHeight,
