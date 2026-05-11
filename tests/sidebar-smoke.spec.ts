@@ -483,3 +483,34 @@ test('native top dock keeps a wider outside tab shape', async ({ page }) => {
   )
   await expect(page.locator('.todo-sidebar')).toHaveCSS('width', '800px')
 })
+
+test('native hover-only reveal zone stays inside the visible tab strip', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'todobar.sidebar.settings.v27',
+      JSON.stringify({
+        dockEdge: 'right',
+        handleHeight: 84,
+        panelWidth: 400,
+        tabVisibility: 'hover',
+        tabWidth: 42,
+      }),
+    )
+  })
+  await page.setViewportSize({ height: 900, width: 442 })
+
+  await page.goto('/?runtime=tauri&dock=right')
+  await expect(page.locator('.workspace')).toHaveClass(/tab-hover/)
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('left', '0px')
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('width', '42px')
+
+  await page.goto('/?runtime=tauri&dock=left')
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('left', '392px')
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('width', '42px')
+
+  await page.goto('/?runtime=tauri&dock=top')
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('top', '400px')
+  await expect(page.locator('.edge-hover-zone')).toHaveCSS('height', '42px')
+})

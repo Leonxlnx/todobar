@@ -45,6 +45,11 @@
 - Prefilled Gmail MCP setup with Google's Workspace MCP endpoint and an OAuth
   client ID field for the future native auth runner.
 
+### Fixed
+
+- Fixed hover-only tab reveal in the native desktop shell so right, left, and
+  top docks expose the invisible edge trigger inside the visible tab strip.
+
 ## 0.1.7 - Performance and Personalization
 
 ### Added

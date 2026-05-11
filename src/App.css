@@ -1036,6 +1036,23 @@ kbd {
   height: 8px;
 }
 
+.workspace.is-native.dock-right.tab-hover.is-sidebar-closed .edge-hover-zone {
+  right: auto;
+  left: 0;
+  width: var(--tab-width);
+}
+
+.workspace.is-native.dock-left.tab-hover.is-sidebar-closed .edge-hover-zone {
+  right: auto;
+  left: var(--panel-width);
+  width: var(--tab-width);
+}
+
+.workspace.is-native.dock-top.tab-hover.is-sidebar-closed .edge-hover-zone {
+  top: var(--panel-depth);
+  height: var(--tab-width);
+}
+
 .workspace.tab-hover.is-sidebar-closed .edge-handle {
   opacity: 0;
   pointer-events: none;

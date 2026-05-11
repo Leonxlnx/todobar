@@ -1455,17 +1455,25 @@ function App() {
           relativeY <= handleBottom + handleHitSlop
         const isHoverOnlyClosed =
           settings.tabVisibility === 'hover' && !isOpen
-        const isOnRevealEdge = isHorizontalDock
-          ? settings.dockEdge === 'top'
-            ? relativeY >= panelDepth - edgeRevealSlop &&
-              relativeY <= panelDepth + edgeRevealSlop
-            : relativeY >= tabWidth - edgeRevealSlop &&
-              relativeY <= tabWidth + edgeRevealSlop
+        const revealLeft = isHorizontalDock
+          ? 0
           : settings.dockEdge === 'left'
-            ? relativeX >= panelWidth - edgeRevealSlop &&
-              relativeX <= panelWidth + edgeRevealSlop
-            : relativeX >= tabWidth - edgeRevealSlop &&
-              relativeX <= tabWidth + edgeRevealSlop
+            ? panelWidth
+            : 0
+        const revealRight = isHorizontalDock ? panelWidth : revealLeft + tabWidth
+        const revealTop = isHorizontalDock
+          ? settings.dockEdge === 'top'
+            ? panelDepth
+            : 0
+          : 0
+        const revealBottom = isHorizontalDock
+          ? revealTop + tabWidth
+          : Number.POSITIVE_INFINITY
+        const isOnRevealEdge =
+          relativeX >= revealLeft - edgeRevealSlop &&
+          relativeX <= revealRight + edgeRevealSlop &&
+          relativeY >= revealTop - edgeRevealSlop &&
+          relativeY <= revealBottom + edgeRevealSlop
 
         if (isHoverOnlyClosed && isOnRevealEdge) {
           hoverRevealUntil.current = Date.now() + 900
