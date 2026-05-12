@@ -138,7 +138,7 @@ function sanitizeSettings(value: Partial<SidebarSettings>): SidebarSettings {
       560,
     ),
     tabVisibility,
-    tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 26, 88),
+    tabWidth: clamp(value.tabWidth ?? defaultSidebarSettings.tabWidth, 22, 112),
     handleHeight: clamp(
       value.handleHeight ?? defaultSidebarSettings.handleHeight,
       56,

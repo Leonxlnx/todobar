@@ -3526,8 +3526,8 @@ function SidebarSettingsPanel({
           <SliderSetting
             label="Visible tab"
             value={settings.tabWidth}
-            min={26}
-            max={88}
+            min={22}
+            max={112}
             step={2}
             suffix="px"
             onChange={(tabWidth) => onChange({ tabWidth })}
