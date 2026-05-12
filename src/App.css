@@ -1005,6 +1005,7 @@ kbd {
   border-radius: 999px;
   background: #e3342f;
   box-shadow: 0 5px 14px rgba(227, 52, 47, 0.32);
+  animation: badge-arrive 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .workspace.dock-left .handle-badge {
@@ -4851,6 +4852,18 @@ kbd {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes badge-arrive {
+  from {
+    opacity: 0;
+    transform: scale(0.72);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 
