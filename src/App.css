@@ -4646,12 +4646,12 @@ kbd {
   animation: check-pop 190ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
-.task-row.is-pulse-complete {
-  animation: task-complete 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+.task-row.is-pulse-complete .check-button {
+  animation: check-surface-pop 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
-.task-row.is-pulse-open {
-  animation: task-reopen 240ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+.task-row.is-pulse-open .check-button {
+  animation: check-surface-open 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .month-list .task-row {
@@ -4696,13 +4696,14 @@ kbd {
   }
 }
 
-@keyframes task-complete {
+@keyframes check-surface-pop {
   0% {
     transform: scale(1);
   }
 
   42% {
-    transform: scale(0.985);
+    transform: scale(0.92);
+    box-shadow: 0 0 0 4px var(--accent-soft);
   }
 
   100% {
@@ -4710,13 +4711,13 @@ kbd {
   }
 }
 
-@keyframes task-reopen {
+@keyframes check-surface-open {
   0% {
     transform: scale(1);
   }
 
   40% {
-    transform: scale(1.008);
+    transform: scale(1.06);
   }
 
   100% {
