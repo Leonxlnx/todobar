@@ -4066,7 +4066,8 @@ function DockEdgeSetting({
         aria-label="Dock left"
         onClick={() => onChange('left')}
       >
-        Left
+        <span className="dock-edge-glyph" aria-hidden="true" />
+        <span>Left</span>
       </button>
       <button
         type="button"
@@ -4075,7 +4076,8 @@ function DockEdgeSetting({
         aria-label="Dock top"
         onClick={() => onChange('top')}
       >
-        Top
+        <span className="dock-edge-glyph" aria-hidden="true" />
+        <span>Top</span>
       </button>
       <button
         type="button"
@@ -4084,7 +4086,8 @@ function DockEdgeSetting({
         aria-label="Dock right"
         onClick={() => onChange('right')}
       >
-        Right
+        <span className="dock-edge-glyph" aria-hidden="true" />
+        <span>Right</span>
       </button>
     </div>
   )
