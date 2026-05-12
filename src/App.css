@@ -1548,16 +1548,14 @@ kbd {
 .workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb,
 .workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb {
   border-width: 3px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.16));
+  background: rgba(226, 232, 240, 0.23);
   background-clip: padding-box;
 }
 
 .workspace.theme-dark .sidebar-content::-webkit-scrollbar-thumb:hover,
 .workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb:hover,
 .workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.38), rgba(255, 255, 255, 0.22));
+  background: rgba(226, 232, 240, 0.34);
   background-clip: padding-box;
 }
 
