@@ -78,17 +78,16 @@ jobs:
 
       - name: Rename APK
         id: rename
-        working-directory: android
         run: |
           set -euo pipefail
-          mkdir -p ../artifacts
-          APK=$(find app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          APK=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
           if [ -z "$APK" ]; then
             echo "No release APK produced" >&2
             exit 1
           fi
           TAG="${GITHUB_REF_NAME//\//-}"
-          OUT="../artifacts/todobar-android-${TAG}.apk"
+          OUT="$GITHUB_WORKSPACE/artifacts/todobar-android-${TAG}.apk"
           cp "$APK" "$OUT"
           echo "apk_path=$OUT" >> "$GITHUB_OUTPUT"
           echo "apk_name=todobar-android-${TAG}.apk" >> "$GITHUB_OUTPUT"
