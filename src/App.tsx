@@ -61,8 +61,8 @@ import type { Task } from './tasks'
 import { usePersistentTasks } from './usePersistentTasks'
 
 const DRAG_THRESHOLD = 5
-const NATIVE_HIT_TEST_EDGE_INTERVAL_MS = 96
-const NATIVE_HIT_TEST_IDLE_INTERVAL_MS = 220
+const NATIVE_HIT_TEST_EDGE_INTERVAL_MS = 72
+const NATIVE_HIT_TEST_IDLE_INTERVAL_MS = 128
 const TASK_STORAGE_KEYS = {
   today: 'todobar.today.v1',
   month: 'todobar.month.v1',
