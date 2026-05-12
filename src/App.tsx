@@ -92,6 +92,12 @@ const THEME_PRESETS = [
     note: 'Neutral clean',
   },
   {
+    id: 'porcelain',
+    label: 'Porcelain',
+    mode: 'light',
+    note: 'Soft white',
+  },
+  {
     id: 'frost',
     label: 'Frostline',
     mode: 'light',
@@ -120,6 +126,12 @@ const THEME_PRESETS = [
     label: 'Obsidian',
     mode: 'dark',
     note: 'Deep neutral',
+  },
+  {
+    id: 'carbon',
+    label: 'Carbon',
+    mode: 'dark',
+    note: 'Soft black',
   },
   {
     id: 'graphite',

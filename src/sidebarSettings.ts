@@ -9,8 +9,10 @@ export type TaskSortMode = 'priority' | 'newest' | 'oldest'
 export type TabVisibility = 'always' | 'hover'
 export type ThemePreset =
   | 'codex'
+  | 'porcelain'
   | 'frost'
   | 'paper'
+  | 'carbon'
   | 'graphite'
   | 'midnight'
   | 'clay'
@@ -18,8 +20,8 @@ export type ThemePreset =
 export type SectionId = 'today' | 'calendar' | 'lists'
 
 export const themePresetsByMode: Record<ThemeMode, ThemePreset[]> = {
-  dark: ['codex', 'graphite', 'midnight', 'clay', 'blueprint'],
-  light: ['codex', 'frost', 'paper', 'clay', 'blueprint'],
+  dark: ['codex', 'carbon', 'graphite', 'midnight', 'clay', 'blueprint'],
+  light: ['codex', 'porcelain', 'frost', 'paper', 'clay', 'blueprint'],
 }
 
 export type SidebarSettings = {

@@ -198,6 +198,66 @@
   --handle-hover-bg: linear-gradient(180deg, #ffffff 0%, #ebe0d0 100%);
 }
 
+.workspace.style-porcelain {
+  --workspace-bg:
+    radial-gradient(circle at 76% 12%, rgba(148, 163, 184, 0.14), transparent 31%),
+    linear-gradient(145deg, #fbfbfb 0%, #f1f3f5 50%, #e7eaee 100%);
+  --ink: #16181d;
+  --muted: #66717e;
+  --line: rgba(22, 24, 29, 0.105);
+  --sidebar-bg: rgba(250, 251, 252, var(--surface-alpha));
+  --sidebar-solid-bg: #fafbfc;
+  --dock-bg: #fafbfc;
+  --dock-stroke: rgba(22, 24, 29, 0.09);
+  --control-bg: #f0f2f4;
+  --task-bg: #ffffff;
+  --task-border: rgba(22, 24, 29, 0.08);
+  --section-bg: rgba(255, 255, 255, 0.76);
+  --rail-bg: rgba(240, 242, 244, 0.9);
+  --settings-surface: #fafbfc;
+  --settings-row: #f0f2f4;
+  --surface-hover: #e8edf2;
+  --row-hover-bg: rgba(22, 24, 29, 0.04);
+  --accent: #1f2937;
+  --accent-strong: #111318;
+  --accent-soft: rgba(31, 41, 55, 0.08);
+  --accent-line: rgba(31, 41, 55, 0.2);
+  --handle-bg: linear-gradient(180deg, #ffffff 0%, #eef1f4 100%);
+  --handle-hover-bg: linear-gradient(180deg, #ffffff 0%, #e5e9ee 100%);
+}
+
+.workspace.style-carbon,
+.workspace.theme-dark.style-carbon {
+  --workspace-bg:
+    radial-gradient(circle at 72% 10%, rgba(255, 255, 255, 0.055), transparent 28%),
+    linear-gradient(145deg, #050506 0%, #0a0b0d 51%, #121418 100%);
+  --ink: #f7f8f9;
+  --muted: #a0a6af;
+  --line: rgba(255, 255, 255, 0.095);
+  --sidebar-bg: rgba(8, 9, 11, calc(var(--surface-alpha) * 0.98));
+  --sidebar-solid-bg: #08090b;
+  --sidebar-border: rgba(255, 255, 255, 0.085);
+  --dock-bg: #08090b;
+  --dock-stroke: rgba(255, 255, 255, 0.09);
+  --control-bg: #14161a;
+  --task-bg: #101216;
+  --task-border: rgba(255, 255, 255, 0.085);
+  --section-bg: rgba(255, 255, 255, 0.04);
+  --rail-bg: rgba(255, 255, 255, 0.035);
+  --settings-surface: #08090b;
+  --settings-row: #14161a;
+  --surface-hover: rgba(255, 255, 255, 0.075);
+  --row-hover-bg: rgba(255, 255, 255, 0.048);
+  --accent: #d8dde5;
+  --accent-strong: #ffffff;
+  --accent-soft: rgba(255, 255, 255, 0.09);
+  --accent-line: rgba(255, 255, 255, 0.18);
+  --range-thumb: #f7f8f9;
+  --range-track: rgba(255, 255, 255, 0.13);
+  --handle-bg: linear-gradient(180deg, #1b1d22 0%, #090a0c 100%);
+  --handle-hover-bg: linear-gradient(180deg, #23262c 0%, #0d0f12 100%);
+}
+
 .workspace.style-graphite,
 .workspace.theme-dark.style-graphite {
   --workspace-bg:
