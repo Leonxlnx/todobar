@@ -7,16 +7,24 @@ polish release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.8
-- Release workflow: created from the `v0.1.8` tag
+- Release workflow:
+  https://github.com/Leonxlnx/todobar/actions/runs/25696559749
+- Release workflow result: passed
 
-Expected published assets:
+Published assets:
 
 - `Todobar_0.1.8_x64-setup.exe`
+  `sha256:91fdfbb6a8a7d65e13977726f37106fbed168a079ece9c264c76c94b61bd6750`
 - `Todobar_0.1.8_x64_en-US.msi`
+  `sha256:fe9fdebd967beaadfb151fa176fb93ff5bfbcccd381e3ea55a7859f755cfc1e8`
 - `Todobar_0.1.8_aarch64.dmg`
+  `sha256:385f99157aaa385b415e3b0216e5da039d2a3c9689144d8fbb3f5311d705bcf5`
 - `Todobar_0.1.8_x64.dmg`
+  `sha256:63520588e2cde4562084771d3fd231b16236d1dbab10a7d5762a4055ad6dbe4e`
 - `Todobar_aarch64.app.tar.gz`
+  `sha256:952ac6073b2749d2c233dc406f278cbe47c3c27d41ba138e0db2f94e7953d6e0`
 - `Todobar_x64.app.tar.gz`
+  `sha256:2fdf6978fefb9752137510b3527647f078f24d1f667093ec0b00a1bd4331f7f0`
 
 ## Release Scope
 
