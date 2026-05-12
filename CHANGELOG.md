@@ -23,6 +23,9 @@
 - Moved Gmail MCP/developer setup out of the normal user flow. MCP remains a
   future advanced path, while direct Gmail OAuth is now the primary connector
   path.
+- Hid the Gmail connector UI behind an internal feature flag until OAuth
+  verification and public rollout are ready. The implementation remains in the
+  codebase for future activation.
 
 ## 0.1.8 - Native Dock Polish
 

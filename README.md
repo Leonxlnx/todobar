@@ -59,13 +59,9 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Rearrange Today, Calendar, and Lists from settings
 - Collapse settings groups while tuning the sidebar, with the open/closed state
   remembered locally
-- Gmail read-only connector foundation using direct Gmail API OAuth from the
-  native layer. Users click Connect Gmail, approve Google's browser consent, and
-  Todobar stores OAuth tokens in the OS credential store instead of frontend
-  storage.
-- Gmail Inbox suggestions for recent unread threads, with local conversion into
-  Todobar tasks, Gmail thread links, local ignore state, reconnect handling, and
-  a small connector activity/audit area.
+- Gmail read-only connector foundation is implemented in code but hidden from
+  the product UI until Google OAuth verification and a public rollout plan are
+  ready.
 - Adjustable panel width, visible tab size, handle height, edge position,
   motion speed, corner radius, task sort mode, task row height, task spacing,
   task text size, completed-task visibility, launch-at-login, notifications,
@@ -157,13 +153,10 @@ choose Open.
 - Use the settings button to adjust appearance, dock edge, desktop startup,
   window size, handle shape, task density, sorting, backdrop image, motion,
   radius, and opacity.
-- Open Settings > Connectors > Connect Gmail to start the Gmail read-only OAuth
-  flow when the build has a maintainer-provided Google OAuth client ID.
-
 ## Gmail Integration Status
 
 Gmail is implemented as a production-minded foundation, not as a frontend
-placeholder:
+placeholder, but it is currently hidden from the normal Todobar UI:
 
 - Primary path: direct Gmail API OAuth, not MCP.
 - Scope: `https://www.googleapis.com/auth/gmail.readonly`.
@@ -179,7 +172,8 @@ placeholder:
 
 Normal users should not need a Google Cloud project. Maintainers of public
 builds still need to configure and verify the Google OAuth client before
-publishing a Gmail-enabled release.
+publishing a Gmail-enabled release. Until then, Gmail remains an internal
+foundation rather than a visible product feature.
 
 ## Data and Privacy
 

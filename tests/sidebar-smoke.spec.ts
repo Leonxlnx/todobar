@@ -37,19 +37,11 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
-  await expect(page.getByText('Gmail', { exact: true })).toBeVisible()
-  await expect(page.getByText('Connect Gmail', { exact: true })).toBeVisible()
-  await expect(page.getByText('Read-only inbox suggestions for local Todobar tasks.')).toBeVisible()
-  await page.getByRole('button', { name: 'Connectors' }).click()
-  await expect(page.getByText('Connect Gmail', { exact: true })).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Connectors' })).toHaveCount(0)
+  await expect(page.getByText('Connect Gmail', { exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Close settings' }).click()
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
-  await expect(page.getByText('Connect Gmail', { exact: true })).toBeHidden()
-  await page.getByRole('button', { name: 'Connectors' }).click()
-  await expect(page.getByText('Connect Gmail', { exact: true })).toBeVisible()
-  await page.getByRole('button', { name: 'Connect Gmail' }).click()
-  await expect(page.getByText('alex@example.com', { exact: true })).toBeVisible()
-  await expect(page.getByText('Connected Gmail mock for browser QA.')).toBeVisible()
+  await expect(page.getByText('Connect Gmail', { exact: true })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Priority' })).toBeVisible()
   await page.getByRole('button', { name: 'Newest' }).click()
   await expect(page.getByRole('button', { name: 'Newest' })).toHaveAttribute(
@@ -130,17 +122,7 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
-  await expect(page.getByText('Inbox suggestions', { exact: true })).toBeVisible()
-  await expect(page.getByText('Review Todobar demo notes', { exact: true })).toBeVisible()
-  await page
-    .locator('.gmail-suggestion-row')
-    .filter({ hasText: 'Review Todobar demo notes' })
-    .getByRole('button', { name: 'Add task' })
-    .click()
-  await expect(page.getByText('Review Todobar demo notes', { exact: true })).toBeVisible()
-  await expect(
-    page.locator('.task-source-link').filter({ hasText: 'Gmail' }),
-  ).toBeVisible()
+  await expect(page.getByText('Inbox suggestions', { exact: true })).toHaveCount(0)
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
   await expect(page.locator('section[aria-labelledby="today-heading"]')).toBeVisible()
   await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
@@ -440,7 +422,7 @@ test('reminder toast snooze moves the reminder forward', async ({ page }) => {
     .toBe(true)
 })
 
-test('Gmail connector shows a reconnect state without frontend tokens', async ({
+test('Gmail connector UI stays hidden while the feature is held back', async ({
   page,
 }) => {
   await page.addInitScript(() => {
@@ -455,8 +437,9 @@ test('Gmail connector shows a reconnect state without frontend tokens', async ({
   await page.goto('/?open=1')
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
 
-  await expect(page.getByText('Reconnect required', { exact: true })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Reconnect Gmail' })).toBeVisible()
+  await expect(page.getByText('Reconnect required', { exact: true })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Reconnect Gmail' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: 'Connectors' })).toHaveCount(0)
   await expect(page.getByText('No email data is read yet.')).toHaveCount(0)
   await expect
     .poll(async () =>
@@ -467,31 +450,6 @@ test('Gmail connector shows a reconnect state without frontend tokens', async ({
       ),
     )
     .toBe(false)
-})
-
-test('Gmail connector explains when OAuth is not bundled in the build', async ({
-  page,
-}) => {
-  await page.addInitScript(() => {
-    window.localStorage.setItem(
-      'todobar.gmail.mock.v1',
-      JSON.stringify({
-        message:
-          "Gmail login is built, but this app build does not include Todobar's Google OAuth client ID yet.",
-        state: 'unconfigured',
-      }),
-    )
-  })
-  await page.goto('/?open=1')
-  await page.getByRole('button', { name: 'Sidebar settings' }).click()
-
-  await expect(
-    page.getByText('Gmail login not enabled in this build', { exact: true }),
-  ).toBeVisible()
-  await expect(page.getByRole('button', { name: 'OAuth setup missing' })).toBeDisabled()
-  await expect(
-    page.getByText('Normal users should not create their own Google project'),
-  ).toBeVisible()
 })
 
 test('native closed dock keeps a rounded tab shape', async ({ page }) => {

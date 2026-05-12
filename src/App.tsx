@@ -70,6 +70,7 @@ const TASK_STORAGE_KEYS = {
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
 const SETTINGS_GROUPS_STORAGE_KEY = 'todobar.settings.groups.v1'
+const GMAIL_CONNECTOR_VISIBLE = false
 const TOP_DOCK_MIN_PANEL_WIDTH = 720
 const TOP_DOCK_MAX_PANEL_WIDTH = 1120
 const TOP_DOCK_WIDTH_MULTIPLIER = 2
@@ -2359,10 +2360,12 @@ function App() {
                         onSubmit={() => addTask('today')}
                         onKeyDown={(event) => onDraftKeyDown(event, 'today')}
                       />
-                      <GmailInboxSuggestions
-                        gmail={gmail}
-                        onConvert={convertGmailSuggestionToTask}
-                      />
+                      {GMAIL_CONNECTOR_VISIBLE ? (
+                        <GmailInboxSuggestions
+                          gmail={gmail}
+                          onConvert={convertGmailSuggestionToTask}
+                        />
+                      ) : null}
                       <div className="task-list">
                         {visibleTodayTasks.map((task, index) => (
                           <TaskRow
@@ -3401,14 +3404,16 @@ function SidebarSettingsPanel({
         />
       </SettingsGroup>
 
-      <SettingsGroup
-        id="connectors"
-        title="Connectors"
-        collapsed={Boolean(collapsedSettingsGroups.connectors)}
-        onToggle={toggleSettingsGroup}
-      >
-        <ConnectorSetting gmail={gmail} />
-      </SettingsGroup>
+      {GMAIL_CONNECTOR_VISIBLE ? (
+        <SettingsGroup
+          id="connectors"
+          title="Connectors"
+          collapsed={Boolean(collapsedSettingsGroups.connectors)}
+          onToggle={toggleSettingsGroup}
+        >
+          <ConnectorSetting gmail={gmail} />
+        </SettingsGroup>
+      ) : null}
 
       <SettingsGroup
         id="backdrop"
