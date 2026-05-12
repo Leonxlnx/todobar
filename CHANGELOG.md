@@ -2,6 +2,31 @@
 
 ## Unreleased
 
+### Added
+
+- Added two extra curated theme presets so light and dark modes each expose six
+  choices.
+- Added a calm Today empty state for filtered or completed lists.
+- Added a smoke assertion for the closed native dock state.
+
+### Changed
+
+- Simplified panel-width apply feedback so it stays neutral instead of turning
+  into a bright blue Done state.
+- Made task completion feedback local to the check button to avoid full-row
+  flashes when reopening a task.
+- Cleaned up pinned list separators and dark-mode task action button contrast.
+- Calmed dark-mode scrollbars and sidebar rail button states.
+- Neutralized the custom backdrop tint on the visible tab.
+- Separated closed native dock stroke styling from the open panel shape.
+- Made the edge picker visually directional.
+- Softened quick-add focus treatment.
+- Tightened calendar reminder controls and labels.
+- Added icons to settings groups and removed duplicate theme mode copy.
+- Expanded the visible tab size range.
+- Lifted the custom theme dropdown above settings controls.
+- Reduced native cursor passthrough latency.
+
 ## 0.1.9 - Hidden Gmail Foundation
 
 ### Added
