@@ -4404,7 +4404,7 @@ kbd {
 }
 
 .task-row:focus-within {
-  z-index: 8;
+  z-index: 80;
 }
 
 .task-row:hover::before,
@@ -4588,7 +4588,7 @@ kbd {
   position: absolute;
   right: 50%;
   bottom: calc(100% + 7px);
-  z-index: 140;
+  z-index: 220;
   padding: 5px 8px;
   color: #fff;
   font-size: 10px;
@@ -4638,7 +4638,7 @@ kbd {
 
 .delete-confirm-popover {
   position: absolute;
-  z-index: 130;
+  z-index: 240;
   right: 8px;
   top: 50%;
   bottom: auto;
