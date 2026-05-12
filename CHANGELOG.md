@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.9 - Hidden Gmail Foundation
+
 ### Added
 
 - Added the first real Gmail integration foundation using direct Gmail API OAuth
