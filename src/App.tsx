@@ -10,15 +10,18 @@ import {
   ChevronRight,
   Circle,
   Clock3,
+  ExternalLink,
   GripVertical,
   ImagePlus,
   Inbox,
   ListTodo,
+  Mail,
   Moon,
   Minus,
   Palette,
   Pencil,
   Pin,
+  RefreshCw,
   RotateCcw,
   PanelRightClose,
   PanelRightOpen,
@@ -40,6 +43,8 @@ import type {
   ReactNode,
 } from 'react'
 import './App.css'
+import { useGmailConnector } from './gmail'
+import type { GmailConnectorController, GmailThreadSuggestion } from './gmail'
 import { themePresetsByMode, useSidebarSettings } from './sidebarSettings'
 import type {
   DockEdge,
@@ -65,10 +70,6 @@ const TASK_STORAGE_KEYS = {
 const CUSTOM_LISTS_STORAGE_KEY = 'todobar.custom-lists.v1'
 const NOTIFIED_REMINDERS_STORAGE_KEY = 'todobar.notified-reminders.v1'
 const SETTINGS_GROUPS_STORAGE_KEY = 'todobar.settings.groups.v1'
-const GMAIL_CONNECTOR_STORAGE_KEY = 'todobar.gmail-connector.v1'
-const DEFAULT_GMAIL_MCP_ENDPOINT = 'https://gmailmcp.googleapis.com/mcp/v1'
-const GMAIL_MCP_GUIDE_URL =
-  'https://developers.google.com/workspace/guides/configure-mcp-servers'
 const TOP_DOCK_MIN_PANEL_WIDTH = 720
 const TOP_DOCK_MAX_PANEL_WIDTH = 1120
 const TOP_DOCK_WIDTH_MULTIPLIER = 2
@@ -260,6 +261,21 @@ function createTask(title: string, meta: string, reminderAt?: string): Task {
     meta,
     priority: 'normal',
     reminderAt: reminderAt || undefined,
+  }
+}
+
+function createGmailTask(suggestion: GmailThreadSuggestion): Task {
+  return {
+    id: Date.now(),
+    title: suggestion.subject,
+    meta: `Gmail · ${suggestion.from}`,
+    priority: 'normal',
+    source: {
+      from: suggestion.from,
+      threadId: suggestion.threadId,
+      type: 'gmail',
+      url: suggestion.gmailUrl,
+    },
   }
 }
 
@@ -627,6 +643,7 @@ function App() {
   const [calendarEntryMode, setCalendarEntryMode] =
     useState<CalendarEntryMode>('task')
   const [settings, updateSettings, resetSettings] = useSidebarSettings()
+  const gmail = useGmailConnector()
   const [viewportWidth, setViewportWidth] = useState(() => window.innerWidth)
   const [viewportHeight, setViewportHeight] = useState(() => window.innerHeight)
   const [dragHandleY, setDragHandleY] = useState<number | null>(null)
@@ -1589,6 +1606,18 @@ function App() {
     setIsOpen(true)
   }
 
+  const convertGmailSuggestionToTask = (suggestion: GmailThreadSuggestion) => {
+    setTodayTasks((tasks) => [createGmailTask(suggestion), ...tasks])
+    gmail.ignoreSuggestion(suggestion.threadId, suggestion.subject)
+    gmail.recordActivity(
+      'convert',
+      `Created local task from Gmail thread: ${suggestion.subject}`,
+    )
+    setCollapsedSections((current) => ({ ...current, today: false }))
+    setActiveRailSection('today')
+    setIsOpen(true)
+  }
+
   const addCalendarTask = () => {
     const title = drafts.month.trim()
 
@@ -2249,6 +2278,7 @@ function App() {
         {isSettingsOpen ? (
           <div className="settings-drawer" role="dialog" aria-label="Settings">
             <SidebarSettingsPanel
+              gmail={gmail}
               settings={settings}
               onChange={updateSettings}
               onReset={resetSettings}
@@ -2328,6 +2358,10 @@ function App() {
                         }
                         onSubmit={() => addTask('today')}
                         onKeyDown={(event) => onDraftKeyDown(event, 'today')}
+                      />
+                      <GmailInboxSuggestions
+                        gmail={gmail}
+                        onConvert={convertGmailSuggestionToTask}
                       />
                       <div className="task-list">
                         {visibleTodayTasks.map((task, index) => (
@@ -3100,11 +3134,13 @@ function QuickAdd({
 }
 
 function SidebarSettingsPanel({
+  gmail,
   settings,
   onChange,
   onReset,
   onClose,
 }: {
+  gmail: GmailConnectorController
   settings: SidebarSettings
   onChange: (patch: Partial<SidebarSettings>) => void
   onReset: () => void
@@ -3371,7 +3407,7 @@ function SidebarSettingsPanel({
         collapsed={Boolean(collapsedSettingsGroups.connectors)}
         onToggle={toggleSettingsGroup}
       >
-        <ConnectorSetting />
+        <ConnectorSetting gmail={gmail} />
       </SettingsGroup>
 
       <SettingsGroup
@@ -3618,133 +3654,223 @@ function SettingsGroup({
   )
 }
 
-function ConnectorSetting() {
-  const [isSetupOpen, setIsSetupOpen] = useState(false)
-  const [serverTarget, setServerTarget] = useState(() => {
-    try {
-      const stored = window.localStorage.getItem(GMAIL_CONNECTOR_STORAGE_KEY)
-      const parsed = stored
-        ? (JSON.parse(stored) as { clientId?: string; serverTarget?: string })
-        : {}
-
-      return typeof parsed.serverTarget === 'string'
-        ? parsed.serverTarget
-        : DEFAULT_GMAIL_MCP_ENDPOINT
-    } catch {
-      return DEFAULT_GMAIL_MCP_ENDPOINT
-    }
-  })
-  const [clientId, setClientId] = useState(() => {
-    try {
-      const stored = window.localStorage.getItem(GMAIL_CONNECTOR_STORAGE_KEY)
-      const parsed = stored
-        ? (JSON.parse(stored) as { clientId?: string; serverTarget?: string })
-        : {}
-
-      return typeof parsed.clientId === 'string' ? parsed.clientId : ''
-    } catch {
-      return ''
-    }
-  })
-  const hasServerTarget = serverTarget.trim().length > 0
-  const hasClientId = clientId.trim().length > 0
-  const persistConnector = (next: {
-    clientId?: string
-    serverTarget?: string
-  }) => {
-    try {
-      window.localStorage.setItem(
-        GMAIL_CONNECTOR_STORAGE_KEY,
-        JSON.stringify({
-          clientId: next.clientId ?? clientId.trim(),
-          serverTarget: next.serverTarget ?? serverTarget.trim(),
-        }),
-      )
-    } catch {
-      // Connector setup can still be edited even if local persistence fails.
-    }
-  }
-  const updateServerTarget = (value: string) => {
-    setServerTarget(value)
-    persistConnector({ serverTarget: value.trim() })
-  }
-  const updateClientId = (value: string) => {
-    setClientId(value)
-    persistConnector({ clientId: value.trim() })
-  }
-
-
-  useEffect(() => {
-    return scheduleLocalStorageWrite(
-      GMAIL_CONNECTOR_STORAGE_KEY,
-      JSON.stringify({
-        clientId: clientId.trim(),
-        serverTarget: serverTarget.trim(),
-      }),
-      220,
-    )
-  }, [clientId, serverTarget])
+function ConnectorSetting({ gmail }: { gmail: GmailConnectorController }) {
+  const isConnected = gmail.status.state === 'connected'
+  const needsReconnect = gmail.status.state === 'needs_reconnect'
+  const isUnconfigured = gmail.status.state === 'unconfigured'
+  const statusLabel =
+    isConnected && gmail.status.accountEmail
+      ? gmail.status.accountEmail
+      : needsReconnect
+        ? 'Reconnect required'
+        : isUnconfigured
+          ? 'Maintainer setup needed'
+          : 'Not connected'
 
   return (
-    <div className={`connector-setting ${isSetupOpen ? 'is-open' : ''}`}>
+    <div className={`connector-setting gmail-connector state-${gmail.status.state}`}>
       <div className="connector-summary">
         <div className="connector-mark" aria-hidden="true">
-          <Inbox size={17} />
+          <Mail size={17} />
         </div>
         <div className="connector-copy">
-          <strong>Gmail MCP</strong>
-          <span>Connect Google's Gmail MCP endpoint before inbox context is used.</span>
-          <em>
-            {hasClientId
-              ? 'OAuth client saved · not authorized'
-              : 'No email data is read yet.'}
-          </em>
+          <strong>Gmail</strong>
+          <span>Read-only inbox suggestions for local Todobar tasks.</span>
+          <em>{statusLabel}</em>
+        </div>
+        <div className="connector-actions">
+          {isConnected ? (
+            <>
+              <button
+                type="button"
+                disabled={gmail.isLoading}
+                onClick={gmail.loadSuggestions}
+              >
+                Sync
+              </button>
+              <button
+                type="button"
+                disabled={gmail.isLoading}
+                onClick={gmail.disconnect}
+              >
+                Disconnect
+              </button>
+            </>
+          ) : (
+            <button
+              type="button"
+              disabled={gmail.isLoading || isUnconfigured}
+              onClick={gmail.connect}
+            >
+              {needsReconnect ? 'Reconnect Gmail' : 'Connect Gmail'}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div className="connector-permission-note">
+        <strong>Permission boundary</strong>
+        <span>
+          Todobar requests Gmail read-only access. It can read recent unread
+          inbox threads for suggestions, but it cannot send, delete, label, or
+          archive email in this version.
+        </span>
+      </div>
+
+      <div className="connector-status" role="status">
+        <span className={isConnected ? 'is-ready' : ''} />
+        {gmail.isLoading
+          ? 'Working with Gmail...'
+          : gmail.error || gmail.status.message}
+      </div>
+
+      <div className="connector-activity" aria-label="Gmail connector activity">
+        <div className="mini-heading">
+          <strong>Activity</strong>
+          <span>{gmail.activities.length} events</span>
+        </div>
+        {gmail.activities.length > 0 ? (
+          <ol>
+            {gmail.activities.slice(0, 4).map((activity) => (
+              <li key={activity.id}>
+                <span>{activity.detail}</span>
+                <time dateTime={activity.at}>
+                  {new Intl.DateTimeFormat(undefined, {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  }).format(new Date(activity.at))}
+                </time>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p>No Gmail reads yet.</p>
+        )}
+      </div>
+
+      <p className="connector-advanced-note">
+        Advanced MCP connector configuration remains a future developer path.
+        Normal users should only need Connect Gmail.
+      </p>
+    </div>
+  )
+}
+
+function GmailInboxSuggestions({
+  gmail,
+  onConvert,
+}: {
+  gmail: GmailConnectorController
+  onConvert: (suggestion: GmailThreadSuggestion) => void
+}) {
+  const isConnected = gmail.status.state === 'connected'
+  const needsReconnect = gmail.status.state === 'needs_reconnect'
+
+  if (
+    gmail.status.state === 'disconnected' &&
+    gmail.suggestions.length === 0 &&
+    !gmail.error
+  ) {
+    return null
+  }
+
+  return (
+    <section className="gmail-suggestions" aria-label="Inbox suggestions">
+      <div className="gmail-suggestions-header">
+        <div>
+          <strong>
+            <Inbox size={14} />
+            Inbox suggestions
+          </strong>
+          <span>
+            {isConnected && gmail.status.accountEmail
+              ? gmail.status.accountEmail
+              : needsReconnect
+                ? 'Reconnect Gmail in settings'
+                : 'Read-only Gmail'}
+          </span>
         </div>
         <button
           type="button"
-          aria-expanded={isSetupOpen}
-          onClick={() => setIsSetupOpen((current) => !current)}
+          aria-label="Sync Gmail inbox suggestions"
+          disabled={!isConnected || gmail.isLoading}
+          onClick={gmail.loadSuggestions}
         >
-          {isSetupOpen ? 'Close' : hasClientId ? 'Edit' : 'Setup'}
+          <RefreshCw size={13} />
         </button>
       </div>
-      {isSetupOpen ? (
-        <div className="connector-setup">
-          <label>
-            <span>MCP server</span>
-            <input
-              type="text"
-              value={serverTarget}
-              placeholder={DEFAULT_GMAIL_MCP_ENDPOINT}
-              onChange={(event) => updateServerTarget(event.target.value)}
-            />
-          </label>
-          <label>
-            <span>OAuth client ID</span>
-            <input
-              type="text"
-              value={clientId}
-              placeholder="Paste a Google OAuth desktop client ID"
-              onChange={(event) => updateClientId(event.target.value)}
-            />
-          </label>
-          <p>
-            Gmail sign-in opens in the system browser through OAuth. Todobar
-            stores only the endpoint and client ID until the native MCP runner
-            and secure token store are added.
-          </p>
-          <a href={GMAIL_MCP_GUIDE_URL} target="_blank" rel="noreferrer">
-            Google MCP setup guide
-          </a>
-          <div className="connector-status" role="status">
-            <span className={hasServerTarget && hasClientId ? 'is-ready' : ''} />
-            {hasServerTarget && hasClientId
-              ? 'Ready for native MCP auth'
-              : 'Waiting for OAuth client ID'}
-          </div>
+
+      <div className="gmail-boundary">
+        <span>Readonly</span>
+        <em>No send, delete, labels, or archive actions.</em>
+      </div>
+
+      {gmail.error || needsReconnect ? (
+        <div className="gmail-state-message" role="status">
+          <strong>{needsReconnect ? 'Reconnect needed' : 'Gmail paused'}</strong>
+          <span>{gmail.error || gmail.status.message}</span>
         </div>
       ) : null}
-    </div>
+
+      {gmail.isLoading ? (
+        <div className="gmail-state-message" role="status">
+          <strong>Checking inbox...</strong>
+          <span>Reading recent unread threads only.</span>
+        </div>
+      ) : null}
+
+      {!gmail.isLoading && isConnected && gmail.suggestions.length === 0 ? (
+        <div className="gmail-state-message">
+          <strong>No unread suggestions</strong>
+          <span>Ignored suggestions stay local on this device.</span>
+        </div>
+      ) : null}
+
+      {gmail.suggestions.length > 0 ? (
+        <div className="gmail-suggestion-list">
+          {gmail.suggestions.map((suggestion) => (
+            <article className="gmail-suggestion-row" key={suggestion.threadId}>
+              <div className="gmail-suggestion-copy">
+                <strong>{suggestion.subject}</strong>
+                <span>
+                  {suggestion.from}
+                  {suggestion.date ? ` · ${suggestion.date}` : ''}
+                </span>
+                <p>{suggestion.snippet}</p>
+              </div>
+              <div className="gmail-suggestion-actions">
+                <a
+                  aria-label={`Open Gmail thread ${suggestion.subject}`}
+                  href={suggestion.gmailUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <ExternalLink size={12} />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => onConvert(suggestion)}
+                >
+                  Add task
+                </button>
+                <button
+                  type="button"
+                  aria-label={`Ignore ${suggestion.subject}`}
+                  onClick={() =>
+                    gmail.ignoreSuggestion(
+                      suggestion.threadId,
+                      suggestion.subject,
+                    )
+                  }
+                >
+                  Ignore
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : null}
+    </section>
   )
 }
 
@@ -4284,6 +4410,17 @@ const TaskRow = memo(function TaskRow({
               <Bell size={10} />
               {reminderLabel}
             </em>
+          ) : null}
+          {task.source?.type === 'gmail' && task.source.url ? (
+            <a
+              className="task-source-link"
+              href={task.source.url}
+              rel="noreferrer"
+              target="_blank"
+              onClick={(event) => event.stopPropagation()}
+            >
+              Gmail
+            </a>
           ) : null}
         </span>
       </div>

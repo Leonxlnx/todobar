@@ -47,6 +47,7 @@ Product and UX:
 
 AI, MCP, security, privacy:
 
+- [Gmail integration](gmail-integration.md)
 - [MCP connector plan](mcp-connector-plan.md)
 - [AI suggestion schema](ai-suggestion-schema.md)
 - [AI and MCP risk register](ai-mcp-risk-register.md)

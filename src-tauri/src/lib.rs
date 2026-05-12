@@ -5,6 +5,8 @@ use tauri::{
 };
 use tauri_plugin_global_shortcut::{GlobalShortcutExt, ShortcutState};
 
+mod gmail;
+
 const TRAY_TOGGLE_EVENT: &str = "todobar-tray-toggle";
 const TRAY_SETTINGS_EVENT: &str = "todobar-tray-settings";
 
@@ -93,6 +95,12 @@ pub fn run() {
         }))
         .plugin(tauri_plugin_autostart::Builder::new().build())
         .plugin(tauri_plugin_global_shortcut::Builder::new().build())
+        .invoke_handler(tauri::generate_handler![
+            gmail::gmail_connect,
+            gmail::gmail_disconnect,
+            gmail::gmail_fetch_unread,
+            gmail::gmail_status,
+        ])
         .setup(|app| {
             setup_tray(app)?;
             setup_global_shortcuts(app);

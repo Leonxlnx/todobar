@@ -5,6 +5,12 @@ export type Task = {
   priority: 'focus' | 'normal' | 'later'
   kind?: 'task' | 'event'
   reminderAt?: string
+  source?: {
+    from?: string
+    threadId?: string
+    type: 'gmail'
+    url?: string
+  }
   done?: boolean
 }
 

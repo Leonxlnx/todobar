@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Added
+
+- Added the first real Gmail integration foundation using direct Gmail API OAuth
+  instead of MCP as the primary user flow.
+- Added native Gmail OAuth loopback handling, PKCE, token exchange, refresh
+  handling, and OS credential storage through Windows Credential Manager and
+  macOS Keychain via the native layer.
+- Added a user-facing Gmail connector settings section with disconnected,
+  connected, reconnect, sync, disconnect, permission boundary, and activity
+  audit states.
+- Added Inbox suggestions for recent unread Gmail threads, with local convert
+  to Todobar task, Gmail thread links, and local ignore state.
+- Added browser smoke coverage for disconnected Gmail UI, connected mock state,
+  revoked-token/reconnect state, and converting a mocked Gmail thread into a
+  local task.
+
+### Changed
+
+- Moved Gmail MCP/developer setup out of the normal user flow. MCP remains a
+  future advanced path, while direct Gmail OAuth is now the primary connector
+  path.
+
 ## 0.1.8 - Native Dock Polish
 
 ### Added

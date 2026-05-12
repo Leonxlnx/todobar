@@ -37,22 +37,19 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await expect(page.getByRole('dialog', { name: 'Settings' })).toBeVisible()
   await expect(page.getByLabel('Show completed')).toBeVisible()
   await expect(page.getByText('Notifications', { exact: true })).toBeVisible()
-  await expect(page.getByText('Gmail MCP', { exact: true })).toBeVisible()
+  await expect(page.getByText('Gmail', { exact: true })).toBeVisible()
+  await expect(page.getByText('Connect Gmail', { exact: true })).toBeVisible()
+  await expect(page.getByText('Read-only inbox suggestions for local Todobar tasks.')).toBeVisible()
   await page.getByRole('button', { name: 'Connectors' }).click()
-  await expect(page.getByText('Gmail MCP', { exact: true })).toBeHidden()
+  await expect(page.getByText('Connect Gmail', { exact: true })).toBeHidden()
   await page.getByRole('button', { name: 'Close settings' }).click()
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
-  await expect(page.getByText('Gmail MCP', { exact: true })).toBeHidden()
+  await expect(page.getByText('Connect Gmail', { exact: true })).toBeHidden()
   await page.getByRole('button', { name: 'Connectors' }).click()
-  await expect(page.getByText('Gmail MCP', { exact: true })).toBeVisible()
-  await page.getByRole('button', { name: 'Setup' }).click()
-  await page
-    .getByLabel('MCP server')
-    .fill('http://localhost:3333/mcp')
-  await page
-    .getByLabel('OAuth client ID')
-    .fill('desktop-client-id.apps.googleusercontent.com')
-  await expect(page.getByText('Ready for native MCP auth')).toBeVisible()
+  await expect(page.getByText('Connect Gmail', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Connect Gmail' }).click()
+  await expect(page.getByText('alex@example.com', { exact: true })).toBeVisible()
+  await expect(page.getByText('Connected Gmail mock for browser QA.')).toBeVisible()
   await expect(page.getByRole('button', { name: 'Priority' })).toBeVisible()
   await page.getByRole('button', { name: 'Newest' }).click()
   await expect(page.getByRole('button', { name: 'Newest' })).toHaveAttribute(
@@ -133,6 +130,17 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await page.getByText('Show completed', { exact: true }).click()
   await expect(page.getByLabel('Show completed')).not.toBeChecked()
   await page.getByRole('button', { name: 'Close settings' }).click()
+  await expect(page.getByText('Inbox suggestions', { exact: true })).toBeVisible()
+  await expect(page.getByText('Review Todobar demo notes', { exact: true })).toBeVisible()
+  await page
+    .locator('.gmail-suggestion-row')
+    .filter({ hasText: 'Review Todobar demo notes' })
+    .getByRole('button', { name: 'Add task' })
+    .click()
+  await expect(page.getByText('Review Todobar demo notes', { exact: true })).toBeVisible()
+  await expect(
+    page.locator('.task-source-link').filter({ hasText: 'Gmail' }),
+  ).toBeVisible()
   await expect(page.getByText('Capture inbox', { exact: true })).toBeHidden()
   await expect(page.locator('section[aria-labelledby="today-heading"]')).toBeVisible()
   await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
@@ -430,6 +438,35 @@ test('reminder toast snooze moves the reminder forward', async ({ page }) => {
       }),
     )
     .toBe(true)
+})
+
+test('Gmail connector shows a reconnect state without frontend tokens', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'todobar.gmail.mock.v1',
+      JSON.stringify({
+        accountEmail: 'alex@example.com',
+        state: 'needs_reconnect',
+      }),
+    )
+  })
+  await page.goto('/?open=1')
+  await page.getByRole('button', { name: 'Sidebar settings' }).click()
+
+  await expect(page.getByText('Reconnect required', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Reconnect Gmail' })).toBeVisible()
+  await expect(page.getByText('No email data is read yet.')).toHaveCount(0)
+  await expect
+    .poll(async () =>
+      page.evaluate(() =>
+        Object.keys(window.localStorage).some((key) =>
+          key.toLowerCase().includes('token'),
+        ),
+      ),
+    )
+    .toBe(false)
 })
 
 test('native closed dock keeps a rounded tab shape', async ({ page }) => {

@@ -2662,6 +2662,12 @@ kbd {
   gap: 10px;
 }
 
+.connector-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .connector-mark {
   width: 38px;
   height: 38px;
@@ -2723,6 +2729,85 @@ kbd {
   border-color: var(--accent-line);
   background: var(--surface-hover);
   opacity: 1;
+}
+
+.connector-setting button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.connector-permission-note,
+.connector-advanced-note {
+  margin: 0;
+  padding: 9px 10px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--settings-surface) 64%, transparent);
+}
+
+.connector-permission-note {
+  display: grid;
+  gap: 4px;
+}
+
+.connector-permission-note strong {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.connector-permission-note span,
+.connector-advanced-note {
+  font-size: 10.5px;
+  font-weight: 620;
+  line-height: 1.35;
+}
+
+.connector-activity {
+  display: grid;
+  gap: 7px;
+  padding-top: 1px;
+}
+
+.connector-activity ol {
+  display: grid;
+  gap: 5px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.connector-activity li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 7px 8px;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--control-bg);
+}
+
+.connector-activity li span {
+  overflow: hidden;
+  font-size: 10.3px;
+  font-weight: 640;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.connector-activity time,
+.connector-activity p {
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 680;
+}
+
+.connector-activity p {
+  margin: 0;
+  padding: 2px;
 }
 
 .connector-setup {
@@ -3642,6 +3727,222 @@ kbd {
   min-height: calc(var(--task-row-height) + 1px);
 }
 
+.gmail-suggestions {
+  display: grid;
+  gap: 8px;
+  overflow: hidden;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), transparent),
+    var(--section-bg);
+  box-shadow: var(--control-shadow);
+  animation: task-row-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.workspace.theme-dark .gmail-suggestions {
+  background: color-mix(in srgb, var(--task-bg) 72%, transparent);
+}
+
+.gmail-suggestions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.gmail-suggestions-header > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.gmail-suggestions-header strong {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 11.8px;
+  font-weight: 780;
+}
+
+.gmail-suggestions-header strong svg {
+  color: var(--accent);
+}
+
+.gmail-suggestions-header span {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.4px;
+  font-weight: 660;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gmail-suggestions-header button {
+  inline-size: 28px;
+  block-size: 28px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
+  cursor: pointer;
+}
+
+.gmail-suggestions-header button:hover:not(:disabled) {
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: var(--surface-hover);
+}
+
+.gmail-suggestions-header button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.gmail-boundary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  padding: 5px 7px;
+  border: 1px solid color-mix(in srgb, var(--accent-line) 64%, transparent);
+  border-radius: 10px;
+  background: var(--accent-soft);
+}
+
+.gmail-boundary span {
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 820;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.gmail-boundary em {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 650;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gmail-state-message {
+  display: grid;
+  gap: 2px;
+  padding: 9px;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--control-bg) 70%, transparent);
+}
+
+.gmail-state-message strong {
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 760;
+}
+
+.gmail-state-message span {
+  color: var(--muted);
+  font-size: 10.4px;
+  font-weight: 620;
+  line-height: 1.3;
+}
+
+.gmail-suggestion-list {
+  display: grid;
+  gap: 7px;
+}
+
+.gmail-suggestion-row {
+  display: grid;
+  gap: 8px;
+  padding: 9px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--task-bg);
+  box-shadow: var(--row-shadow);
+}
+
+.gmail-suggestion-copy {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.gmail-suggestion-copy strong {
+  overflow: hidden;
+  color: var(--ink);
+  font-size: 11.6px;
+  font-weight: 780;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gmail-suggestion-copy span {
+  overflow: hidden;
+  color: var(--accent);
+  font-size: 10.2px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gmail-suggestion-copy p {
+  display: -webkit-box;
+  margin: 2px 0 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 10.5px;
+  font-weight: 610;
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.gmail-suggestion-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gmail-suggestion-actions a,
+.gmail-suggestion-actions button {
+  min-width: 0;
+  height: 28px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0 9px;
+  color: var(--muted);
+  font-size: 10.4px;
+  font-weight: 760;
+  text-decoration: none;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
+  cursor: pointer;
+}
+
+.gmail-suggestion-actions a {
+  width: 28px;
+  padding: 0;
+}
+
+.gmail-suggestion-actions button:hover,
+.gmail-suggestion-actions a:hover {
+  color: var(--ink);
+  border-color: var(--accent-line);
+  background: var(--surface-hover);
+}
+
 .section-content {
   display: grid;
   grid-template-rows: 1fr;
@@ -4031,6 +4332,20 @@ kbd {
   font-weight: 700;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.task-source-link {
+  min-width: max-content;
+  display: inline-flex;
+  align-items: center;
+  color: var(--accent);
+  font-size: inherit;
+  font-weight: 760;
+  text-decoration: none;
+}
+
+.task-source-link:hover {
+  text-decoration: underline;
 }
 
 .task-kind-pill {

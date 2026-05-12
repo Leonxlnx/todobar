@@ -59,10 +59,13 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 - Rearrange Today, Calendar, and Lists from settings
 - Collapse settings groups while tuning the sidebar, with the open/closed state
   remembered locally
-- Gmail MCP setup surface for a future native MCP runner. It stores Google's
-  Workspace MCP endpoint and an OAuth client ID, but Gmail sign-in still needs
-  the native OAuth/MCP runner and secure token store; the current build does
-  not read email data.
+- Gmail read-only connector foundation using direct Gmail API OAuth from the
+  native layer. Users click Connect Gmail, approve Google's browser consent, and
+  Todobar stores OAuth tokens in the OS credential store instead of frontend
+  storage.
+- Gmail Inbox suggestions for recent unread threads, with local conversion into
+  Todobar tasks, Gmail thread links, local ignore state, reconnect handling, and
+  a small connector activity/audit area.
 - Adjustable panel width, visible tab size, handle height, edge position,
   motion speed, corner radius, task sort mode, task row height, task spacing,
   task text size, completed-task visibility, launch-at-login, notifications,
@@ -154,12 +157,40 @@ choose Open.
 - Use the settings button to adjust appearance, dock edge, desktop startup,
   window size, handle shape, task density, sorting, backdrop image, motion,
   radius, and opacity.
+- Open Settings > Connectors > Connect Gmail to start the Gmail read-only OAuth
+  flow when the build has a maintainer-provided Google OAuth client ID.
+
+## Gmail Integration Status
+
+Gmail is implemented as a production-minded foundation, not as a frontend
+placeholder:
+
+- Primary path: direct Gmail API OAuth, not MCP.
+- Scope: `https://www.googleapis.com/auth/gmail.readonly`.
+- Current reads: recent unread Inbox threads only.
+- Current actions: convert a selected suggestion into a local Todobar task,
+  open the original Gmail thread, or ignore the suggestion locally.
+- Not implemented: sending email, composing drafts, deleting email, archiving,
+  labeling, or mutating Gmail in any way.
+- Token storage: native OS credential store only. Windows uses Credential
+  Manager. macOS uses Keychain. OAuth tokens are never stored in frontend
+  `localStorage`.
+- Browser preview uses mock connector state for tests and design QA only.
+
+Normal users should not need a Google Cloud project. Maintainers of public
+builds still need to configure and verify the Google OAuth client before
+publishing a Gmail-enabled release.
 
 ## Data and Privacy
 
 Todobar is local-first in this prototype. Task data and settings are stored in
-local browser storage inside the app webview. There is no analytics layer and no
-network sync.
+local browser storage inside the app webview. Gmail-derived tasks stay local in
+the same task store. There is no analytics layer and no general network sync.
+
+When Gmail is connected, Todobar uses the Gmail API only for the read-only
+connector features listed above. Every Gmail read performed by the UI is shown in
+the connector activity area. Disconnecting Gmail removes the stored OAuth token
+from the native OS credential store.
 
 Future AI and MCP features should stay optional, permissioned, and visible. The
 core task app must remain useful without AI.
@@ -189,6 +220,22 @@ Run the native desktop app:
 ```bash
 npm run tauri:dev
 ```
+
+For local Gmail OAuth testing, provide a Google OAuth desktop client ID to the
+native process:
+
+```bash
+$env:TODOBAR_GMAIL_CLIENT_ID="your-client-id.apps.googleusercontent.com"
+npm run tauri:dev
+```
+
+If your OAuth client requires a secret, keep it in the native environment only:
+
+```bash
+$env:TODOBAR_GMAIL_CLIENT_SECRET="your-client-secret"
+```
+
+Do not put OAuth secrets in React code, static assets, or browser storage.
 
 Build the app locally:
 
@@ -296,6 +343,7 @@ Planning and research notes live in [`docs/`](docs/).
 Useful starting points:
 
 - [Architecture](docs/architecture.md)
+- [Gmail integration](docs/gmail-integration.md)
 - [Product vision](docs/product-vision.md)
 - [UI direction](docs/ui-direction.md)
 - [Platform support](docs/platform-support.md)
