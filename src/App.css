@@ -1700,7 +1700,7 @@ kbd {
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
-  padding: 14px 5px 13px;
+  padding: 14px 6px 13px;
   border-left: 1px solid var(--line);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent 34%),
@@ -1718,16 +1718,16 @@ kbd {
 
 .sidebar-rail button {
   min-width: 0;
-  inline-size: 36px;
-  block-size: 36px;
+  inline-size: 34px;
+  block-size: 34px;
   display: grid;
   place-items: center;
   padding: 0;
   color: var(--muted);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 11px;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), transparent),
     var(--control-bg);
   box-shadow: var(--control-shadow);
   cursor: pointer;
@@ -1753,14 +1753,12 @@ kbd {
 .sidebar-rail button.is-active {
   color: var(--ink);
   border-color: var(--accent-line);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.2), transparent),
-    var(--accent-soft);
+  background: var(--accent-soft);
   box-shadow: var(--control-shadow-hover);
 }
 
 .workspace.theme-dark .sidebar-rail button {
-  background: var(--control-bg);
+  background: color-mix(in srgb, var(--control-bg) 86%, transparent);
 }
 
 .workspace.theme-dark .sidebar-rail button:hover,
