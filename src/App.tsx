@@ -3353,7 +3353,6 @@ function SidebarSettingsPanel({
             key={settings.theme}
             options={availableThemes}
             selectedTheme={selectedTheme}
-            theme={settings.theme}
             value={settings.visualStyle}
             onChange={(visualStyle) => onChange({ visualStyle })}
           />
@@ -3915,18 +3914,15 @@ function ThemeSwatch({ id }: { id: ThemePreset }) {
 function ThemePresetDropdown({
   options,
   selectedTheme,
-  theme,
   value,
   onChange,
 }: {
   options: ThemePresetOption[]
   selectedTheme: ThemePresetOption
-  theme: ThemeMode
   value: ThemePreset
   onChange: (value: ThemePreset) => void
 }) {
   const [isOpen, setIsOpen] = useState(false)
-  const modeLabel = theme === 'dark' ? 'Dark mode' : 'Light mode'
 
   return (
     <div
@@ -3960,9 +3956,7 @@ function ThemePresetDropdown({
         <ThemeSwatch id={selectedTheme.id} />
         <span className="theme-dropdown-current">
           <strong>{selectedTheme.label}</strong>
-          <em>
-            {modeLabel} - {options.length} presets
-          </em>
+          <em>{options.length} curated presets</em>
         </span>
         <ChevronDown
           className="theme-dropdown-chevron"
