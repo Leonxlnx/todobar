@@ -2047,7 +2047,7 @@ kbd {
 .settings-panel {
   display: grid;
   align-content: start;
-  gap: 12px;
+  gap: 10px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -2128,7 +2128,7 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 0 2px;
+  padding: 0 0 1px;
 }
 
 .settings-panel-header strong {
@@ -2233,7 +2233,7 @@ kbd {
 
 .settings-group {
   display: grid;
-  gap: 7px;
+  gap: 6px;
   padding: 0;
   border: 0;
   border-radius: 0;
@@ -2241,7 +2241,7 @@ kbd {
 }
 
 .settings-group + .settings-group {
-  margin-top: 3px;
+  margin-top: 1px;
 }
 
 .settings-appearance {
@@ -2254,7 +2254,7 @@ kbd {
 
 .settings-group-toggle {
   width: 100%;
-  height: 24px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2286,7 +2286,7 @@ kbd {
 .settings-group-content {
   min-height: 0;
   display: grid;
-  gap: 8px;
+  gap: 7px;
   opacity: 1;
   transform: translateY(0);
   transition:
@@ -2321,15 +2321,17 @@ kbd {
 
 .apply-setting {
   justify-self: end;
-  min-width: 74px;
+  min-width: 86px;
   height: 30px;
   padding: 0 12px;
-  color: var(--accent-strong);
+  color: var(--ink);
   font-size: 10.5px;
   font-weight: 780;
-  border: 1px solid var(--accent-line);
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--accent-soft);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent),
+    var(--control-bg);
   box-shadow: var(--control-shadow);
   cursor: pointer;
   transition:
@@ -2349,26 +2351,15 @@ kbd {
   opacity: 0.58;
 }
 
+.apply-setting:not(:disabled):hover {
+  border-color: var(--accent-line);
+  background: var(--surface-hover);
+  box-shadow: var(--control-shadow-hover);
+}
+
 .apply-setting:not(:disabled):active {
   transform: scale(0.97);
   box-shadow: var(--control-shadow-pressed);
-}
-
-.apply-setting.is-applied {
-  color: var(--accent-strong);
-  border-color: var(--accent-line);
-  background: var(--accent-soft);
-  box-shadow: var(--control-shadow);
-}
-
-.apply-feedback {
-  align-self: center;
-  justify-self: start;
-  color: var(--muted);
-  font-size: 10.5px;
-  font-weight: 720;
-  opacity: 0.78;
-  animation: apply-feedback-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 .mode-toggle {

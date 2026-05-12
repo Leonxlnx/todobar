@@ -3180,7 +3180,6 @@ function SidebarSettingsPanel({
     base: settings.panelWidth,
     value: settings.panelWidth,
   }))
-  const [isPanelWidthApplied, setIsPanelWidthApplied] = useState(false)
   const availableThemes = getThemeOptions(settings.theme)
   const selectedTheme =
     availableThemes.find((preset) => preset.id === settings.visualStyle) ??
@@ -3192,7 +3191,6 @@ function SidebarSettingsPanel({
       : settings.panelWidth
   const hasPanelWidthDraft = draftPanelWidth !== settings.panelWidth
   const updateDraftPanelWidth = (value: number) => {
-    setIsPanelWidthApplied(false)
     setPanelWidthDraft({
       base: settings.panelWidth,
       value,
@@ -3200,8 +3198,6 @@ function SidebarSettingsPanel({
   }
   const applyPanelWidth = () => {
     onChange({ panelWidth: draftPanelWidth })
-    setIsPanelWidthApplied(true)
-    window.setTimeout(() => setIsPanelWidthApplied(false), 900)
     setPanelWidthDraft({
       base: draftPanelWidth,
       value: draftPanelWidth,
@@ -3498,17 +3494,12 @@ function SidebarSettingsPanel({
           />
           <button
             type="button"
-            className={`apply-setting ${isPanelWidthApplied ? 'is-applied' : ''}`}
+            className="apply-setting"
             disabled={!hasPanelWidthDraft}
             onClick={applyPanelWidth}
           >
-            Apply
+            Save width
           </button>
-          {isPanelWidthApplied ? (
-            <span className="apply-feedback" role="status">
-              Applied
-            </span>
-          ) : null}
         </div>
         <div className="settings-range-grid">
           <ToggleSetting
@@ -3619,13 +3610,13 @@ function SidebarSettingsPanel({
           onChange={(panelRadius) => onChange({ panelRadius })}
         />
         <SliderSetting
-          label="Surface opacity"
+          label="Panel opacity"
           value={settings.surfaceAlpha}
           min={58}
           max={100}
           step={1}
           suffix="%"
-          description="Controls how solid the panel surface feels. Lower values show more of the workspace behind it."
+          description="Lower values let more of the workspace image show through."
           onChange={(surfaceAlpha) => onChange({ surfaceAlpha })}
         />
       </SettingsGroup>
