@@ -4417,6 +4417,16 @@ kbd {
   box-shadow: none;
 }
 
+.workspace.theme-dark .row-actions button {
+  border-color: rgba(255, 255, 255, 0.07);
+  background: color-mix(in srgb, var(--control-bg) 78%, transparent);
+}
+
+.workspace.theme-dark .row-actions button:hover {
+  border-color: rgba(255, 255, 255, 0.13);
+  background: color-mix(in srgb, var(--surface-hover) 82%, transparent);
+}
+
 .check-button {
   width: 26px;
   height: 26px;
