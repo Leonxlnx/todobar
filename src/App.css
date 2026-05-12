@@ -4134,6 +4134,21 @@ kbd {
   border-radius: 13px;
 }
 
+.empty-task-list {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 11px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 680;
+}
+
+.empty-task-list svg {
+  color: var(--accent);
+}
+
 .list-section {
   padding-top: 2px;
 }

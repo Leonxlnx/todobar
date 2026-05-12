@@ -2379,20 +2379,27 @@ function App() {
                         />
                       ) : null}
                       <div className="task-list">
-                        {visibleTodayTasks.map((task, index) => (
-                          <TaskRow
-                            key={task.id}
-                            task={task}
-                            index={index}
-                            onToggle={(id) => toggleTask('today', id)}
-                            onPriority={(id) => cycleTaskPriority('today', id)}
-                            onReminder={(id) => cycleTaskReminder('today', id)}
-                            onDelete={(id) => deleteTask('today', id)}
-                            onRename={(id, title) =>
-                              renameTask('today', id, title)
-                            }
-                          />
-                        ))}
+                        {visibleTodayTasks.length > 0 ? (
+                          visibleTodayTasks.map((task, index) => (
+                            <TaskRow
+                              key={task.id}
+                              task={task}
+                              index={index}
+                              onToggle={(id) => toggleTask('today', id)}
+                              onPriority={(id) => cycleTaskPriority('today', id)}
+                              onReminder={(id) => cycleTaskReminder('today', id)}
+                              onDelete={(id) => deleteTask('today', id)}
+                              onRename={(id, title) =>
+                                renameTask('today', id, title)
+                              }
+                            />
+                          ))
+                        ) : (
+                          <div className="empty-task-list">
+                            <Check size={14} />
+                            <span>No open tasks here.</span>
+                          </div>
+                        )}
                       </div>
                       {pinnedTodayLists.length > 0 ? (
                         <section
