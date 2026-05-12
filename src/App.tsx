@@ -3363,6 +3363,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="edge"
         title="Screen edge"
+        icon={<PanelRightOpen size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.edge)}
         onToggle={toggleSettingsGroup}
       >
@@ -3375,6 +3376,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="layout"
         title="Layout"
+        icon={<ListTodo size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.layout)}
         onToggle={toggleSettingsGroup}
       >
@@ -3404,6 +3406,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="desktop"
         title="Desktop"
+        icon={<Settings size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.desktop)}
         onToggle={toggleSettingsGroup}
       >
@@ -3423,6 +3426,7 @@ function SidebarSettingsPanel({
         <SettingsGroup
           id="connectors"
           title="Connectors"
+          icon={<Mail size={12} />}
           collapsed={Boolean(collapsedSettingsGroups.connectors)}
           onToggle={toggleSettingsGroup}
         >
@@ -3485,6 +3489,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="window"
         title="Window & handle"
+        icon={<PanelRightClose size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.window)}
         className="settings-size-group"
         onToggle={toggleSettingsGroup}
@@ -3551,6 +3556,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="tasks"
         title="Tasks"
+        icon={<Check size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.tasks)}
         onToggle={toggleSettingsGroup}
       >
@@ -3595,6 +3601,7 @@ function SidebarSettingsPanel({
       <SettingsGroup
         id="feel"
         title="Feel"
+        icon={<Palette size={12} />}
         collapsed={Boolean(collapsedSettingsGroups.feel)}
         onToggle={toggleSettingsGroup}
       >
