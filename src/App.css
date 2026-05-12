@@ -1065,15 +1065,15 @@ kbd {
 .workspace.has-custom-backdrop .edge-handle {
   color: #f8fafc;
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.2), rgba(15, 23, 42, 0.5)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.36)),
     var(--custom-backdrop-image),
     var(--handle-bg);
   background-position: center;
   background-size: auto, cover, auto;
-  border-color: color-mix(in srgb, var(--accent-line) 42%, transparent);
+  border-color: color-mix(in srgb, var(--dock-stroke) 70%, transparent);
   box-shadow:
-    -9px 16px 30px rgba(15, 23, 42, 0.18),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.3);
+    -9px 16px 30px rgba(15, 23, 42, 0.16),
+    inset 1px 1px 0 rgba(255, 255, 255, 0.18);
 }
 
 .workspace.theme-dark.has-custom-backdrop .edge-handle {
@@ -1086,7 +1086,7 @@ kbd {
 .workspace.has-custom-backdrop .edge-handle:hover {
   color: #ffffff;
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.12), rgba(15, 23, 42, 0.42)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.28)),
     var(--custom-backdrop-image),
     var(--handle-hover-bg);
   background-position: center;
