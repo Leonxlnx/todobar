@@ -3097,7 +3097,7 @@ function QuickAdd({
               }
             >
               <strong>30 min</strong>
-              <span>from now</span>
+              <span>Later</span>
             </button>
             <button
               type="button"
@@ -3109,7 +3109,7 @@ function QuickAdd({
               }
             >
               <strong>Tomorrow</strong>
-              <span>same time</span>
+              <span>Same time</span>
             </button>
             <button
               type="button"
@@ -3121,7 +3121,7 @@ function QuickAdd({
               }
             >
               <strong>Next week</strong>
-              <span>same time</span>
+              <span>Same time</span>
             </button>
           </div>
           <label>

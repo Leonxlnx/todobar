@@ -1946,9 +1946,9 @@ kbd {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 32px;
   align-items: end;
-  column-gap: 8px;
-  row-gap: 9px;
-  padding: 10px;
+  column-gap: 7px;
+  row-gap: 8px;
+  padding: 9px;
   border: 1px solid var(--task-border);
   border-radius: 15px;
   background:
@@ -1964,18 +1964,18 @@ kbd {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
+  gap: 5px;
 }
 
 .reminder-presets button {
   inline-size: auto;
-  block-size: 38px;
+  block-size: 34px;
   width: 100%;
-  height: 38px;
+  height: 34px;
   aspect-ratio: auto;
   flex: initial;
   min-width: 0;
-  min-height: 38px;
+  min-height: 34px;
   display: grid;
   place-items: center;
   gap: 2px;
@@ -3606,9 +3606,9 @@ kbd {
 
 .calendar-today-button {
   width: auto !important;
-  min-width: 48px;
+  min-width: 44px;
   height: 34px !important;
-  padding: 0 10px !important;
+  padding: 0 9px !important;
   color: var(--ink) !important;
   font-size: 10.5px;
   font-weight: 760;
@@ -3635,8 +3635,8 @@ kbd {
 
 .calendar-board {
   display: grid;
-  gap: 7px;
-  padding: 10px;
+  gap: 8px;
+  padding: 9px;
   border: 1px solid var(--line);
   border-radius: 16px;
   background:
@@ -3767,7 +3767,7 @@ kbd {
 .calendar-day-summary {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 6px;
+  gap: 5px;
 }
 
 .calendar-day-summary span {
