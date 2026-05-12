@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Todobar</string>
+
+    <string name="hero_title">Todobar</string>
+    <string name="hero_subtitle">A quiet, edge-docked todo bubble for Android.</string>
+
+    <string name="overlay_card_title">Display over other apps</string>
+    <string name="overlay_card_body">Lets the bubble float on top of every screen, just like the desktop sidebar.</string>
+
+    <string name="notif_card_title">Show notifications</string>
+    <string name="notif_card_body">Required on Android 13+ so the bubble can run as a quiet foreground service.</string>
+
+    <string name="bubble_card_title">Floating bubble</string>
+    <string name="bubble_card_body">Tap the bubble to open the sidebar. Drag it to reposition along the right edge.</string>
+
+    <string name="permission_granted">Granted</string>
+    <string name="permission_needed">Not granted</string>
+    <string name="action_grant">Grant access</string>
+    <string name="action_reopen_settings">Open Android settings</string>
+    <string name="action_start_bubble">Start bubble</string>
+    <string name="action_stop_bubble">Stop bubble</string>
+    <string name="bubble_running">Running</string>
+    <string name="bubble_idle">Stopped</string>
+
+    <string name="sidebar_title">Today</string>
+    <string name="sidebar_input_hint">Capture a task…</string>
+    <string name="sidebar_empty">No tasks yet.\nCapture one above.</string>
+    <string name="sidebar_clear_completed">Clear completed</string>
+    <string name="sidebar_close">Close</string>
+
+    <string name="bubble_channel_name">Todobar bubble</string>
+    <string name="bubble_channel_desc">Keeps the floating todo bubble alive.</string>
+    <string name="bubble_notification_title">Todobar</string>
+    <string name="bubble_notification_body">Bubble is running</string>
+
+    <string name="cd_check">Mark complete</string>
+    <string name="cd_uncheck">Mark not complete</string>
+    <string name="cd_delete">Delete task</string>
+
+    <plurals name="open_task_count">
+        <item quantity="one">%d open</item>
+        <item quantity="other">%d open</item>
+    </plurals>
+</resources>

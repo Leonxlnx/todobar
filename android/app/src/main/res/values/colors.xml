@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors the desktop "studio" light preset:
+         workspace gradient, ink, muted, accent (#2563eb). -->
+    <color name="surface_workspace">#F7F7F6</color>
+    <color name="surface_panel">#FCFCFB</color>
+    <color name="surface_panel_alt">#F5F6F7</color>
+    <color name="surface_task">#FFFFFF</color>
+    <color name="ink">#111318</color>
+    <color name="muted">#687383</color>
+    <color name="line">#1A181A20</color>
+    <color name="task_border">#1B181A20</color>
+    <color name="accent">#2563EB</color>
+    <color name="accent_soft">#172563EB</color>
+    <color name="accent_line">#3D2563EB</color>
+    <color name="amber">#F08C2F</color>
+    <color name="scrim">#33000000</color>
+
+    <color name="handle_grad_top">#FFFFFF</color>
+    <color name="handle_grad_bot">#F6F6F5</color>
+    <color name="handle_stroke">#14181A20</color>
+
+    <color name="dot_focus">#F08C2F</color>
+    <color name="dot_normal">#2563EB</color>
+    <color name="dot_later">#8A8F98</color>
+</resources>
