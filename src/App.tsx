@@ -3664,7 +3664,7 @@ function ConnectorSetting({ gmail }: { gmail: GmailConnectorController }) {
       : needsReconnect
         ? 'Reconnect required'
         : isUnconfigured
-          ? 'Maintainer setup needed'
+          ? 'Gmail login not enabled in this build'
           : 'Not connected'
 
   return (
@@ -3702,7 +3702,11 @@ function ConnectorSetting({ gmail }: { gmail: GmailConnectorController }) {
               disabled={gmail.isLoading || isUnconfigured}
               onClick={gmail.connect}
             >
-              {needsReconnect ? 'Reconnect Gmail' : 'Connect Gmail'}
+              {isUnconfigured
+                ? 'OAuth setup missing'
+                : needsReconnect
+                  ? 'Reconnect Gmail'
+                  : 'Connect Gmail'}
             </button>
           )}
         </div>
@@ -3749,8 +3753,9 @@ function ConnectorSetting({ gmail }: { gmail: GmailConnectorController }) {
       </div>
 
       <p className="connector-advanced-note">
-        Advanced MCP connector configuration remains a future developer path.
-        Normal users should only need Connect Gmail.
+        This build is missing Todobar's Google OAuth app credentials. Normal
+        users should not create their own Google project; the public app build
+        needs one verified app identity from the maintainer.
       </p>
     </div>
   )

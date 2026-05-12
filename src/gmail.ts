@@ -154,6 +154,18 @@ function loadBrowserMockStatus(): GmailConnectionStatus {
     }
   }
 
+  if (forcedState === 'unconfigured' || stored.state === 'unconfigured') {
+    return {
+      accountEmail: null,
+      message:
+        stored.message ??
+        "Gmail login is built, but this app build does not include Todobar's Google OAuth client ID yet.",
+      scope: GMAIL_SCOPE,
+      state: 'unconfigured',
+      syncState: 'idle',
+    }
+  }
+
   return defaultDisconnectedStatus
 }
 

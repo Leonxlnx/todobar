@@ -210,7 +210,7 @@ fn status_from_token(token: Option<StoredGmailToken>) -> Result<GmailConnectionS
             state: "unconfigured".to_string(),
             account_email: None,
             sync_state: "idle".to_string(),
-            message: "This build needs a Google OAuth client ID before Gmail can connect.".to_string(),
+            message: "Gmail login is built, but this app build does not include Todobar's Google OAuth client ID yet.".to_string(),
             scope: GMAIL_SCOPE.to_string(),
         });
     }

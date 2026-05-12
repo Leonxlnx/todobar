@@ -469,6 +469,31 @@ test('Gmail connector shows a reconnect state without frontend tokens', async ({
     .toBe(false)
 })
 
+test('Gmail connector explains when OAuth is not bundled in the build', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem(
+      'todobar.gmail.mock.v1',
+      JSON.stringify({
+        message:
+          "Gmail login is built, but this app build does not include Todobar's Google OAuth client ID yet.",
+        state: 'unconfigured',
+      }),
+    )
+  })
+  await page.goto('/?open=1')
+  await page.getByRole('button', { name: 'Sidebar settings' }).click()
+
+  await expect(
+    page.getByText('Gmail login not enabled in this build', { exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('button', { name: 'OAuth setup missing' })).toBeDisabled()
+  await expect(
+    page.getByText('Normal users should not create their own Google project'),
+  ).toBeVisible()
+})
+
 test('native closed dock keeps a rounded tab shape', async ({ page }) => {
   await page.setViewportSize({ height: 900, width: 442 })
   await page.goto('/?runtime=tauri')
