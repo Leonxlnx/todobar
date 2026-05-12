@@ -4195,13 +4195,13 @@ kbd {
 
 .pinned-list-stack {
   display: grid;
-  gap: 10px;
+  gap: 0;
 }
 
 .today-goal-list {
   display: grid;
-  gap: 8px;
-  padding: 12px 0 0;
+  gap: 7px;
+  padding: 13px 0 12px;
   border: 0;
   border-top: 1px solid var(--line);
   border-radius: 0;
@@ -4209,8 +4209,12 @@ kbd {
 }
 
 .today-goal-list:first-child {
-  padding-top: 0;
+  padding-top: 2px;
   border-top: 0;
+}
+
+.today-goal-list:last-child {
+  padding-bottom: 0;
 }
 
 .today-goal-list-title {
@@ -4249,10 +4253,13 @@ kbd {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--task-bg);
+  background-clip: padding-box;
+  isolation: isolate;
 }
 
 .pinned-task-list .task-row {
   padding-inline: 7px;
+  background-clip: padding-box;
 }
 
 .compact-task-list .task-row {
