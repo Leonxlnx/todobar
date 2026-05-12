@@ -2613,6 +2613,19 @@ kbd {
   background: rgba(42, 45, 51, 0.16);
 }
 
+.theme-preview-porcelain {
+  background:
+    linear-gradient(135deg, #ffffff, #e5e9ee);
+}
+
+.theme-preview-porcelain i:first-child {
+  background: #111318;
+}
+
+.theme-preview-porcelain i:not(:first-child) {
+  background: rgba(17, 19, 24, 0.14);
+}
+
 .theme-preview-frost {
   background:
     radial-gradient(circle at 78% 18%, rgba(96, 165, 250, 0.28), transparent 20px),
@@ -2638,6 +2651,19 @@ kbd {
 
 .theme-preview-paper i:not(:first-child) {
   background: rgba(124, 92, 47, 0.22);
+}
+
+.theme-preview-carbon {
+  background:
+    linear-gradient(135deg, #050506, #15171c);
+}
+
+.theme-preview-carbon i:first-child {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.theme-preview-carbon i:not(:first-child) {
+  background: rgba(255, 255, 255, 0.18);
 }
 
 .theme-preview-graphite {
