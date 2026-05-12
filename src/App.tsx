@@ -2209,7 +2209,7 @@ function App() {
 
       {isNative ? (
         <svg
-          className="native-dock-surface"
+          className={`native-dock-surface ${isOpen ? 'is-open' : 'is-closed'}`}
           width={dockSurface.width}
           height={dockSurface.height}
           viewBox={`0 0 ${dockSurface.width} ${dockSurface.height}`}

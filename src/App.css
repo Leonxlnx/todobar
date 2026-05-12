@@ -579,6 +579,10 @@
   vector-effect: non-scaling-stroke;
 }
 
+.native-dock-surface.is-closed path {
+  stroke: color-mix(in srgb, var(--dock-stroke) 58%, transparent);
+}
+
 .dock-backdrop-base {
   fill: var(--dock-bg);
 }
