@@ -1441,7 +1441,7 @@ function App() {
         const panelWidth = effectivePanelWidth * scaleFactor
         const panelDepth = effectivePanelDepth * scaleFactor
         const handleHitSlop = 3 * scaleFactor
-        const edgeRevealSlop = 8 * scaleFactor
+        const edgeRevealSlop = 14 * scaleFactor
         const isHorizontalDock =
           settings.dockEdge === 'top' || settings.dockEdge === 'bottom'
         const horizontalHandleLength =
