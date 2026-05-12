@@ -2414,10 +2414,15 @@ kbd {
 .settings-group:has(.theme-dropdown.is-open) {
   position: relative;
   z-index: 120;
+  overflow: visible;
 }
 
 .theme-dropdown.is-open {
   z-index: 140;
+}
+
+.settings-drawer:has(.theme-dropdown.is-open) {
+  overflow-y: visible;
 }
 
 .theme-dropdown-trigger,
