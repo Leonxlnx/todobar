@@ -1,5 +1,71 @@
 # Changelog
 
+## 0.1.13 - Premium UI Polish
+
+### Added
+
+- Added a shared motion, spacing, and radius design-token layer so every
+  component now pulls easing curves, gaps, and corner radii from one place.
+- Added a persistent left accent bar on focus-priority task rows so high-priority
+  items are scannable without hover.
+- Added an accent rail indicator that slides in beside the active sidebar
+  section button as a clear "you are here" cue.
+- Added a sticky settings drawer header with backdrop blur so the title and
+  back action stay visible while scrolling long settings groups.
+- Added micro-interactions: bell tilt when a reminder is queued, calendar event
+  dots that grow on hover, and a check pop on task completion.
+- Added prefers-reduced-motion guards so the section enter and per-row stagger
+  animations are skipped for users who opt out.
+- Added @media (hover: none) handling so row actions stay visible, reminder
+  presets grow to 40 dp, and rail/calendar hit targets reach 38-44 dp on touch.
+
+### Changed
+
+- Polished the edge handle with a theme-aware border, layered drop shadow, and
+  a dedicated dark-mode tone so it grounds against any palette without halo.
+- Quieted shared icon button rest states across the rail, headers, capture row,
+  and task rows: transparent at rest, soft surface tint on hover.
+- Replaced the task row check button with a round outline that fills with the
+  accent on hover and completion, matching modern task-app conventions.
+- Removed card-in-card layouts: custom list titles became flat hover rows and
+  pinned task lists no longer wrap their rows in a second bordered card.
+- Reskinned the dock-edge picker, task-sort picker, and calendar entry-mode
+  toggle as proper segmented controls with a single shared track.
+- Modernized the settings toggle to fill with the active accent instead of
+  going near-black or washed-blue depending on theme.
+- Tuned settings sliders to use the active accent for the thumb with an
+  accent-tinted halo that visually grounds in the surrounding row.
+- Tightened section switch staggers from 158 ms to 128 ms and removed the
+  rotation that was causing subpixel shimmer on horizontal text.
+- Promoted the Apply settings button and destructive confirmation buttons to
+  real primary actions (accent or red pills) so commits and deletes are
+  unmistakable.
+- Polished the calendar board, day cells, weekday header, today button, and
+  agenda card into a coherent month view with tabular numerals throughout.
+- Replaced the hard-coded red reminder badge on the edge handle with the
+  active theme accent so the notification chip belongs to the current palette.
+- Made the app icon tile theme-aware so it picks up the active accent instead
+  of always reading as a dark chip.
+- Auto-hid custom scrollbars unless the surrounding container is hovered so
+  the side rail stays clean at rest.
+- Refined every popover (reminder, delete confirm, theme dropdown, settings
+  confirm) to a calmer two-layer shadow that adapts to dark mode.
+- Aligned the section-heading counter, day-summary chips, and pinned list
+  titles on consistent typography (-0.5% letter-spacing, tabular-nums).
+- Mirrored the desktop polish on Android: thinner bubble handle stroke and
+  card borders, pill-shaped primary buttons, flat task row backgrounds, and a
+  matching ink-color sentence-case heading for settings sections.
+
+### Fixed
+
+- Stopped task row actions from translating on hover (no more 1 px shift).
+- Stopped theme dropdown hover from matching the selected state so the current
+  theme stays identifiable as the cursor moves through the menu.
+- Stopped section group titles from rendering as tiny 9 px UPPERCASE muted
+  text - they are now proper 11.5 px sentence-case ink-color headings.
+- Stopped the calendar nav arrows from reading as inert because they no longer
+  rely solely on the global icon-button hover.
+
 ## 0.1.12 - Desktop Motion Polish
 
 ### Added
