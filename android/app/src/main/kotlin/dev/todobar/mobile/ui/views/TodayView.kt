@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -64,8 +65,13 @@ class TodayView(
         scroll.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         scroll.isFillViewport = true
         addView(scroll)
-        scroll.addView(body)
-        body.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        scroll.addView(
+            body,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
         body.orientation = VERTICAL
 
         // ── section-heading ───────────────────────────────────────────────

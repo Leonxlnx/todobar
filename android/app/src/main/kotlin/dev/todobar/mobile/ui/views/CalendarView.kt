@@ -6,6 +6,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
@@ -58,8 +59,13 @@ class CalendarView(
         scroll.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         scroll.isFillViewport = true
         addView(scroll)
-        scroll.addView(body)
-        body.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        scroll.addView(
+            body,
+            FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+            ),
+        )
         body.setPadding(dp(context, 14f), dp(context, 10f), dp(context, 14f), dp(context, 32f))
 
         // Month nav
