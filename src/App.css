@@ -4479,7 +4479,11 @@ kbd {
 .task-row:hover {
   z-index: 6;
   background: var(--row-hover-bg);
-  box-shadow: var(--row-shadow-hover);
+  box-shadow: none;
+}
+
+.task-row:hover .check-button {
+  border-color: color-mix(in srgb, var(--muted) 52%, transparent);
 }
 
 .task-row:focus-within {
@@ -4507,10 +4511,19 @@ kbd {
 }
 
 .check-button {
-  width: 26px;
-  height: 26px;
-  color: #63758a;
-  border-radius: 9px;
+  inline-size: 26px;
+  block-size: 26px;
+  flex-basis: 26px;
+  color: var(--muted);
+  border: 1.5px solid color-mix(in srgb, var(--muted) 36%, transparent);
+  border-radius: 999px;
+  background: transparent;
+}
+
+.check-button:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .check-button svg,
@@ -4808,9 +4821,9 @@ kbd {
 }
 
 .task-row.is-complete .check-button {
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-color: rgba(31, 33, 38, 0.12);
+  color: var(--task-bg);
+  background: var(--accent);
+  border-color: var(--accent);
 }
 
 .task-row.is-pulse-complete .check-button svg,
