@@ -5041,6 +5041,24 @@ kbd {
     inline-size: 28px;
     block-size: 28px;
   }
+
+  .calendar-grid {
+    gap: 4px;
+  }
+
+  .calendar-grid button {
+    min-height: 38px;
+  }
+
+  .calendar-today-button,
+  .calendar-nav button {
+    min-height: 34px;
+  }
+
+  .sidebar-rail button {
+    inline-size: 38px;
+    block-size: 38px;
+  }
 }
 
 .task-row .delete-button {
