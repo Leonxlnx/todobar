@@ -4626,13 +4626,19 @@ kbd {
 .task-row::before {
   content: '';
   position: absolute;
-  inset: 8px auto 8px 0;
-  width: 3px;
+  inset: 9px auto 9px 0;
+  width: 2px;
   border-radius: 999px;
   background: transparent;
+  opacity: 0;
   transition:
     background 160ms ease,
-    opacity 160ms ease;
+    opacity 200ms ease;
+}
+
+.task-row.priority-focus::before {
+  background: var(--accent);
+  opacity: 1;
 }
 
 .task-row:hover {
@@ -4652,6 +4658,12 @@ kbd {
 .task-row:hover::before,
 .task-row:focus-within::before {
   background: var(--accent);
+  opacity: 0.6;
+}
+
+.task-row.priority-focus:hover::before,
+.task-row.priority-focus:focus-within::before {
+  opacity: 1;
 }
 
 .workspace.theme-dark .task-row:hover {
