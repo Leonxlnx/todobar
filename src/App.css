@@ -3995,16 +3995,17 @@ kbd {
 }
 
 .calendar-grid button span {
-  font-size: 11px;
-  font-weight: 740;
+  font-size: 11.5px;
+  font-weight: 680;
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 
 .calendar-grid button em {
   color: var(--accent);
   font-size: 8.5px;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 760;
   line-height: 1;
 }
 
