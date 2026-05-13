@@ -6,19 +6,19 @@ This page records the checks for the `v0.1.11` Android companion release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.11
-- Release workflow: pending tag build
-- Android workflow: pending tag build
-- Workflow status: local checks passed, CI pending tag build
+- Release workflow: https://github.com/Leonxlnx/todobar/actions/runs/25798182640
+- Android workflow: https://github.com/Leonxlnx/todobar/actions/runs/25798182656
+- Workflow status: passed
 
-Expected published assets:
+Published assets:
 
-- `Todobar_0.1.11_x64-setup.exe`
-- `Todobar_0.1.11_x64_en-US.msi`
-- `Todobar_0.1.11_aarch64.dmg`
-- `Todobar_0.1.11_x64.dmg`
-- `Todobar_aarch64.app.tar.gz`
-- `Todobar_x64.app.tar.gz`
-- `todobar-android-v0.1.11.apk`
+- `Todobar_0.1.11_x64-setup.exe` - 3,087,870 bytes
+- `Todobar_0.1.11_x64_en-US.msi` - 4,476,928 bytes
+- `Todobar_0.1.11_aarch64.dmg` - 5,052,781 bytes
+- `Todobar_0.1.11_x64.dmg` - 5,210,983 bytes
+- `Todobar_aarch64.app.tar.gz` - 4,786,574 bytes
+- `Todobar_x64.app.tar.gz` - 4,946,173 bytes
+- `todobar-android-v0.1.11.apk` - 4,413,526 bytes
 
 ## Release Scope
 
