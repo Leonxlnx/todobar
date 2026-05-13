@@ -2460,43 +2460,42 @@ kbd {
   justify-self: end;
   min-width: 86px;
   height: 30px;
-  padding: 0 12px;
-  color: var(--ink);
+  padding: 0 14px;
+  color: var(--task-bg);
   font-size: 10.5px;
   font-weight: 780;
-  border: 1px solid var(--line);
+  border: 1px solid var(--accent);
   border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.3), transparent),
-    var(--control-bg);
-  box-shadow: var(--control-shadow);
+  background: var(--accent);
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--accent) 22%, transparent);
   cursor: pointer;
   transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
     opacity 160ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    transform 180ms var(--ease-out),
     box-shadow 160ms ease;
 }
 
 .apply-setting:disabled {
   color: var(--muted);
   border-color: var(--line);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.34), transparent),
-    var(--control-bg);
-  box-shadow: var(--control-shadow);
+  background: var(--control-bg);
+  box-shadow: none;
   cursor: default;
   opacity: 0.58;
 }
 
 .apply-setting:not(:disabled):hover {
-  border-color: var(--accent-line);
-  background: var(--surface-hover);
-  box-shadow: var(--control-shadow-hover);
+  border-color: color-mix(in srgb, var(--accent) 80%, black);
+  background: color-mix(in srgb, var(--accent) 88%, black);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 32%, transparent);
 }
 
 .apply-setting:not(:disabled):active {
   transform: scale(0.97);
-  box-shadow: var(--control-shadow-pressed);
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .mode-toggle {
