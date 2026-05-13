@@ -27,8 +27,8 @@
   --task-title-size: 12.5px;
   --task-meta-size: 11px;
   --workspace-bg:
-    radial-gradient(circle at 18% 16%, rgba(24, 26, 32, 0.055), transparent 28%),
-    linear-gradient(145deg, #f7f7f6 0%, #eff1f2 48%, #e6e9ec 100%);
+    radial-gradient(circle at 18% 16%, rgba(24, 26, 32, 0.035), transparent 32%),
+    linear-gradient(155deg, #f8f8f7 0%, #f1f2f3 48%, #e9ebed 100%);
   --ink: #111318;
   --muted: #687383;
   --line: rgba(24, 26, 32, 0.105);
@@ -103,8 +103,8 @@
 
 .workspace.theme-dark {
   --workspace-bg:
-    radial-gradient(circle at 18% 16%, rgba(244, 244, 245, 0.045), transparent 28%),
-    linear-gradient(145deg, #0d0d0e 0%, #121216 48%, #18181b 100%);
+    radial-gradient(circle at 18% 16%, rgba(244, 244, 245, 0.03), transparent 36%),
+    linear-gradient(160deg, #0c0c0d 0%, #111114 50%, #16161a 100%);
   --ink: #f4f4f5;
   --muted: #9b9ca3;
   --line: rgba(255, 255, 255, 0.075);
