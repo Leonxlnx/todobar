@@ -3668,9 +3668,11 @@ kbd {
 }
 
 .section-order-row.is-dragging {
-  opacity: 0.58;
-  transform: scale(0.985);
+  opacity: 0.55;
+  transform: scale(0.98);
   cursor: grabbing;
+  border-color: var(--accent);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--accent) 18%, transparent);
 }
 
 .section-order-row span {
