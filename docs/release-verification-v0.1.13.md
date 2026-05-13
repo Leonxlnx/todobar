@@ -8,6 +8,7 @@ This page records the checks for the `v0.1.13` premium UI polish release.
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.13
 - Release workflow: https://github.com/Leonxlnx/todobar/actions/runs/25810111565 (success)
 - Android workflow: https://github.com/Leonxlnx/todobar/actions/runs/25810111576 (success)
+- Post-release main CI (Windows + macOS validate): https://github.com/Leonxlnx/todobar/actions/runs/25811031884 (success)
 
 Published assets:
 
