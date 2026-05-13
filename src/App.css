@@ -5058,13 +5058,21 @@ kbd {
 }
 
 .task-row.is-complete {
-  background: rgba(125, 139, 154, 0.06);
+  background: color-mix(in srgb, var(--muted) 6%, transparent);
+}
+
+.task-row.is-complete .task-body strong {
+  opacity: 0.6;
 }
 
 .task-row.is-complete .check-button {
   color: var(--task-bg);
   background: var(--accent);
   border-color: var(--accent);
+}
+
+.task-row.is-complete .check-button svg {
+  animation: check-pop 220ms var(--ease-out) both;
 }
 
 .task-row.is-pulse-complete .check-button svg,
