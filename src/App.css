@@ -2297,8 +2297,8 @@ kbd {
   display: grid;
   place-items: center;
   color: var(--muted);
-  border: 1px solid var(--line);
-  border-radius: 9px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   background: transparent;
   cursor: pointer;
 }
@@ -2308,18 +2308,22 @@ kbd {
   z-index: 50;
   width: 100%;
   display: grid;
-  gap: 7px;
-  padding: 12px;
+  gap: 8px;
+  padding: 12px 14px;
   color: var(--ink);
-  border: 1px solid var(--accent-line);
-  border-radius: 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
   background: var(--task-bg);
-  box-shadow: 0 22px 48px rgba(17, 24, 39, 0.18);
-  animation: reminder-popover-in 170ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  box-shadow:
+    0 12px 28px rgba(17, 24, 39, 0.12),
+    0 2px 6px rgba(17, 24, 39, 0.04);
+  animation: reminder-popover-in 170ms var(--ease-out);
 }
 
 .workspace.theme-dark .settings-confirm-popover {
-  box-shadow: 0 24px 54px rgba(0, 0, 0, 0.42);
+  box-shadow:
+    0 16px 36px rgba(0, 0, 0, 0.48),
+    0 2px 8px rgba(0, 0, 0, 0.28);
 }
 
 .settings-confirm-popover strong {
