@@ -4290,12 +4290,13 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  padding: 0 8px;
+  padding: 0 4px;
   color: var(--ink);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--task-bg);
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
   cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
 }
 
 .custom-list-edit-input {
@@ -4346,9 +4347,7 @@ kbd {
 .custom-list-pin:hover,
 .custom-list-toggle:hover {
   color: var(--ink);
-  border-color: var(--line);
   background: var(--surface-hover);
-  box-shadow: var(--control-shadow-hover);
 }
 
 .custom-list-pin.is-pinned {
@@ -4420,16 +4419,21 @@ kbd {
 }
 
 .pinned-task-list {
-  border: 1px solid var(--line);
-  border-radius: 14px;
-  background: var(--task-bg);
-  background-clip: padding-box;
+  display: grid;
+  gap: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   isolation: isolate;
 }
 
 .pinned-task-list .task-row {
-  padding-inline: 7px;
+  padding-inline: 2px;
   background-clip: padding-box;
+}
+
+.today-goal-list .pinned-task-list .task-row:last-child {
+  border-bottom: 0;
 }
 
 .compact-task-list .task-row {
