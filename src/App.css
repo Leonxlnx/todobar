@@ -3941,10 +3941,11 @@ kbd {
 .calendar-grid button:hover {
   border-color: transparent;
   background: var(--surface-hover);
+  transform: scale(1.04);
 }
 
 .calendar-grid button:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .calendar-grid button.is-muted {
