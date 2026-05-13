@@ -6,8 +6,23 @@ This page records the checks for the `v0.1.13` premium UI polish release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.13
-- Release workflow: triggered by tag push to `v0.1.13`
-- Android workflow: triggered by tag push to `v0.1.13`
+- Release workflow: https://github.com/Leonxlnx/todobar/actions/runs/25810111565 (success)
+- Android workflow: https://github.com/Leonxlnx/todobar/actions/runs/25810111576 (success)
+
+Published assets:
+
+- `Todobar_0.1.13_x64-setup.exe` - 3,091,428 bytes
+- `Todobar_0.1.13_x64_en-US.msi` - 4,476,928 bytes
+- `Todobar_0.1.13_aarch64.dmg` - 5,054,400 bytes
+- `Todobar_0.1.13_x64.dmg` - 5,217,842 bytes
+- `Todobar_aarch64.app.tar.gz` - 4,786,076 bytes
+- `Todobar_x64.app.tar.gz` - 4,953,879 bytes
+- `todobar-android-v0.1.13.apk` - 4,416,162 bytes
+
+The rolling Android pre-release was refreshed at the same time:
+
+- `https://github.com/Leonxlnx/todobar/releases/tag/android-latest` →
+  `todobar-android-main.apk` - 4,416,162 bytes
 
 ## Release Scope
 
