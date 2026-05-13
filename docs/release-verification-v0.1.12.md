@@ -6,19 +6,19 @@ This page records the checks for the `v0.1.12` desktop motion release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.12
-- Release workflow: pending tag build
-- Android workflow: pending tag build
-- Workflow status: pending
+- Release workflow: https://github.com/Leonxlnx/todobar/actions/runs/25801672178
+- Android workflow: https://github.com/Leonxlnx/todobar/actions/runs/25801672422
+- Workflow status: passed
 
-Expected published assets:
+Published assets:
 
-- `Todobar_0.1.12_x64-setup.exe`
-- `Todobar_0.1.12_x64_en-US.msi`
-- `Todobar_0.1.12_aarch64.dmg`
-- `Todobar_0.1.12_x64.dmg`
-- `Todobar_aarch64.app.tar.gz`
-- `Todobar_x64.app.tar.gz`
-- `todobar-android-v0.1.12.apk`
+- `Todobar_0.1.12_x64-setup.exe` - 3,088,120 bytes
+- `Todobar_0.1.12_x64_en-US.msi` - 4,476,928 bytes
+- `Todobar_0.1.12_aarch64.dmg` - 5,055,277 bytes
+- `Todobar_0.1.12_x64.dmg` - 5,214,503 bytes
+- `Todobar_aarch64.app.tar.gz` - 4,786,606 bytes
+- `Todobar_x64.app.tar.gz` - 4,949,422 bytes
+- `todobar-android-v0.1.12.apk` - 4,413,526 bytes
 
 ## Release Scope
 
