@@ -972,26 +972,29 @@ kbd {
   display: grid;
   grid-template-rows: 1fr;
   place-items: center;
-  color: #4d5968;
-  border: 1px solid rgba(207, 214, 222, 0.78);
-  border-radius: 12px;
+  color: var(--muted);
+  border: 1px solid var(--sidebar-border);
+  border-radius: 14px;
   background: var(--handle-bg);
   box-shadow:
-    -7px 14px 24px rgba(15, 23, 42, 0.1),
-    inset 1px 1px 0 rgba(255, 255, 255, 0.92);
+    -8px 16px 28px rgba(15, 23, 42, 0.08),
+    -1px 2px 6px rgba(15, 23, 42, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(22px) saturate(1.24);
   transform: translateY(-50%);
   cursor: pointer;
   user-select: none;
   touch-action: none;
   transition:
-    bottom var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    left var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    right var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    top var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    bottom var(--motion-ms) var(--ease-out),
+    left var(--motion-ms) var(--ease-out),
+    right var(--motion-ms) var(--ease-out),
+    top var(--motion-ms) var(--ease-out),
     opacity 180ms ease,
-    width var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
-    height var(--motion-ms) cubic-bezier(0.2, 0.8, 0.2, 1),
+    width var(--motion-ms) var(--ease-out),
+    height var(--motion-ms) var(--ease-out),
+    border-color 200ms ease,
+    box-shadow 200ms ease,
     color 160ms ease,
     transform 160ms ease;
 }
@@ -1067,13 +1070,31 @@ kbd {
 }
 
 .edge-handle:hover {
-  color: #262a31;
-  border-color: rgba(177, 186, 197, 0.86);
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--accent-line) 64%, var(--sidebar-border));
   background: var(--handle-hover-bg);
+  box-shadow:
+    -10px 18px 32px rgba(15, 23, 42, 0.12),
+    -1px 2px 8px rgba(15, 23, 42, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 .edge-handle:hover .handle-symbol {
   opacity: 1;
+}
+
+.workspace.theme-dark .edge-handle {
+  color: var(--muted);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow:
+    -10px 18px 30px rgba(0, 0, 0, 0.45),
+    -1px 2px 6px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.workspace.theme-dark .edge-handle:hover {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 .edge-hover-zone {
