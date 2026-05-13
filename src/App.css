@@ -4558,8 +4558,13 @@ kbd {
 
 .custom-list-pin.is-pinned {
   color: var(--accent);
-  border-color: var(--accent-line);
+  border-color: transparent;
   background: var(--accent-soft);
+}
+
+.custom-list-pin.is-pinned:hover {
+  color: var(--accent-strong);
+  background: color-mix(in srgb, var(--accent-soft) 130%, var(--surface-hover));
 }
 
 .today-goals {
