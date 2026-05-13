@@ -3899,14 +3899,29 @@ kbd {
   width: auto !important;
   min-width: 56px;
   height: 32px !important;
-  padding: 0 12px !important;
+  padding: 0 14px !important;
   color: var(--ink) !important;
   font-size: 11px;
-  font-weight: 760;
+  font-weight: 720;
   border: 1px solid var(--line) !important;
   border-radius: 999px !important;
   background: var(--control-bg) !important;
   box-shadow: none !important;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 180ms var(--ease-out) !important;
+}
+
+.calendar-today-button:hover {
+  color: var(--accent-strong) !important;
+  border-color: color-mix(in srgb, var(--accent-line) 60%, var(--line)) !important;
+  background: var(--accent-soft) !important;
+}
+
+.calendar-today-button:active {
+  transform: scale(0.97);
 }
 
 .workspace.theme-dark .calendar-today-button {
