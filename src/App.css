@@ -4352,18 +4352,25 @@ kbd {
 }
 
 .empty-task-list {
-  min-height: 44px;
+  min-height: 56px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 10px 11px;
+  padding: 14px;
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 680;
+  font-size: 11.5px;
+  font-weight: 660;
+  border: 1px dashed color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: var(--radius-lg);
+  background: transparent;
+  text-align: center;
 }
 
 .empty-task-list svg {
+  flex: 0 0 auto;
   color: var(--accent);
+  opacity: 0.8;
 }
 
 .list-section {
