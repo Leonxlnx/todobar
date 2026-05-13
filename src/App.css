@@ -2260,11 +2260,13 @@ kbd {
 }
 
 .workspace.theme-dark .settings-drawer {
-  background: color-mix(
-    in srgb,
-    var(--settings-surface) var(--surface-alpha-percent),
-    transparent
-  );
+  background:
+    radial-gradient(circle at 100% 0%, rgba(255, 255, 255, 0.022), transparent 35%),
+    color-mix(
+      in srgb,
+      var(--settings-surface) var(--surface-alpha-percent),
+      transparent
+    );
 }
 
 .workspace.theme-dark.has-custom-backdrop .settings-drawer {
