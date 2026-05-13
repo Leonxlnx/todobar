@@ -1804,6 +1804,36 @@ kbd {
     0 4px 10px color-mix(in srgb, var(--accent) 14%, transparent);
 }
 
+.sidebar-rail button.is-active::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 50%;
+  width: 2px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  transform: translateY(-50%);
+  animation: rail-indicator-in 220ms var(--ease-out) both;
+}
+
+.workspace.dock-left .sidebar-rail button.is-active::before {
+  left: auto;
+  right: -8px;
+}
+
+@keyframes rail-indicator-in {
+  from {
+    opacity: 0;
+    transform: translate(-2px, -50%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(0, -50%);
+  }
+}
+
 .workspace.theme-dark .sidebar-rail button.is-active {
   color: var(--accent-strong);
   border-color: var(--accent-line);
