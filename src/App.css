@@ -5024,6 +5024,15 @@ kbd {
   .row-actions {
     opacity: 1;
   }
+
+  .task-row {
+    min-height: calc(var(--task-row-height) + 4px);
+  }
+
+  .check-button {
+    inline-size: 28px;
+    block-size: 28px;
+  }
 }
 
 .task-row .delete-button {
