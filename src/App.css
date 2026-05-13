@@ -3813,11 +3813,20 @@ kbd {
 }
 
 .section-heading em {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  padding: 2px 7px;
+  margin-left: 6px;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: 10px;
   font-style: normal;
-  font-weight: 680;
+  font-weight: 700;
   font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--control-bg) 80%, transparent);
 }
 
 .section-heading p {
