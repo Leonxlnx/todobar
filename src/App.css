@@ -2023,22 +2023,26 @@ kbd {
   top: auto;
   left: auto;
   right: auto;
-  margin-top: 4px;
+  margin-top: 6px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 32px;
   align-items: end;
-  column-gap: 7px;
-  row-gap: 8px;
-  padding: 9px;
-  border: 1px solid var(--task-border);
-  border-radius: 15px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.44), transparent),
-    var(--task-bg);
+  column-gap: var(--space-2);
+  row-gap: var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--task-bg);
   box-shadow:
-    0 18px 42px rgba(15, 23, 42, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.55);
-  animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    0 14px 32px rgba(15, 23, 42, 0.12),
+    0 2px 6px rgba(15, 23, 42, 0.04);
+  animation: reminder-popover-in 150ms var(--ease-out);
+}
+
+.workspace.theme-dark .reminder-popover {
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.48),
+    0 2px 8px rgba(0, 0, 0, 0.24);
 }
 
 .reminder-presets {
@@ -2050,24 +2054,26 @@ kbd {
 
 .reminder-presets button {
   inline-size: auto;
-  block-size: 34px;
+  block-size: 36px;
   width: 100%;
-  height: 34px;
+  height: 36px;
   aspect-ratio: auto;
   flex: initial;
   min-width: 0;
-  min-height: 34px;
+  min-height: 36px;
   display: grid;
   place-items: center;
   gap: 2px;
   color: var(--ink);
   line-height: 1.05;
   border: 1px solid var(--line);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.42), transparent),
-    var(--control-bg);
-  box-shadow: var(--control-shadow);
+  border-radius: var(--radius-md);
+  background: var(--control-bg);
+  box-shadow: none;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
 .reminder-presets button strong {
