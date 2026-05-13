@@ -1540,13 +1540,13 @@ kbd {
 .sidebar-content::-webkit-scrollbar,
 .settings-drawer::-webkit-scrollbar,
 .theme-dropdown-menu::-webkit-scrollbar {
-  width: 9px;
+  width: 10px;
 }
 
 .sidebar-content::-webkit-scrollbar-track,
 .settings-drawer::-webkit-scrollbar-track,
 .theme-dropdown-menu::-webkit-scrollbar-track {
-  background: var(--scrollbar-track);
+  background: transparent;
 }
 
 .sidebar-content::-webkit-scrollbar-thumb,
@@ -1554,30 +1554,33 @@ kbd {
 .theme-dropdown-menu::-webkit-scrollbar-thumb {
   border: 3px solid transparent;
   border-radius: 999px;
-  background: var(--scrollbar-thumb);
+  background: transparent;
   background-clip: padding-box;
+  transition: background-color 200ms ease;
+}
+
+.sidebar-content:hover::-webkit-scrollbar-thumb,
+.settings-drawer:hover::-webkit-scrollbar-thumb,
+.theme-dropdown-menu:hover::-webkit-scrollbar-thumb {
+  background-color: var(--scrollbar-thumb);
 }
 
 .sidebar-content::-webkit-scrollbar-thumb:hover,
 .settings-drawer::-webkit-scrollbar-thumb:hover,
 .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
-  background: var(--scrollbar-thumb-hover);
-  background-clip: padding-box;
+  background-color: var(--scrollbar-thumb-hover);
 }
 
-.workspace.theme-dark .sidebar-content::-webkit-scrollbar-thumb,
-.workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb,
-.workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb {
-  border-width: 3px;
-  background: rgba(226, 232, 240, 0.23);
-  background-clip: padding-box;
+.workspace.theme-dark .sidebar-content:hover::-webkit-scrollbar-thumb,
+.workspace.theme-dark .settings-drawer:hover::-webkit-scrollbar-thumb,
+.workspace.theme-dark .theme-dropdown-menu:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(226, 232, 240, 0.18);
 }
 
 .workspace.theme-dark .sidebar-content::-webkit-scrollbar-thumb:hover,
 .workspace.theme-dark .settings-drawer::-webkit-scrollbar-thumb:hover,
 .workspace.theme-dark .theme-dropdown-menu::-webkit-scrollbar-thumb:hover {
-  background: rgba(226, 232, 240, 0.34);
-  background-clip: padding-box;
+  background-color: rgba(226, 232, 240, 0.32);
 }
 
 .todo-sidebar.is-open {
