@@ -1,6 +1,7 @@
 package dev.todobar.mobile.ui.views
 
 import android.content.Context
+import android.graphics.Typeface
 import android.text.format.DateFormat
 import android.util.TypedValue
 import android.view.Gravity
@@ -96,7 +97,9 @@ class CalendarView(
         body.addView(Views.spacer(context, 12))
 
         // Selected day header + mode tabs
-        selectedHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        selectedHeader.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f)
+        selectedHeader.typeface = Typeface.create(selectedHeader.typeface, Typeface.BOLD)
+        selectedHeader.letterSpacing = -0.005f
         body.addView(selectedHeader)
 
         captureMode.orientation = LinearLayout.HORIZONTAL
