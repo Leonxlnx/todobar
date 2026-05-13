@@ -135,11 +135,12 @@ class SettingsView(
     private fun section(title: String) {
         val tv = TextView(context).apply {
             text = title
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-            setTextColor(palette.muted)
-            setPadding(0, dp(context, 14f), 0, dp(context, 6f))
-            isAllCaps = true
-            letterSpacing = 0.08f
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f)
+            setTextColor(palette.ink)
+            setPadding(0, dp(context, 18f), 0, dp(context, 8f))
+            isAllCaps = false
+            letterSpacing = -0.005f
+            setTypeface(typeface, android.graphics.Typeface.BOLD)
         }
         body.addView(tv)
     }
