@@ -112,8 +112,9 @@ class CalendarView(
         body.addView(taskList)
         emptyState.text = "No events scheduled."
         emptyState.gravity = Gravity.CENTER
-        emptyState.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-        emptyState.setPadding(dp(context, 16f))
+        emptyState.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f)
+        emptyState.setPadding(dp(context, 18f))
+        emptyState.setTextColor(palette.muted)
         body.addView(emptyState)
     }
 
