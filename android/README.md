@@ -14,7 +14,8 @@ swipe the handle away when you are done.
 
 ## Status
 
-Early. Local-first, no network access. Features:
+Local-first, no network access. The Android app is now a native companion for
+the desktop sidebar and should feel like the same product adapted to a phone:
 
 - Always-reachable handle docked to the right edge of the screen
 - Drag the handle vertically to reposition it
@@ -23,6 +24,9 @@ Early. Local-first, no network access. Features:
 - Clear all completed tasks in one tap
 - Sort: open before completed, then by priority, then most recent
 - Light and dark theme matched to the desktop "Studio" / "Obsidian" presets
+- Six light and six dark visual presets mirrored from desktop
+- Today, Calendar, Lists, and Settings views inside the overlay
+- Reminder toasts with snooze support for Today, Calendar, and custom lists
 - Local persistence via SharedPreferences
 - Autostarts the bubble after reboot once the overlay permission has been
   granted
@@ -46,6 +50,13 @@ cd android
 ```
 
 The signed release APK lands in `app/build/outputs/apk/release/`.
+
+On Windows from the repository root:
+
+```powershell
+cd android
+.\gradlew.bat assembleRelease
+```
 
 Setting `TODOBAR_KEYSTORE_PATH`, `TODOBAR_KEYSTORE_PASSWORD`, `TODOBAR_KEY_ALIAS`
 and `TODOBAR_KEY_PASSWORD` switches the release build to your own keystore;
