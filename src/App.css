@@ -1955,29 +1955,30 @@ kbd {
 
 .quick-add {
   position: relative;
-  min-height: 39px;
+  min-height: 40px;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 7px;
-  padding: 4px 5px 4px 11px;
+  gap: var(--space-2);
+  padding: 4px 5px 4px 12px;
   color: var(--muted);
   border: 1px solid var(--task-border);
-  border-radius: 13px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.24), transparent),
-    var(--control-bg);
-  box-shadow: var(--control-shadow);
+  border-radius: var(--radius-lg);
+  background: var(--control-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.36);
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    background 160ms ease;
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background 180ms ease;
 }
 
 .quick-add:hover {
-  border-color: var(--accent-line);
+  border-color: color-mix(in srgb, var(--accent-line) 60%, var(--task-border));
   background: var(--surface-hover);
-  box-shadow: var(--control-shadow-hover);
+}
+
+.workspace.theme-dark .quick-add {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .quick-add input {
@@ -1995,12 +1996,11 @@ kbd {
 }
 
 .quick-add:focus-within {
-  border-color: color-mix(in srgb, var(--accent-line) 74%, var(--line));
+  border-color: var(--accent);
   background: var(--task-bg);
   box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent-line) 52%, transparent),
-    0 0 0 3px color-mix(in srgb, var(--accent-soft) 72%, transparent),
-    var(--control-shadow-hover);
+    0 0 0 3px color-mix(in srgb, var(--accent-soft) 70%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
 .quick-add input:focus-visible {
