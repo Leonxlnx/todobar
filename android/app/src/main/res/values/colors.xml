@@ -8,8 +8,8 @@
     <color name="surface_task">#FFFFFF</color>
     <color name="ink">#111318</color>
     <color name="muted">#687383</color>
-    <color name="line">#1A181A20</color>
-    <color name="task_border">#1B181A20</color>
+    <color name="line">#1418181B</color>
+    <color name="task_border">#1618181B</color>
     <color name="accent">#2563EB</color>
     <color name="accent_soft">#172563EB</color>
     <color name="accent_line">#3D2563EB</color>

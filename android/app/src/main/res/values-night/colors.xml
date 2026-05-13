@@ -7,8 +7,8 @@
     <color name="surface_task">#151517</color>
     <color name="ink">#F4F4F5</color>
     <color name="muted">#9B9CA3</color>
-    <color name="line">#13FFFFFF</color>
-    <color name="task_border">#13FFFFFF</color>
+    <color name="line">#10FFFFFF</color>
+    <color name="task_border">#12FFFFFF</color>
     <color name="accent">#74A8FF</color>
     <color name="accent_soft">#2174A8FF</color>
     <color name="accent_line">#4774A8FF</color>
