@@ -2321,14 +2321,22 @@ kbd {
 }
 
 .settings-panel-header {
-  position: relative;
+  position: sticky;
+  top: -18px;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 0 8px;
-  margin-bottom: 4px;
+  padding: 8px 0 8px;
+  margin: -8px 0 4px;
+  background: color-mix(
+    in srgb,
+    var(--settings-surface) var(--surface-alpha-percent),
+    transparent
+  );
   border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  backdrop-filter: blur(12px);
 }
 
 .settings-panel-header strong {
