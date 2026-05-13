@@ -2351,7 +2351,7 @@ kbd {
 .settings-actions {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
 }
 
 .settings-group-title {
@@ -2368,8 +2368,8 @@ kbd {
 }
 
 .settings-actions button {
-  inline-size: 30px;
-  block-size: 30px;
+  inline-size: 32px;
+  block-size: 32px;
   display: grid;
   place-items: center;
   color: var(--muted);
@@ -2377,6 +2377,12 @@ kbd {
   border-radius: var(--radius-md);
   background: transparent;
   cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.settings-actions button:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
 }
 
 .settings-confirm-popover {
