@@ -107,7 +107,7 @@ class Store private constructor(context: Context) {
     // ── Mutators ────────────────────────────────────────────────────────────
 
     fun addTodayTask(title: String, reminderAt: String?): Task {
-        val task = newTask(title, meta = "Quick add", reminderAt = reminderAt)
+        val task = newTask(title, meta = "Today", reminderAt = reminderAt)
         saveToday(listOf(task) + today())
         return task
     }
@@ -159,7 +159,8 @@ class Store private constructor(context: Context) {
     }
 
     fun addToCustomList(listId: String, title: String, reminderAt: String?): Task {
-        val task = newTask(title = title, meta = "Quick add", reminderAt = reminderAt)
+        val listTitle = customLists().firstOrNull { it.id == listId }?.title ?: "List"
+        val task = newTask(title = title, meta = listTitle, reminderAt = reminderAt)
         saveCustomLists(customLists().map { list ->
             if (list.id == listId) list.copy(tasks = listOf(task) + list.tasks) else list
         })

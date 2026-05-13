@@ -25,6 +25,7 @@ import android.widget.FrameLayout
 import androidx.core.app.NotificationCompat
 import dev.todobar.mobile.model.DockEdge
 import dev.todobar.mobile.store.Store
+import dev.todobar.mobile.store.TaskScope
 import dev.todobar.mobile.ui.ReminderToastController
 import dev.todobar.mobile.ui.SidebarOverlayController
 import kotlin.math.abs
@@ -232,21 +233,29 @@ class BubbleService : Service() {
         if (!store.settings().notificationsEnabled) return
         val now = System.currentTimeMillis()
         val notified = store.notifiedReminders().toMutableSet()
-        val candidates = (store.today() + store.scheduled() +
-            store.customLists().flatMap { it.tasks })
-        candidates.forEach { task ->
+        val candidates = buildList {
+            store.today().forEach { add(TaskScope.Today to it) }
+            store.scheduled().forEach { add(TaskScope.Scheduled to it) }
+            store.customLists().forEach { list ->
+                list.tasks.forEach { add(TaskScope.CustomList(list.id) to it) }
+            }
+        }
+        candidates.forEach { (scope, task) ->
             val r = task.reminderAt ?: return@forEach
             val ms = runCatching { dev.todobar.mobile.store.ReminderClock.parse(r) }.getOrNull() ?: return@forEach
             val key = task.id.toString() + "@" + r
             if (ms <= now && key !in notified && !task.done) {
-                showReminderToast(task)
+                showReminderToast(task, scope)
                 store.markReminderNotified(key)
                 notified.add(key)
             }
         }
     }
 
-    private fun showReminderToast(task: dev.todobar.mobile.model.Task) {
+    private fun showReminderToast(
+        task: dev.todobar.mobile.model.Task,
+        scope: TaskScope,
+    ) {
         reminderToast?.dismiss()
         reminderToast = ReminderToastController(
             context = this,
@@ -254,11 +263,7 @@ class BubbleService : Service() {
             overlayType = overlayType(),
             task = task,
             onSnooze = {
-                store.snoozeReminder(
-                    dev.todobar.mobile.store.TaskScope.Today,
-                    task.id,
-                    10,
-                )
+                store.snoozeReminder(scope, task.id, 10)
                 reminderToast = null
             },
             onDismiss = {
