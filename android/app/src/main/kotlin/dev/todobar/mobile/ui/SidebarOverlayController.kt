@@ -95,8 +95,8 @@ class SidebarOverlayController(
     private var activeSection: SectionId = SectionId.TODAY
     private var settingsOpen: Boolean = false
 
-    fun show() {
-        if (rootView != null) return
+    fun show(): Boolean {
+        if (rootView != null) return true
         val ctx = context
         try {
             val params = WindowManager.LayoutParams(
@@ -152,13 +152,14 @@ class SidebarOverlayController(
             buildContent(panelView)
             buildRail(panelView)
 
-            runCatching { windowManager.addView(root, params) }
-                .onFailure {
-                    Log.e(TAG, "panel addView failed", it)
-                    rootView = null
-                    onDismiss()
-                    return
-                }
+            val added = runCatching { windowManager.addView(root, params) }
+            if (added.isFailure) {
+                Log.e(TAG, "panel addView failed", added.exceptionOrNull())
+                rootView = null
+                panel = null
+                scrim = null
+                return false
+            }
 
             store.addListener(storeListener)
             applyState()
@@ -178,15 +179,17 @@ class SidebarOverlayController(
                 .start()
             scrimView.alpha = 0f
             scrimView.animate().alpha(1f).setDuration(motion - 50).start()
+            return true
         } catch (t: Throwable) {
             // Service crashes are silent on the user device — log and clean up
             // instead of taking the bubble down with us.
             Log.e(TAG, "panel show failed", t)
+            store.removeListener(storeListener)
             runCatching { rootView?.let(windowManager::removeView) }
             rootView = null
             panel = null
             scrim = null
-            onDismiss()
+            return false
         }
     }
 

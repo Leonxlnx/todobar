@@ -10,6 +10,7 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.content.res.Configuration
 import android.graphics.PixelFormat
+import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
@@ -52,7 +53,7 @@ class BubbleService : Service() {
         bubbleView?.post { checkRemindersDue() }
     }
 
-    private val edgeNudgePx by lazy { dp(2f).toInt() }
+    private val edgeOverlapPx by lazy { dp(1f).toInt() }
 
     override fun onCreate() {
         super.onCreate()
@@ -75,8 +76,10 @@ class BubbleService : Service() {
         super.onConfigurationChanged(newConfig)
         // Keep the bubble pinned to the right edge if rotation changes.
         bubbleParams?.let { params ->
-            params.x = 0
-            params.y = clampVertical(params.y)
+            val settings = store.settings()
+            params.gravity = handleGravity()
+            params.x = handleX(settings)
+            params.y = handleY(settings)
             bubbleView?.let { runCatching { windowManager.updateViewLayout(it, params) } }
         }
         sidebar?.onConfigurationChanged(newConfig)
@@ -153,33 +156,28 @@ class BubbleService : Service() {
                 or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT,
         ).apply {
-            gravity = handleGravity(settings.dockEdge)
-            x = if (settings.dockEdge == DockEdge.TOP) {
-                positionForHandle(settings)
-            } else {
-                -edgeNudgePx
-            }
-            y = if (settings.dockEdge == DockEdge.TOP) {
-                -edgeNudgePx
-            } else {
-                positionForHandle(settings)
-            }
+            gravity = handleGravity()
+            x = handleX(settings)
+            y = handleY(settings)
         }
 
         attachDragAndTap(view, params)
-        runCatching { windowManager.addView(view, params) }
-            .onFailure { Log.e(TAG, "bubble add failed", it) }
+        view.alpha = 1f
+        view.visibility = View.VISIBLE
+        view.background = handleBackground(settings)
+        val added = runCatching { windowManager.addView(view, params) }
+        if (added.isFailure) {
+            Log.e(TAG, "bubble add failed", added.exceptionOrNull())
+            stopSelf()
+            return
+        }
         bubbleView = view
         bubbleParams = params
         applyHandleSettings()
         checkRemindersDue()
     }
 
-    private fun handleGravity(edge: DockEdge): Int = when (edge) {
-        DockEdge.LEFT -> Gravity.TOP or Gravity.START
-        DockEdge.TOP -> Gravity.TOP or Gravity.CENTER_HORIZONTAL
-        DockEdge.RIGHT -> Gravity.TOP or Gravity.END
-    }
+    private fun handleGravity(): Int = Gravity.TOP or Gravity.START
 
     private fun handleWidthPx(settings: dev.todobar.mobile.model.SidebarSettings): Int =
         if (settings.dockEdge == DockEdge.TOP) {
@@ -218,15 +216,46 @@ class BubbleService : Service() {
         val settings = store.settings()
         params.width = handleWidthPx(settings)
         params.height = handleHeightPx(settings)
-        params.gravity = handleGravity(settings.dockEdge)
-        if (settings.dockEdge == DockEdge.TOP) {
-            params.x = positionForHandle(settings)
-            params.y = -edgeNudgePx
-        } else {
-            params.x = -edgeNudgePx
-            params.y = positionForHandle(settings)
+        params.gravity = handleGravity()
+        params.x = handleX(settings)
+        params.y = handleY(settings)
+        view.background = handleBackground(settings)
+        if (sidebar == null) {
+            view.animate().cancel()
+            view.alpha = 1f
+            view.visibility = View.VISIBLE
         }
         runCatching { windowManager.updateViewLayout(view, params) }
+    }
+
+    private fun handleX(settings: dev.todobar.mobile.model.SidebarSettings): Int {
+        val metrics = resources.displayMetrics
+        return when (settings.dockEdge) {
+            DockEdge.LEFT -> -edgeOverlapPx
+            DockEdge.TOP -> positionForHandle(settings)
+            DockEdge.RIGHT -> metrics.widthPixels - handleWidthPx(settings) + edgeOverlapPx
+        }
+    }
+
+    private fun handleY(settings: dev.todobar.mobile.model.SidebarSettings): Int =
+        when (settings.dockEdge) {
+            DockEdge.TOP -> -edgeOverlapPx
+            else -> positionForHandle(settings)
+        }
+
+    private fun handleBackground(settings: dev.todobar.mobile.model.SidebarSettings): GradientDrawable {
+        val radius = dp(22f)
+        return GradientDrawable(
+            GradientDrawable.Orientation.TL_BR,
+            intArrayOf(
+                getColorCompat(R.color.handle_grad_top),
+                getColorCompat(R.color.handle_grad_bot),
+            ),
+        ).apply {
+            shape = GradientDrawable.RECTANGLE
+            cornerRadius = radius
+            setStroke(dp(1f).toInt(), getColorCompat(R.color.handle_stroke))
+        }
     }
 
     private fun checkRemindersDue() {
@@ -315,8 +344,20 @@ class BubbleService : Service() {
                 MotionEvent.ACTION_UP -> {
                     val duration = System.currentTimeMillis() - touchStartTime
                     if (!dragging && duration < 280) {
+                        v.performClick()
                         openSidebar()
                     }
+                    if (dragging) {
+                        if (isTopDock) {
+                            persistHandlePosition(params.x, horizontal = true)
+                        } else {
+                            persistHandlePosition(params.y, horizontal = false)
+                        }
+                    }
+                    true
+                }
+
+                MotionEvent.ACTION_CANCEL -> {
                     if (dragging) {
                         if (isTopDock) {
                             persistHandlePosition(params.x, horizontal = true)
@@ -335,8 +376,7 @@ class BubbleService : Service() {
     private fun openSidebar() {
         if (!Settings.canDrawOverlays(this)) return
         if (sidebar != null) return
-        bubbleView?.let { it.animate().alpha(0f).setDuration(120).start() }
-        sidebar = SidebarOverlayController(
+        val controller = SidebarOverlayController(
             serviceContext = this,
             windowManager = windowManager,
             overlayType = overlayType(),
@@ -346,7 +386,21 @@ class BubbleService : Service() {
                     .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(pickerIntent)
             },
-        ).also { it.show() }
+        )
+        sidebar = controller
+        if (!controller.show()) {
+            sidebar = null
+            bubbleView?.let {
+                it.animate().cancel()
+                it.alpha = 1f
+                it.visibility = View.VISIBLE
+            }
+            return
+        }
+        bubbleView?.let {
+            it.animate().cancel()
+            it.animate().alpha(0f).setDuration(120).start()
+        }
     }
 
     private fun closeSidebar() {
@@ -408,6 +462,14 @@ class BubbleService : Service() {
 
     private fun dp(value: Float): Float =
         value * resources.displayMetrics.density
+
+    private fun getColorCompat(resId: Int): Int =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            resources.getColor(resId, theme)
+        } else {
+            @Suppress("DEPRECATION")
+            resources.getColor(resId)
+        }
 
     companion object {
         private const val TAG = "BubbleService"

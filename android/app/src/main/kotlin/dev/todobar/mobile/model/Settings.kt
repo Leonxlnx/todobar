@@ -83,7 +83,9 @@ data class SidebarSettings(
     fun toJson(): JSONObject = JSONObject().apply {
         put("dockEdge", dockEdge.name.lowercase())
         put("panelWidth", panelWidth)
-        put("tabVisibility", tabVisibility.name.lowercase())
+        // Android has no hover state, so the floating handle must stay
+        // touch-visible even when desktop settings are synced later.
+        put("tabVisibility", TabVisibility.ALWAYS.name.lowercase())
         put("tabWidth", tabWidth)
         put("handleHeight", handleHeight)
         put("handleY", handleY)
@@ -135,10 +137,7 @@ data class SidebarSettings(
                 "bottom" -> DockEdge.TOP
                 else -> DockEdge.RIGHT
             }
-            val tabVisibility = when (obj.optString("tabVisibility")) {
-                "hover" -> TabVisibility.HOVER
-                else -> TabVisibility.ALWAYS
-            }
+            val tabVisibility = TabVisibility.ALWAYS
             val sectionOrder = parseSectionOrder(obj.optJSONArray("sectionOrder"))
             val defaults = SidebarSettings()
             return SidebarSettings(

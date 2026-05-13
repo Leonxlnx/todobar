@@ -6,10 +6,6 @@
         android:startColor="@color/handle_grad_top"
         android:endColor="@color/handle_grad_bot"
         android:type="linear" />
-    <corners
-        android:topLeftRadius="6dp"
-        android:bottomLeftRadius="6dp"
-        android:topRightRadius="0dp"
-        android:bottomRightRadius="0dp" />
+    <corners android:radius="22dp" />
     <stroke android:width="1dp" android:color="@color/handle_stroke" />
 </shape>

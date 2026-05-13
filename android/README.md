@@ -20,6 +20,8 @@ the desktop sidebar and should feel like the same product adapted to a phone:
 - Always-reachable handle docked to the right edge of the screen
 - Drag the handle vertically to reposition it
 - Tap to slide in a clean task panel sized for one-handed use
+- Desktop hover-only tab settings are ignored on Android because touch screens
+  need an always-visible handle
 - Add, complete, delete tasks
 - Clear all completed tasks in one tap
 - Sort: open before completed, then by priority, then most recent
