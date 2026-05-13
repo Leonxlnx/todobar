@@ -184,15 +184,23 @@ class TaskRowView(
             },
         )
 
-        // Check button look
+        // Check button look — outlined circle that fills with accent when done.
+        // Mirrors the desktop polish where complete tasks display a solid
+        // accent pill with a white tick, and incomplete tasks just show a
+        // crisp transparent outline.
         if (task.done) {
             checkBtn.setImageResource(R.drawable.ic_check)
-            checkBtn.background = Drawables.roundedSurface(context, palette.accent, 999f)
-            checkBtn.imageTintList = android.content.res.ColorStateList.valueOf(palette.sidebarBg)
+            checkBtn.background = Drawables.roundedSurface(context, palette.accent, 999f, palette.accent)
+            checkBtn.imageTintList = android.content.res.ColorStateList.valueOf(palette.taskBg)
             checkBtn.setPadding(dp(context, 4f))
         } else {
             checkBtn.setImageDrawable(null)
-            checkBtn.background = Drawables.roundedSurface(context, palette.controlBg, 999f, palette.accentLine)
+            checkBtn.background = Drawables.roundedSurface(
+                context,
+                android.graphics.Color.TRANSPARENT,
+                999f,
+                palette.muted and 0x66FFFFFF.toInt(),
+            )
         }
 
         // Reminder chip
