@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Mirrors the desktop "obsidian" dark preset. -->
+    <color name="surface_workspace">#0D0D0E</color>
+    <color name="surface_panel">#0D0D0E</color>
+    <color name="surface_panel_alt">#171719</color>
+    <color name="surface_task">#151517</color>
+    <color name="ink">#F4F4F5</color>
+    <color name="muted">#9B9CA3</color>
+    <color name="line">#13FFFFFF</color>
+    <color name="task_border">#13FFFFFF</color>
+    <color name="accent">#74A8FF</color>
+    <color name="accent_soft">#2174A8FF</color>
+    <color name="accent_line">#4774A8FF</color>
+    <color name="amber">#FFB267</color>
+    <color name="scrim">#73000000</color>
+
+    <color name="handle_grad_top">#26262B</color>
+    <color name="handle_grad_bot">#151518</color>
+    <color name="handle_stroke">#1FFFFFFF</color>
+
+    <color name="dot_focus">#FFB267</color>
+    <color name="dot_normal">#74A8FF</color>
+    <color name="dot_later">#9B9CA3</color>
+</resources>

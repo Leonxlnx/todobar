@@ -1,0 +1,128 @@
+name: android
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "android/**"
+      - ".github/workflows/android.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-34 build-tools;34.0.0 platform-tools"
+
+      - name: Cache Gradle
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            android/.gradle
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/*.gradle*', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Generate signing keystore
+        working-directory: android
+        run: |
+          set -euo pipefail
+          KEYSTORE_PATH="$RUNNER_TEMP/todobar-release.keystore"
+          KEYSTORE_PASSWORD="todobar"
+          KEY_ALIAS="todobar"
+          KEY_PASSWORD="todobar"
+          keytool -genkeypair \
+            -keystore "$KEYSTORE_PATH" \
+            -storepass "$KEYSTORE_PASSWORD" \
+            -keypass "$KEY_PASSWORD" \
+            -alias "$KEY_ALIAS" \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Todobar, OU=Mobile, O=Todobar, L=Berlin, S=Berlin, C=DE"
+          {
+            echo "TODOBAR_KEYSTORE_PATH=$KEYSTORE_PATH"
+            echo "TODOBAR_KEYSTORE_PASSWORD=$KEYSTORE_PASSWORD"
+            echo "TODOBAR_KEY_ALIAS=$KEY_ALIAS"
+            echo "TODOBAR_KEY_PASSWORD=$KEY_PASSWORD"
+          } >> "$GITHUB_ENV"
+
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Rename APK
+        id: rename
+        run: |
+          set -euo pipefail
+          mkdir -p "$GITHUB_WORKSPACE/artifacts"
+          APK=$(find android/app/build/outputs/apk/release -name "*.apk" | head -n 1)
+          if [ -z "$APK" ]; then
+            echo "No release APK produced" >&2
+            exit 1
+          fi
+          TAG="${GITHUB_REF_NAME//\//-}"
+          OUT="$GITHUB_WORKSPACE/artifacts/todobar-android-${TAG}.apk"
+          cp "$APK" "$OUT"
+          echo "apk_path=$OUT" >> "$GITHUB_OUTPUT"
+          echo "apk_name=todobar-android-${TAG}.apk" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.rename.outputs.apk_name }}
+          path: ${{ steps.rename.outputs.apk_path }}
+          if-no-files-found: error
+
+      - name: Attach APK to GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.rename.outputs.apk_path }}
+          fail_on_unmatched_files: true
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish rolling Android prerelease
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-latest
+          name: Todobar Android (latest)
+          body: |
+            Rolling Android APK build from `main`.
+            Install on your device, then enable "Display over other apps" inside
+            the Todobar settings screen to start the floating bubble.
+          files: ${{ steps.rename.outputs.apk_path }}
+          prerelease: true
+          make_latest: false
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
