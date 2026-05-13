@@ -2690,22 +2690,25 @@ kbd {
 }
 
 .theme-dropdown-menu button {
-  min-height: 44px;
-  padding: 6px 8px 6px 5px;
+  min-height: 46px;
+  padding: 6px 10px 6px 6px;
   border-color: transparent;
-  border-radius: 10px;
+  border-radius: var(--radius-md);
   background: transparent;
   transition:
-    background 140ms ease,
-    border-color 140ms ease,
-    color 140ms ease;
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
 }
 
 .theme-dropdown-menu button + button {
   margin-top: 2px;
 }
 
-.theme-dropdown-menu button:hover,
+.theme-dropdown-menu button:hover {
+  background: var(--surface-hover);
+}
+
 .theme-dropdown-menu button.is-selected {
   border-color: var(--accent-line);
   background: var(--accent-soft);
