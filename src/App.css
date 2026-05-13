@@ -1867,10 +1867,69 @@ kbd {
   display: grid;
   gap: 12px;
   align-content: start;
+  --view-enter-x: 10px;
+  --view-enter-rotate: 0.15deg;
+  --view-delay: 0ms;
+}
+
+.view-stack[data-motion='backward'] {
+  --view-enter-x: -10px;
+  --view-enter-rotate: -0.15deg;
 }
 
 .view-stack > .panel-section {
   min-width: 0;
+  animation: view-section-in 300ms cubic-bezier(0.16, 0.86, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+.view-stack .section-heading,
+.view-stack .quick-add,
+.view-stack .gmail-suggestions,
+.view-stack .empty-task-list,
+.view-stack .today-goals,
+.view-stack .mini-heading,
+.view-stack .calendar-board,
+.view-stack .calendar-day-panel,
+.view-stack .calendar-backlog,
+.view-stack .calendar-empty-state,
+.view-stack .custom-list {
+  animation: view-stagger-in 340ms cubic-bezier(0.16, 0.86, 0.3, 1) both;
+  animation-delay: var(--view-delay);
+  will-change: opacity, transform;
+}
+
+.view-stack .section-heading {
+  --view-delay: 18ms;
+}
+
+.view-stack .quick-add,
+.view-stack .calendar-board,
+.view-stack .custom-list:nth-child(1) {
+  --view-delay: 54ms;
+}
+
+.view-stack .task-list,
+.view-stack .today-goals,
+.view-stack .calendar-day-panel,
+.view-stack .calendar-empty-state,
+.view-stack .custom-list:nth-child(2) {
+  --view-delay: 92ms;
+}
+
+.view-stack .calendar-backlog,
+.view-stack .custom-list:nth-child(3) {
+  --view-delay: 130ms;
+}
+
+.view-stack .custom-list:nth-child(n + 4) {
+  --view-delay: 158ms;
+}
+
+.view-stack .task-row {
+  animation: view-row-in 310ms cubic-bezier(0.16, 0.86, 0.3, 1) both;
+  animation-delay: calc(90ms + var(--row-delay, 0ms));
+  will-change: opacity, transform;
 }
 
 .quick-add {
@@ -3513,19 +3572,6 @@ kbd {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
-  animation: panel-piece-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-}
-
-.panel-section:nth-of-type(2) {
-  animation-delay: 28ms;
-}
-
-.panel-section:nth-of-type(3) {
-  animation-delay: 56ms;
-}
-
-.panel-section:nth-of-type(4) {
-  animation-delay: 84ms;
 }
 
 .section-heading {
@@ -4780,6 +4826,44 @@ kbd {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes view-section-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--view-enter-x)) translateY(5px)
+      rotate(var(--view-enter-rotate));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0) rotate(0);
+  }
+}
+
+@keyframes view-stagger-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--view-enter-x) * 0.58)) translateY(7px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0);
+  }
+}
+
+@keyframes view-row-in {
+  from {
+    opacity: 0;
+    transform: translateX(calc(var(--view-enter-x) * 0.45)) translateY(6px)
+      scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0) translateY(0) scale(1);
   }
 }
 

@@ -203,7 +203,18 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     'aria-current',
     'true',
   )
+  await expect(page.locator('.view-stack')).toHaveAttribute(
+    'data-motion',
+    /forward|backward/,
+  )
   await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toBeVisible()
+  await expect(
+    page.locator('section[aria-labelledby="calendar-heading"]'),
+  ).toHaveCSS('animation-name', 'view-section-in')
+  await expect(page.locator('.calendar-board')).toHaveCSS(
+    'animation-name',
+    'view-stagger-in',
+  )
   await expect(page.getByRole('grid')).toBeVisible()
   await expect(page.getByLabel('Add a task to selected calendar day')).toBeVisible()
   await page
@@ -237,7 +248,15 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     'aria-current',
     'true',
   )
+  await expect(page.locator('.view-stack')).toHaveAttribute(
+    'data-motion',
+    /forward|backward/,
+  )
   await expect(page.locator('section[aria-labelledby="lists-heading"]')).toBeVisible()
+  await expect(page.locator('.list-create')).toHaveCSS(
+    'animation-name',
+    'view-stagger-in',
+  )
   await expect(page.locator('section[aria-labelledby="calendar-heading"]')).toHaveCount(0)
   await page.getByLabel('Create a custom list').fill('Workstream')
   await page.getByRole('button', { name: 'Create list' }).click()
@@ -249,6 +268,10 @@ test('sidebar opens and completed-task visibility is configurable', async ({
   await customList.locator('.submit-task').click()
   await customList.getByRole('button', { name: 'Show Planner on Today' }).click()
   await page.getByRole('button', { name: 'Jump to Today' }).click()
+  await expect(page.locator('.view-stack')).toHaveAttribute(
+    'data-motion',
+    /forward|backward/,
+  )
   await expect(page.getByText('Pinned lists', { exact: true })).toBeVisible()
   await expect(
     page.locator('.today-goal-list-title strong').filter({ hasText: 'Planner' }),

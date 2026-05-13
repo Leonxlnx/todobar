@@ -529,6 +529,21 @@ function moveSectionOrderToIndex(
   return next
 }
 
+function getSectionMotionDirection(
+  sections: SectionId[],
+  current: SectionId,
+  next: SectionId,
+) {
+  const currentIndex = sections.indexOf(current)
+  const nextIndex = sections.indexOf(next)
+
+  if (currentIndex === -1 || nextIndex === -1) {
+    return 'forward'
+  }
+
+  return nextIndex >= currentIndex ? 'forward' : 'backward'
+}
+
 function getThemeOptions(theme: ThemeMode) {
   const allowed = themePresetsByMode[theme]
 
@@ -649,6 +664,9 @@ function App() {
     () => new URLSearchParams(window.location.search).get('settings') === '1',
   )
   const [activeRailSection, setActiveRailSection] = useState<SectionId>('today')
+  const [sectionMotion, setSectionMotion] = useState<'forward' | 'backward'>(
+    'forward',
+  )
   const [calendarCursor, setCalendarCursor] = useState(() => new Date())
   const [selectedCalendarKey, setSelectedCalendarKey] = useState(() =>
     formatDateKey(new Date()),
@@ -1627,7 +1645,7 @@ function App() {
       `Created local task from Gmail thread: ${suggestion.subject}`,
     )
     setCollapsedSections((current) => ({ ...current, today: false }))
-    setActiveRailSection('today')
+    activateRailSection('today')
     setIsOpen(true)
   }
 
@@ -1983,9 +2001,23 @@ function App() {
   }
 
   const focusSection = (section: SectionId) => {
-    setActiveRailSection(section)
+    activateRailSection(section)
     setIsSettingsOpen(false)
     setIsOpen(true)
+  }
+
+  const activateRailSection = (section: SectionId) => {
+    if (section !== activeRailSection) {
+      setSectionMotion(
+        getSectionMotionDirection(
+          settings.sectionOrder,
+          activeRailSection,
+          section,
+        ),
+      )
+    }
+
+    setActiveRailSection(section)
   }
 
   const openReminderToast = (toast: ReminderToast) => {
@@ -1996,7 +2028,7 @@ function App() {
       setSelectedCalendarKey(formatDateKey(reminderDate))
     }
 
-    setActiveRailSection('calendar')
+    activateRailSection('calendar')
     setIsSettingsOpen(false)
     setIsOpen(true)
     dismissReminderToast(toast.id)
@@ -2318,7 +2350,12 @@ function App() {
               <span style={{ width: `${progressPercent}%` }} />
             </section>
 
-            <div className="view-stack" data-view={activeRailSection}>
+            <div
+              className="view-stack"
+              data-motion={sectionMotion}
+              data-view={activeRailSection}
+              key={activeRailSection}
+            >
               {activeRailSection === 'today' ? (
                 <section
                   className="panel-section"
