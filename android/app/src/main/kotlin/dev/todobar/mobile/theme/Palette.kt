@@ -46,13 +46,13 @@ data class Palette(
     companion object {
         // ──── Light presets ─────────────────────────────────────────────────
         private val STUDIO = Palette(
-            workspaceTop = 0xFFF7F7F6.toInt(),
-            workspaceBottom = 0xFFE6E9EC.toInt(),
+            workspaceTop = 0xFFF8F8F7.toInt(),
+            workspaceBottom = 0xFFE9EBED.toInt(),
             ink = 0xFF111318.toInt(),
             muted = 0xFF687383.toInt(),
-            line = 0x1A18181B,
+            line = 0x1418181B,
             sidebarBg = 0xFFFCFCFB.toInt(),
-            sidebarBorder = 0x1718181B,
+            sidebarBorder = 0x1418181B,
             controlBg = 0xFFF5F6F7.toInt(),
             taskBg = 0xFFFFFFFF.toInt(),
             taskBorder = 0x1618181B,
@@ -191,16 +191,16 @@ data class Palette(
 
         // ──── Dark presets ─────────────────────────────────────────────────
         private val OBSIDIAN = Palette(
-            workspaceTop = 0xFF0D0D0E.toInt(),
-            workspaceBottom = 0xFF18181B.toInt(),
+            workspaceTop = 0xFF0C0C0D.toInt(),
+            workspaceBottom = 0xFF16161A.toInt(),
             ink = 0xFFF4F4F5.toInt(),
             muted = 0xFF9B9CA3.toInt(),
-            line = 0x14FFFFFF,
+            line = 0x10FFFFFF,
             sidebarBg = 0xFF0D0D0E.toInt(),
-            sidebarBorder = 0x14FFFFFF,
+            sidebarBorder = 0x10FFFFFF,
             controlBg = 0xFF171719.toInt(),
             taskBg = 0xFF151517.toInt(),
-            taskBorder = 0x14FFFFFF,
+            taskBorder = 0x12FFFFFF,
             accent = 0xFF74A8FF.toInt(),
             accentSoft = 0x2274A8FF,
             accentLine = 0x4774A8FF,
