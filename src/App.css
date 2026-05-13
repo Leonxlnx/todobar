@@ -4199,6 +4199,16 @@ kbd {
 
 .calendar-task-list .task-row {
   min-height: calc(var(--task-row-height) + 1px);
+  padding-inline: 10px;
+}
+
+.calendar-task-list .task-row:first-child {
+  padding-top: 8px;
+}
+
+.calendar-task-list .task-row:last-child {
+  padding-bottom: 8px;
+  border-bottom: 0;
 }
 
 .gmail-suggestions {
