@@ -2113,7 +2113,7 @@ kbd {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 5px;
+  gap: 6px;
 }
 
 .reminder-presets button {
@@ -2142,24 +2142,32 @@ kbd {
 
 .reminder-presets button strong {
   color: var(--ink);
-  font-size: 10px;
+  font-size: 10.5px;
   line-height: 1;
-  font-weight: 790;
+  font-weight: 720;
 }
 
 .reminder-presets button span {
   color: var(--muted);
-  font-size: 8.5px;
+  font-size: 9px;
   line-height: 1;
-  font-weight: 720;
+  font-weight: 640;
   letter-spacing: 0;
   text-transform: none;
 }
 
 .reminder-presets button:hover {
   color: var(--accent-strong);
-  border-color: var(--accent-line);
+  border-color: color-mix(in srgb, var(--accent-line) 64%, var(--line));
   background: var(--accent-soft);
+}
+
+@media (hover: none) {
+  .reminder-presets button {
+    block-size: 40px;
+    height: 40px;
+    min-height: 40px;
+  }
 }
 
 .reminder-popover label {
