@@ -4637,7 +4637,11 @@ kbd {
 
 .custom-list-pin.is-pinned:hover {
   color: var(--accent-strong);
-  background: color-mix(in srgb, var(--accent-soft) 130%, var(--surface-hover));
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-hover));
+}
+
+.workspace.theme-dark .custom-list-pin.is-pinned:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-hover));
 }
 
 .today-goals {
