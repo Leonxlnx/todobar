@@ -4382,9 +4382,9 @@ kbd {
 }
 
 .list-create {
-  min-height: 36px;
+  min-height: 38px;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  margin: 0 0 9px;
+  margin: 0 0 4px;
 }
 
 .custom-list-stack {
@@ -4440,14 +4440,14 @@ kbd {
 .custom-list-edit-input {
   min-width: 0;
   height: 30px;
-  padding: 0 8px;
+  padding: 0 10px;
   color: var(--ink);
-  font: 720 12px / 1.2 var(--font);
-  border: 1px solid var(--accent-line);
-  border-radius: 8px;
+  font: 720 12.5px / 1.2 var(--font);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
   outline: 0;
   background: var(--task-bg);
-  box-shadow: 0 0 0 3px var(--accent-soft);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-soft) 70%, transparent);
 }
 
 .custom-list-title span {
