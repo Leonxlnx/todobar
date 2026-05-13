@@ -4107,8 +4107,12 @@ kbd {
 }
 
 .workspace.theme-dark .calendar-entry-mode button.is-selected {
-  background: var(--settings-row);
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  background: color-mix(in srgb, var(--task-bg) 88%, transparent);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.06);
+}
+
+.workspace.theme-dark .calendar-entry-mode {
+  background: color-mix(in srgb, var(--settings-row) 90%, transparent);
 }
 
 .calendar-entry-mode button:active {
