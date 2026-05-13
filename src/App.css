@@ -3955,6 +3955,12 @@ kbd {
   border-radius: 999px;
   background: var(--accent);
   margin-top: -2px;
+  box-shadow: 0 0 0 0 transparent;
+  transition: transform 180ms var(--ease-out);
+}
+
+.calendar-grid button.has-event:not(.is-selected):hover::after {
+  transform: scale(1.2);
 }
 
 .calendar-grid button.is-today.has-event:not(.is-selected)::after {
