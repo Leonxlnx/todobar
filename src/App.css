@@ -4466,8 +4466,8 @@ kbd {
 
 .today-goals {
   display: grid;
-  gap: 8px;
-  padding-top: 1px;
+  gap: 10px;
+  padding-top: 2px;
 }
 
 .pinned-list-stack {
@@ -4477,8 +4477,8 @@ kbd {
 
 .today-goal-list {
   display: grid;
-  gap: 7px;
-  padding: 13px 0 12px;
+  gap: 8px;
+  padding: 14px 0 12px;
   border: 0;
   border-top: 1px solid var(--line);
   border-radius: 0;
@@ -4486,7 +4486,7 @@ kbd {
 }
 
 .today-goal-list:first-child {
-  padding-top: 2px;
+  padding-top: 4px;
   border-top: 0;
 }
 
@@ -4506,7 +4506,8 @@ kbd {
   overflow: hidden;
   color: var(--ink);
   font-size: 11.5px;
-  font-weight: 760;
+  font-weight: 720;
+  letter-spacing: -0.005em;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
