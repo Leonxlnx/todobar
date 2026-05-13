@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.12 - Desktop Motion Polish
+
+### Added
+
+- Added direction-aware, staggered transitions when switching between Today,
+  Calendar, and Lists.
+- Added smoke coverage that checks the rendered section transition animation
+  hooks.
+
+### Changed
+
+- Made Windows and macOS desktop navigation feel smoother by animating the new
+  section shell, primary blocks, and task rows as one coordinated transition.
+
 ## 0.1.11 - Android Companion
 
 ### Added

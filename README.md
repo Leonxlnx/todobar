@@ -130,7 +130,7 @@ The detailed plan lives in [Product vision](docs/product-vision.md) and
 Download the latest Windows, macOS, or Android build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.11`.
+Current stable release: `v0.1.12`.
 
 Windows:
 
@@ -365,7 +365,7 @@ Useful starting points:
 - [Product vision](docs/product-vision.md)
 - [UI direction](docs/ui-direction.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.11.md)
+- [Release verification](docs/release-verification-v0.1.12.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)
