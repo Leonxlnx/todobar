@@ -733,19 +733,17 @@ button {
   display: inline-grid;
   place-items: center;
   color: var(--muted);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.36), transparent),
-    var(--control-bg);
-  box-shadow: var(--control-shadow);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
   transition:
     background 160ms ease,
     border-color 160ms ease,
     box-shadow 160ms ease,
     color 160ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform 180ms var(--ease-out);
 }
 
 .system-actions button:hover,
@@ -762,8 +760,8 @@ button {
 .custom-list-toggle:hover {
   color: var(--ink);
   background: var(--surface-hover);
-  border-color: var(--line);
-  box-shadow: var(--control-shadow-hover);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .workspace.theme-dark .system-actions button:hover,
@@ -780,24 +778,8 @@ button {
 .workspace.theme-dark .custom-list-toggle:hover {
   color: var(--ink);
   background: var(--surface-hover);
-  border-color: rgba(255, 255, 255, 0.105);
-  box-shadow: var(--control-shadow-hover);
-}
-
-.workspace.theme-dark .system-actions button,
-.workspace.theme-dark .icon-cluster button,
-.workspace.theme-dark .section-heading button,
-.workspace.theme-dark .settings-actions button,
-.workspace.theme-dark .quick-add button,
-.workspace.theme-dark .check-button,
-.workspace.theme-dark .edit-button,
-.workspace.theme-dark .priority-button,
-.workspace.theme-dark .reminder-button,
-.workspace.theme-dark .delete-button,
-.workspace.theme-dark .custom-list-pin,
-.workspace.theme-dark .custom-list-toggle {
-  background: var(--control-bg);
-  box-shadow: var(--control-shadow);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .system-actions button:focus-visible,
