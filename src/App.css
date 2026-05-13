@@ -1361,30 +1361,36 @@ kbd {
 .reminder-toast {
   min-height: 72px;
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 32px minmax(0, 1fr);
   align-items: center;
   gap: 10px;
-  padding: 10px 10px 10px 11px;
+  padding: 10px 12px;
   color: var(--toast-ink);
   border: 1px solid var(--toast-border);
-  border-radius: 16px;
+  border-radius: var(--radius-2xl);
   background: var(--toast-bg);
   box-shadow:
-    0 22px 54px rgba(14, 23, 38, 0.18),
-    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    0 14px 32px rgba(14, 23, 38, 0.14),
+    0 2px 6px rgba(14, 23, 38, 0.06);
   pointer-events: auto;
-  animation: toast-in 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation: toast-in 260ms var(--ease-out) both;
   backdrop-filter: blur(16px) saturate(132%);
 }
 
+.workspace.theme-dark .reminder-toast {
+  box-shadow:
+    0 20px 44px rgba(0, 0, 0, 0.46),
+    0 4px 12px rgba(0, 0, 0, 0.32);
+}
+
 .reminder-toast-icon {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   display: grid;
   place-items: center;
-  color: #93c5fd;
-  border: 1px solid rgba(147, 197, 253, 0.22);
-  border-radius: 11px;
+  color: var(--accent);
+  border: 0;
+  border-radius: var(--radius-md);
   background: var(--toast-icon-bg);
 }
 
@@ -1440,15 +1446,17 @@ kbd {
   color: var(--toast-button-ink);
   font-size: 10.5px;
   font-weight: 780;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 9px;
+  border: 1px solid transparent;
+  border-radius: 999px;
   background: var(--toast-button-bg);
   cursor: pointer;
+  transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
 .reminder-toast-actions button:hover {
-  border-color: var(--accent-line);
+  border-color: var(--accent);
   background: var(--accent);
+  color: var(--task-bg);
 }
 
 .reminder-toast-actions button.is-subtle {
