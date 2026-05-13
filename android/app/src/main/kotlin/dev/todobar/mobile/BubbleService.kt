@@ -23,6 +23,9 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.FrameLayout
 import androidx.core.app.NotificationCompat
+import dev.todobar.mobile.model.DockEdge
+import dev.todobar.mobile.store.Store
+import dev.todobar.mobile.ui.ReminderToastController
 import dev.todobar.mobile.ui.SidebarOverlayController
 import kotlin.math.abs
 
@@ -40,15 +43,21 @@ class BubbleService : Service() {
     private var bubbleView: View? = null
     private var bubbleParams: WindowManager.LayoutParams? = null
     private var sidebar: SidebarOverlayController? = null
+    private var reminderToast: ReminderToastController? = null
+    private val store by lazy { Store.get(this) }
 
-    private val handleHeightPx by lazy { dp(92f).toInt() }
-    private val handleWidthPx by lazy { dp(14f).toInt() }
+    private val storeListener: () -> Unit = {
+        bubbleView?.post { applyHandleSettings() }
+        bubbleView?.post { checkRemindersDue() }
+    }
+
     private val edgeNudgePx by lazy { dp(2f).toInt() }
 
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         startInForeground()
+        store.addListener(storeListener)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -73,9 +82,12 @@ class BubbleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        store.removeListener(storeListener)
         removeBubble()
         sidebar?.dismiss()
         sidebar = null
+        reminderToast?.dismiss()
+        reminderToast = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -121,22 +133,26 @@ class BubbleService : Service() {
             stopSelf()
             return
         }
-        if (bubbleView != null) return
+        if (bubbleView != null) {
+            applyHandleSettings()
+            return
+        }
 
+        val settings = store.settings()
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.overlay_bubble, FrameLayout(this), false)
         val params = WindowManager.LayoutParams(
-            handleWidthPx,
-            handleHeightPx,
+            handleWidthPx(settings.tabWidth),
+            handleHeightPx(settings.handleHeight),
             overlayType(),
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
                 or WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
             PixelFormat.TRANSLUCENT,
         ).apply {
-            gravity = Gravity.TOP or Gravity.END
+            gravity = handleGravity(settings.dockEdge)
             x = -edgeNudgePx
-            y = defaultBubbleY()
+            y = positionForHandleY(settings.handleY, settings.handleHeight)
         }
 
         attachDragAndTap(view, params)
@@ -144,6 +160,77 @@ class BubbleService : Service() {
             .onFailure { Log.e(TAG, "bubble add failed", it) }
         bubbleView = view
         bubbleParams = params
+        applyHandleSettings()
+        checkRemindersDue()
+    }
+
+    private fun handleGravity(edge: DockEdge): Int = when (edge) {
+        DockEdge.LEFT -> Gravity.TOP or Gravity.START
+        DockEdge.TOP -> Gravity.TOP or Gravity.CENTER_HORIZONTAL
+        DockEdge.RIGHT -> Gravity.TOP or Gravity.END
+    }
+
+    private fun handleWidthPx(tabWidthDp: Int): Int = dp(tabWidthDp.coerceIn(22, 112) / 2f).toInt()
+        .coerceAtLeast(dp(12f).toInt())
+
+    private fun handleHeightPx(handleHeightDp: Int): Int = dp(handleHeightDp.toFloat()).toInt()
+
+    private fun positionForHandleY(percent: Int, handleHeightDp: Int): Int {
+        val metrics = resources.displayMetrics
+        val h = handleHeightPx(handleHeightDp)
+        val available = metrics.heightPixels - h - dp(48f).toInt()
+        val ratio = percent.coerceIn(0, 100) / 100f
+        return (available * ratio).toInt() + dp(24f).toInt()
+    }
+
+    private fun applyHandleSettings() {
+        val view = bubbleView ?: return
+        val params = bubbleParams ?: return
+        val settings = store.settings()
+        params.width = handleWidthPx(settings.tabWidth)
+        params.height = handleHeightPx(settings.handleHeight)
+        params.gravity = handleGravity(settings.dockEdge)
+        params.y = positionForHandleY(settings.handleY, settings.handleHeight)
+        runCatching { windowManager.updateViewLayout(view, params) }
+    }
+
+    private fun checkRemindersDue() {
+        if (!store.settings().notificationsEnabled) return
+        val now = System.currentTimeMillis()
+        val notified = store.notifiedReminders().toMutableSet()
+        val candidates = (store.today() + store.scheduled() +
+            store.customLists().flatMap { it.tasks })
+        candidates.forEach { task ->
+            val r = task.reminderAt ?: return@forEach
+            val ms = runCatching { dev.todobar.mobile.store.ReminderClock.parse(r) }.getOrNull() ?: return@forEach
+            val key = task.id.toString() + "@" + r
+            if (ms <= now && key !in notified && !task.done) {
+                showReminderToast(task)
+                store.markReminderNotified(key)
+                notified.add(key)
+            }
+        }
+    }
+
+    private fun showReminderToast(task: dev.todobar.mobile.model.Task) {
+        reminderToast?.dismiss()
+        reminderToast = ReminderToastController(
+            context = this,
+            windowManager = windowManager,
+            overlayType = overlayType(),
+            task = task,
+            onSnooze = {
+                store.snoozeReminder(
+                    dev.todobar.mobile.store.TaskScope.Today,
+                    task.id,
+                    10,
+                )
+                reminderToast = null
+            },
+            onDismiss = {
+                reminderToast = null
+            },
+        ).also { it.show() }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -178,6 +265,7 @@ class BubbleService : Service() {
                     if (!dragging && duration < 280) {
                         openSidebar()
                     }
+                    if (dragging) persistHandleY(params.y)
                     true
                 }
 
@@ -195,6 +283,11 @@ class BubbleService : Service() {
             windowManager = windowManager,
             overlayType = overlayType(),
             onDismiss = ::onSidebarDismissed,
+            onRequestBackdropPicker = {
+                val pickerIntent = Intent(this, BackdropPickerActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(pickerIntent)
+            },
         ).also { it.show() }
     }
 
@@ -222,16 +315,24 @@ class BubbleService : Service() {
             WindowManager.LayoutParams.TYPE_PHONE
         }
 
-    private fun defaultBubbleY(): Int {
-        val metrics = resources.displayMetrics
-        return (metrics.heightPixels / 2) - (handleHeightPx / 2)
-    }
-
     private fun clampVertical(value: Int): Int {
         val metrics: DisplayMetrics = resources.displayMetrics
-        val maxY = metrics.heightPixels - handleHeightPx - dp(24f).toInt()
+        val h = handleHeightPx(store.settings().handleHeight)
+        val maxY = metrics.heightPixels - h - dp(24f).toInt()
         val minY = dp(24f).toInt()
         return value.coerceIn(minY, maxY)
+    }
+
+    private fun persistHandleY(y: Int) {
+        val metrics = resources.displayMetrics
+        val h = handleHeightPx(store.settings().handleHeight)
+        val available = metrics.heightPixels - h - dp(48f).toInt()
+        if (available <= 0) return
+        val ratio = ((y - dp(24f).toInt()).toFloat() / available).coerceIn(0f, 1f)
+        val percent = (ratio * 100).toInt()
+        if (percent != store.settings().handleY) {
+            store.saveSettings(store.settings().copy(handleY = percent))
+        }
     }
 
     private fun dp(value: Float): Float =
