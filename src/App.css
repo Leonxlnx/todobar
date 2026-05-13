@@ -2055,6 +2055,12 @@ kbd {
 .quick-add.has-reminder .reminder-toggle {
   color: var(--accent);
   background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent-line) 50%, transparent);
+}
+
+.quick-add.is-reminder-open .reminder-toggle {
+  color: var(--accent-strong);
+  background: var(--accent-soft);
 }
 
 .reminder-popover {
