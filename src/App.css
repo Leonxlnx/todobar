@@ -5034,11 +5034,11 @@ kbd {
 }
 
 .list-delete-confirm {
-  top: 35px;
+  top: 36px;
   right: 0;
   bottom: auto;
   transform: none;
-  animation: reminder-popover-in 150ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: reminder-popover-in 150ms var(--ease-out);
 }
 
 .priority-dot {
