@@ -4660,10 +4660,10 @@ kbd {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   min-width: 113px;
   justify-content: flex-end;
-  opacity: 0.54;
+  opacity: 0.58;
   transition: opacity 160ms ease;
 }
 
@@ -4672,13 +4672,18 @@ kbd {
   opacity: 1;
 }
 
+@media (hover: none) {
+  .row-actions {
+    opacity: 1;
+  }
+}
+
 .task-row .delete-button {
   inline-size: 26px;
   block-size: 26px;
   flex-basis: 26px;
   border-radius: 9px;
-  opacity: 0.48;
-  transform: translateX(1px);
+  opacity: 0.62;
 }
 
 .row-actions button {
@@ -4731,7 +4736,7 @@ kbd {
 
 .task-row:hover .delete-button,
 .task-row:focus-within .delete-button {
-  transform: translateX(0);
+  opacity: 1;
 }
 
 .task-row .delete-button:hover svg {
