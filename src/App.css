@@ -1826,7 +1826,8 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 0 0 2px;
+  padding: 0 0 6px;
+  margin-bottom: 2px;
 }
 
 .app-lockup {
