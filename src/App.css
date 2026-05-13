@@ -3209,12 +3209,12 @@ kbd {
 
 .slider-setting {
   display: grid;
-  gap: 7px;
-  padding: 9px 10px;
+  gap: 8px;
+  padding: 10px 12px 12px;
   border: 1px solid var(--line);
-  border-radius: 13px;
+  border-radius: var(--radius-lg);
   background: var(--settings-row);
-  box-shadow: var(--control-shadow);
+  box-shadow: none;
 }
 
 .slider-setting + .slider-setting {
@@ -3272,9 +3272,7 @@ kbd {
 .slider-setting input::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 999px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.18), transparent),
-    var(--range-track);
+  background: var(--range-track);
 }
 
 .slider-setting input::-webkit-slider-thumb {
@@ -3283,10 +3281,25 @@ kbd {
   margin-top: -6px;
   -webkit-appearance: none;
   appearance: none;
-  border: 1px solid var(--range-thumb-border);
+  border: 0;
   border-radius: 999px;
-  background: var(--range-thumb);
-  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.18);
+  background: var(--accent);
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 0 0 2px var(--settings-row);
+  transition: transform 160ms var(--ease-out), box-shadow 160ms ease;
+}
+
+.slider-setting input:hover::-webkit-slider-thumb,
+.slider-setting input:focus-visible::-webkit-slider-thumb {
+  transform: scale(1.12);
+  box-shadow:
+    0 4px 10px color-mix(in srgb, var(--accent) 36%, transparent),
+    0 0 0 3px var(--settings-row);
+}
+
+.slider-setting input:focus-visible {
+  outline: 0;
 }
 
 .slider-setting input::-moz-range-track {
@@ -3298,10 +3311,20 @@ kbd {
 .slider-setting input::-moz-range-thumb {
   width: 16px;
   height: 16px;
-  border: 1px solid var(--range-thumb-border);
+  border: 0;
   border-radius: 999px;
-  background: var(--range-thumb);
-  box-shadow: 0 4px 11px rgba(0, 0, 0, 0.18);
+  background: var(--accent);
+  box-shadow:
+    0 2px 6px color-mix(in srgb, var(--accent) 28%, transparent),
+    0 0 0 2px var(--settings-row);
+}
+
+.slider-setting input:hover::-moz-range-thumb,
+.slider-setting input:focus-visible::-moz-range-thumb {
+  transform: scale(1.12);
+  box-shadow:
+    0 4px 10px color-mix(in srgb, var(--accent) 36%, transparent),
+    0 0 0 3px var(--settings-row);
 }
 
 .toggle-setting {
