@@ -4722,7 +4722,14 @@ kbd {
 }
 
 .compact-task-list .task-row {
-  min-height: calc(var(--task-row-height) - 1px);
+  min-height: calc(var(--task-row-height) - 2px);
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+.compact-task-list .task-row .row-actions {
+  min-width: auto;
+  gap: 0;
 }
 
 .delete-button {
