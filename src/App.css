@@ -3869,7 +3869,7 @@ kbd {
 }
 
 .calendar-grid {
-  gap: 4px;
+  gap: 3px;
 }
 
 .calendar-grid button {
@@ -3877,18 +3877,19 @@ kbd {
   min-width: 0;
   display: grid;
   place-items: center;
-  gap: 1px;
+  gap: 2px;
   padding: 2px;
   color: var(--ink);
+  font-variant-numeric: tabular-nums;
   border: 1px solid transparent;
-  border-radius: 11px;
+  border-radius: var(--radius-md);
   background: transparent;
   cursor: pointer;
   transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    color 160ms ease,
-    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    background 200ms ease,
+    border-color 200ms ease,
+    color 200ms ease,
+    transform 180ms var(--ease-out);
 }
 
 .calendar-grid button:hover {
