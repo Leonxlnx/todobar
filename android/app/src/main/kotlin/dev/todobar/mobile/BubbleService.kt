@@ -55,6 +55,7 @@ class BubbleService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        isRunning = true
         windowManager = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         startInForeground()
         store.addListener(storeListener)
@@ -82,6 +83,7 @@ class BubbleService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        isRunning = false
         store.removeListener(storeListener)
         removeBubble()
         sidebar?.dismiss()
@@ -142,8 +144,8 @@ class BubbleService : Service() {
         val inflater = LayoutInflater.from(this)
         val view = inflater.inflate(R.layout.overlay_bubble, FrameLayout(this), false)
         val params = WindowManager.LayoutParams(
-            handleWidthPx(settings.tabWidth),
-            handleHeightPx(settings.handleHeight),
+            handleWidthPx(settings),
+            handleHeightPx(settings),
             overlayType(),
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                 or WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -151,8 +153,16 @@ class BubbleService : Service() {
             PixelFormat.TRANSLUCENT,
         ).apply {
             gravity = handleGravity(settings.dockEdge)
-            x = -edgeNudgePx
-            y = positionForHandleY(settings.handleY, settings.handleHeight)
+            x = if (settings.dockEdge == DockEdge.TOP) {
+                positionForHandle(settings)
+            } else {
+                -edgeNudgePx
+            }
+            y = if (settings.dockEdge == DockEdge.TOP) {
+                -edgeNudgePx
+            } else {
+                positionForHandle(settings)
+            }
         }
 
         attachDragAndTap(view, params)
@@ -170,16 +180,34 @@ class BubbleService : Service() {
         DockEdge.RIGHT -> Gravity.TOP or Gravity.END
     }
 
-    private fun handleWidthPx(tabWidthDp: Int): Int = dp(tabWidthDp.coerceIn(22, 112) / 2f).toInt()
-        .coerceAtLeast(dp(12f).toInt())
+    private fun handleWidthPx(settings: dev.todobar.mobile.model.SidebarSettings): Int =
+        if (settings.dockEdge == DockEdge.TOP) {
+            dp(settings.handleHeight.coerceIn(56, 176).toFloat()).toInt()
+        } else {
+            dp(settings.tabWidth.coerceIn(22, 112).toFloat()).toInt()
+        }.coerceAtLeast(dp(18f).toInt())
 
-    private fun handleHeightPx(handleHeightDp: Int): Int = dp(handleHeightDp.toFloat()).toInt()
+    private fun handleHeightPx(settings: dev.todobar.mobile.model.SidebarSettings): Int =
+        if (settings.dockEdge == DockEdge.TOP) {
+            dp(settings.tabWidth.coerceIn(22, 112).toFloat()).toInt()
+        } else {
+            dp(settings.handleHeight.coerceIn(56, 176).toFloat()).toInt()
+        }.coerceAtLeast(dp(18f).toInt())
 
-    private fun positionForHandleY(percent: Int, handleHeightDp: Int): Int {
+    private fun positionForHandle(settings: dev.todobar.mobile.model.SidebarSettings): Int {
         val metrics = resources.displayMetrics
-        val h = handleHeightPx(handleHeightDp)
-        val available = metrics.heightPixels - h - dp(48f).toInt()
-        val ratio = percent.coerceIn(0, 100) / 100f
+        val handleLength = if (settings.dockEdge == DockEdge.TOP) {
+            handleWidthPx(settings)
+        } else {
+            handleHeightPx(settings)
+        }
+        val screenLength = if (settings.dockEdge == DockEdge.TOP) {
+            metrics.widthPixels
+        } else {
+            metrics.heightPixels
+        }
+        val available = screenLength - handleLength - dp(48f).toInt()
+        val ratio = settings.handleY.coerceIn(0, 100) / 100f
         return (available * ratio).toInt() + dp(24f).toInt()
     }
 
@@ -187,10 +215,16 @@ class BubbleService : Service() {
         val view = bubbleView ?: return
         val params = bubbleParams ?: return
         val settings = store.settings()
-        params.width = handleWidthPx(settings.tabWidth)
-        params.height = handleHeightPx(settings.handleHeight)
+        params.width = handleWidthPx(settings)
+        params.height = handleHeightPx(settings)
         params.gravity = handleGravity(settings.dockEdge)
-        params.y = positionForHandleY(settings.handleY, settings.handleHeight)
+        if (settings.dockEdge == DockEdge.TOP) {
+            params.x = positionForHandle(settings)
+            params.y = -edgeNudgePx
+        } else {
+            params.x = -edgeNudgePx
+            params.y = positionForHandle(settings)
+        }
         runCatching { windowManager.updateViewLayout(view, params) }
     }
 
@@ -236,25 +270,38 @@ class BubbleService : Service() {
     @SuppressLint("ClickableViewAccessibility")
     private fun attachDragAndTap(view: View, params: WindowManager.LayoutParams) {
         var initialY = 0
+        var initialX = 0
         var touchStartY = 0f
+        var touchStartX = 0f
         var touchStartTime = 0L
         var dragging = false
 
         view.setOnTouchListener { v, event ->
+            val isTopDock = store.settings().dockEdge == DockEdge.TOP
             when (event.actionMasked) {
                 MotionEvent.ACTION_DOWN -> {
                     initialY = params.y
+                    initialX = params.x
                     touchStartY = event.rawY
+                    touchStartX = event.rawX
                     touchStartTime = System.currentTimeMillis()
                     dragging = false
                     true
                 }
 
                 MotionEvent.ACTION_MOVE -> {
-                    val dy = event.rawY - touchStartY
-                    if (!dragging && abs(dy) > dp(6f)) dragging = true
+                    val delta = if (isTopDock) {
+                        event.rawX - touchStartX
+                    } else {
+                        event.rawY - touchStartY
+                    }
+                    if (!dragging && abs(delta) > dp(6f)) dragging = true
                     if (dragging) {
-                        params.y = clampVertical((initialY + dy).toInt())
+                        if (isTopDock) {
+                            params.x = clampHorizontal((initialX + delta).toInt())
+                        } else {
+                            params.y = clampVertical((initialY + delta).toInt())
+                        }
                         runCatching { windowManager.updateViewLayout(v, params) }
                     }
                     true
@@ -265,7 +312,13 @@ class BubbleService : Service() {
                     if (!dragging && duration < 280) {
                         openSidebar()
                     }
-                    if (dragging) persistHandleY(params.y)
+                    if (dragging) {
+                        if (isTopDock) {
+                            persistHandlePosition(params.x, horizontal = true)
+                        } else {
+                            persistHandlePosition(params.y, horizontal = false)
+                        }
+                    }
                     true
                 }
 
@@ -317,18 +370,31 @@ class BubbleService : Service() {
 
     private fun clampVertical(value: Int): Int {
         val metrics: DisplayMetrics = resources.displayMetrics
-        val h = handleHeightPx(store.settings().handleHeight)
+        val h = handleHeightPx(store.settings())
         val maxY = metrics.heightPixels - h - dp(24f).toInt()
         val minY = dp(24f).toInt()
         return value.coerceIn(minY, maxY)
     }
 
-    private fun persistHandleY(y: Int) {
+    private fun clampHorizontal(value: Int): Int {
         val metrics = resources.displayMetrics
-        val h = handleHeightPx(store.settings().handleHeight)
-        val available = metrics.heightPixels - h - dp(48f).toInt()
+        val w = handleWidthPx(store.settings())
+        val maxX = metrics.widthPixels - w - dp(24f).toInt()
+        val minX = dp(24f).toInt()
+        return value.coerceIn(minX, maxX)
+    }
+
+    private fun persistHandlePosition(value: Int, horizontal: Boolean) {
+        val metrics = resources.displayMetrics
+        val handleLength = if (horizontal) {
+            handleWidthPx(store.settings())
+        } else {
+            handleHeightPx(store.settings())
+        }
+        val screenLength = if (horizontal) metrics.widthPixels else metrics.heightPixels
+        val available = screenLength - handleLength - dp(48f).toInt()
         if (available <= 0) return
-        val ratio = ((y - dp(24f).toInt()).toFloat() / available).coerceIn(0f, 1f)
+        val ratio = ((value - dp(24f).toInt()).toFloat() / available).coerceIn(0f, 1f)
         val percent = (ratio * 100).toInt()
         if (percent != store.settings().handleY) {
             store.saveSettings(store.settings().copy(handleY = percent))
@@ -341,6 +407,9 @@ class BubbleService : Service() {
     companion object {
         private const val TAG = "BubbleService"
         private const val NOTIFICATION_ID = 4711
+        @Volatile
+        var isRunning: Boolean = false
+            private set
         const val ACTION_OPEN = "dev.todobar.mobile.action.OPEN"
         const val ACTION_CLOSE = "dev.todobar.mobile.action.CLOSE"
 

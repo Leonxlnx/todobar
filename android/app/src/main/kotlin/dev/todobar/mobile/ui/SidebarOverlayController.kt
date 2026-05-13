@@ -163,11 +163,16 @@ class SidebarOverlayController(
             store.addListener(storeListener)
             applyState()
 
-            val travel = panelWidth.toFloat()
-            panelView.translationX = travel
+            val motionAxis = motionAxis(panelView)
+            if (motionAxis.horizontal) {
+                panelView.translationX = motionAxis.closedOffset
+            } else {
+                panelView.translationY = motionAxis.closedOffset
+            }
             val motion = store.settings().motionMs.toLong()
             panelView.animate()
                 .translationX(0f)
+                .translationY(0f)
                 .setDuration(motion)
                 .setInterpolator(AccelerateDecelerateInterpolator())
                 .start()
@@ -580,9 +585,10 @@ class SidebarOverlayController(
         val motion = store.settings().motionMs.toLong()
         scrimView?.animate()?.alpha(0f)?.setDuration(motion - 50)?.start()
         if (panelView != null) {
-            val travel = panelView.width.toFloat()
+            val motionAxis = motionAxis(panelView)
             panelView.animate()
-                .translationX(travel)
+                .translationX(if (motionAxis.horizontal) motionAxis.closedOffset else 0f)
+                .translationY(if (motionAxis.horizontal) 0f else motionAxis.closedOffset)
                 .setDuration(motion)
                 .setInterpolator(AccelerateDecelerateInterpolator())
                 .withEndAction { teardown() }
@@ -599,6 +605,21 @@ class SidebarOverlayController(
         sectionViews.clear()
         settingsView = null
         onDismiss()
+    }
+
+    private data class PanelMotionAxis(
+        val closedOffset: Float,
+        val horizontal: Boolean,
+    )
+
+    private fun motionAxis(panelView: View): PanelMotionAxis {
+        val settings = store.settings()
+
+        return when (settings.dockEdge) {
+            DockEdge.LEFT -> PanelMotionAxis(-panelView.width.toFloat(), horizontal = true)
+            DockEdge.TOP -> PanelMotionAxis(-panelView.height.toFloat(), horizontal = false)
+            DockEdge.RIGHT -> PanelMotionAxis(panelView.width.toFloat(), horizontal = true)
+        }
     }
 
     companion object {

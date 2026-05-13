@@ -68,11 +68,9 @@ class MainActivity : AppCompatActivity() {
         bubbleButton.setOnClickListener {
             if (isBubbleRunning) {
                 BubbleService.stop(this)
-                bubbleRunning = false
             } else {
                 if (!Settings.canDrawOverlays(this)) return@setOnClickListener
                 BubbleService.start(this)
-                bubbleRunning = true
             }
             refreshState()
         }
@@ -115,11 +113,5 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val isBubbleRunning: Boolean
-        get() = bubbleRunning && Settings.canDrawOverlays(this)
-
-    companion object {
-        // Lightweight runtime flag so the UI reflects start/stop without
-        // querying ActivityManager (deprecated for non-foreground services).
-        private var bubbleRunning: Boolean = false
-    }
+        get() = BubbleService.isRunning && Settings.canDrawOverlays(this)
 }
