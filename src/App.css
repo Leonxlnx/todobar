@@ -1818,21 +1818,25 @@ kbd {
 }
 
 .app-icon {
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   display: grid;
   place-items: center;
-  color: #fff;
+  color: var(--task-bg);
   flex: 0 0 auto;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 11px;
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: var(--radius-md);
   background:
-    radial-gradient(circle at 28% 18%, rgba(255, 255, 255, 0.24), transparent 28%),
-    linear-gradient(145deg, #202126 0%, #0c0d10 100%),
-    #111216;
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.16), transparent 42%),
+    var(--accent);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    0 8px 18px rgba(17, 24, 39, 0.12);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 4px 12px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.workspace.theme-dark .app-icon {
+  color: var(--sidebar-solid-bg);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 
 .app-lockup div {
