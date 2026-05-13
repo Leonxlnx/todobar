@@ -27,6 +27,12 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".BackdropPickerActivity"
+            android:exported="false"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.Todobar.Transparent" />
+
         <service
             android:name=".BubbleService"
             android:exported="false"

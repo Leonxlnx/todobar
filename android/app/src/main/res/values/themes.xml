@@ -11,4 +11,13 @@
         <item name="android:navigationBarColor" tools:targetApi="21">@color/surface_workspace</item>
         <item name="android:windowLightStatusBar" tools:targetApi="23">true</item>
     </style>
+
+    <style name="Theme.Todobar.Transparent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowIsFloating">false</item>
+    </style>
 </resources>
