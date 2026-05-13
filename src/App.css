@@ -2271,15 +2271,18 @@ kbd {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 0 0 1px;
+  padding: 0 0 8px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
 }
 
 .settings-panel-header strong {
   display: block;
   color: var(--ink);
-  font-size: 14.5px;
+  font-size: 15px;
   line-height: 1.2;
-  font-weight: 760;
+  font-weight: 720;
+  letter-spacing: -0.01em;
 }
 
 .settings-panel-header span {
@@ -2287,6 +2290,7 @@ kbd {
   margin-top: 4px;
   color: var(--muted);
   font-size: 11px;
+  line-height: 1.4;
 }
 
 .settings-actions {
