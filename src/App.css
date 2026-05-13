@@ -1472,9 +1472,9 @@ kbd {
 }
 
 .reminder-toast-actions button.is-subtle:hover {
-  color: var(--toast-button-ink);
-  border-color: var(--accent-line);
-  background: var(--accent);
+  color: var(--toast-ink);
+  border-color: transparent;
+  background: var(--surface-hover);
 }
 
 .reminder-toast-actions button.is-icon {
@@ -1483,6 +1483,12 @@ kbd {
   color: var(--toast-muted);
   border-color: var(--line);
   background: var(--control-bg);
+}
+
+.reminder-toast-actions button.is-icon:hover {
+  color: var(--toast-ink);
+  border-color: transparent;
+  background: var(--surface-hover);
 }
 
 .todo-sidebar {
