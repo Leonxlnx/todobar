@@ -82,11 +82,12 @@ class TodayView(
         sectionIcon.layoutParams = iconParams
 
         sectionTitle.text = "Today"
-        sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13.5f)
         sectionTitle.typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+        sectionTitle.letterSpacing = -0.005f
 
         sectionCount.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f)
-        sectionCount.typeface = Typeface.create("sans-serif", Typeface.ITALIC)
+        sectionCount.typeface = Typeface.create("sans-serif", Typeface.NORMAL)
         val countParams = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
         countParams.setMargins(dp(context, 8f), 0, 0, 0)
         sectionCount.layoutParams = countParams
