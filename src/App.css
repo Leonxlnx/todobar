@@ -4155,6 +4155,16 @@ kbd {
 
 .calendar-agenda {
   display: grid;
+  gap: 1px;
+}
+
+.calendar-task-list {
+  display: grid;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--task-bg);
+  background-clip: padding-box;
+  overflow: hidden;
 }
 
 .calendar-empty-state {
