@@ -279,7 +279,7 @@ class BubbleService : Service() {
         if (sidebar != null) return
         bubbleView?.let { it.animate().alpha(0f).setDuration(120).start() }
         sidebar = SidebarOverlayController(
-            context = this,
+            serviceContext = this,
             windowManager = windowManager,
             overlayType = overlayType(),
             onDismiss = ::onSidebarDismissed,
