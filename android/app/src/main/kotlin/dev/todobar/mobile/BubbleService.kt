@@ -10,23 +10,21 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.content.res.Configuration
 import android.graphics.PixelFormat
-import android.graphics.drawable.GradientDrawable
 import android.os.Build
 import android.os.IBinder
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
-import android.widget.FrameLayout
 import androidx.core.app.NotificationCompat
 import dev.todobar.mobile.model.DockEdge
 import dev.todobar.mobile.store.Store
 import dev.todobar.mobile.store.TaskScope
+import dev.todobar.mobile.ui.EdgeHandleView
 import dev.todobar.mobile.ui.ReminderToastController
 import dev.todobar.mobile.ui.SidebarOverlayController
 import kotlin.math.abs
@@ -145,8 +143,7 @@ class BubbleService : Service() {
         }
 
         val settings = store.settings()
-        val inflater = LayoutInflater.from(this)
-        val view = inflater.inflate(R.layout.overlay_bubble, FrameLayout(this), false)
+        val view = EdgeHandleView(this)
         val params = WindowManager.LayoutParams(
             handleWidthPx(settings),
             handleHeightPx(settings),
@@ -164,7 +161,7 @@ class BubbleService : Service() {
         attachDragAndTap(view, params)
         view.alpha = 1f
         view.visibility = View.VISIBLE
-        view.background = handleBackground(settings)
+        view.applySettings(settings)
         val added = runCatching { windowManager.addView(view, params) }
         if (added.isFailure) {
             Log.e(TAG, "bubble add failed", added.exceptionOrNull())
@@ -219,7 +216,7 @@ class BubbleService : Service() {
         params.gravity = handleGravity()
         params.x = handleX(settings)
         params.y = handleY(settings)
-        view.background = handleBackground(settings)
+        (view as? EdgeHandleView)?.applySettings(settings)
         if (sidebar == null) {
             view.animate().cancel()
             view.alpha = 1f
@@ -242,21 +239,6 @@ class BubbleService : Service() {
             DockEdge.TOP -> -edgeOverlapPx
             else -> positionForHandle(settings)
         }
-
-    private fun handleBackground(settings: dev.todobar.mobile.model.SidebarSettings): GradientDrawable {
-        val radius = dp(22f)
-        return GradientDrawable(
-            GradientDrawable.Orientation.TL_BR,
-            intArrayOf(
-                getColorCompat(R.color.handle_grad_top),
-                getColorCompat(R.color.handle_grad_bot),
-            ),
-        ).apply {
-            shape = GradientDrawable.RECTANGLE
-            cornerRadius = radius
-            setStroke(dp(1f).toInt(), getColorCompat(R.color.handle_stroke))
-        }
-    }
 
     private fun checkRemindersDue() {
         if (!store.settings().notificationsEnabled) return
@@ -462,14 +444,6 @@ class BubbleService : Service() {
 
     private fun dp(value: Float): Float =
         value * resources.displayMetrics.density
-
-    private fun getColorCompat(resId: Int): Int =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            resources.getColor(resId, theme)
-        } else {
-            @Suppress("DEPRECATION")
-            resources.getColor(resId)
-        }
 
     companion object {
         private const val TAG = "BubbleService"
