@@ -1903,19 +1903,19 @@ kbd {
   display: grid;
   gap: 12px;
   align-content: start;
-  --view-enter-x: 10px;
-  --view-enter-rotate: 0.15deg;
+  --view-enter-x: 8px;
+  --view-enter-rotate: 0deg;
   --view-delay: 0ms;
 }
 
 .view-stack[data-motion='backward'] {
-  --view-enter-x: -10px;
-  --view-enter-rotate: -0.15deg;
+  --view-enter-x: -8px;
+  --view-enter-rotate: 0deg;
 }
 
 .view-stack > .panel-section {
   min-width: 0;
-  animation: view-section-in 300ms cubic-bezier(0.16, 0.86, 0.3, 1) both;
+  animation: view-section-in 280ms var(--ease-out-soft) both;
   will-change: opacity, transform;
 }
 
@@ -1930,19 +1930,19 @@ kbd {
 .view-stack .calendar-backlog,
 .view-stack .calendar-empty-state,
 .view-stack .custom-list {
-  animation: view-stagger-in 340ms cubic-bezier(0.16, 0.86, 0.3, 1) both;
+  animation: view-stagger-in 320ms var(--ease-out-soft) both;
   animation-delay: var(--view-delay);
   will-change: opacity, transform;
 }
 
 .view-stack .section-heading {
-  --view-delay: 18ms;
+  --view-delay: 0ms;
 }
 
 .view-stack .quick-add,
 .view-stack .calendar-board,
 .view-stack .custom-list:nth-child(1) {
-  --view-delay: 54ms;
+  --view-delay: 32ms;
 }
 
 .view-stack .task-list,
@@ -1950,16 +1950,34 @@ kbd {
 .view-stack .calendar-day-panel,
 .view-stack .calendar-empty-state,
 .view-stack .custom-list:nth-child(2) {
-  --view-delay: 92ms;
+  --view-delay: 64ms;
 }
 
 .view-stack .calendar-backlog,
 .view-stack .custom-list:nth-child(3) {
-  --view-delay: 130ms;
+  --view-delay: 96ms;
 }
 
 .view-stack .custom-list:nth-child(n + 4) {
-  --view-delay: 158ms;
+  --view-delay: 128ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-stack > .panel-section,
+  .view-stack .section-heading,
+  .view-stack .quick-add,
+  .view-stack .gmail-suggestions,
+  .view-stack .empty-task-list,
+  .view-stack .today-goals,
+  .view-stack .mini-heading,
+  .view-stack .calendar-board,
+  .view-stack .calendar-day-panel,
+  .view-stack .calendar-backlog,
+  .view-stack .calendar-empty-state,
+  .view-stack .custom-list,
+  .view-stack .task-row {
+    animation: none !important;
+  }
 }
 
 .view-stack .task-row {
