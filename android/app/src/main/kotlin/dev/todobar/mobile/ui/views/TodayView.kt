@@ -1,14 +1,16 @@
 package dev.todobar.mobile.ui.views
 
 import android.content.Context
+import android.graphics.Typeface
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.view.setPadding
+import dev.todobar.mobile.R
 import dev.todobar.mobile.model.CustomList
 import dev.todobar.mobile.model.SidebarSettings
 import dev.todobar.mobile.model.Task
@@ -24,8 +26,9 @@ import dev.todobar.mobile.ui.TaskRowView
 import dev.todobar.mobile.ui.Views
 
 /**
- * "Today" view: capture row, focus strip, primary task list, pinned custom
- * lists rendered as goal-style collapsible sections.
+ * "Today" view — matches the desktop `.panel-section` markup: section heading
+ * (icon + name + count + collapse), capture row, task list, pinned custom
+ * lists rendered as compact goal-style sections.
  */
 class TodayView(
     context: Context,
@@ -36,12 +39,25 @@ class TodayView(
 
     private val scroll = ScrollView(context)
     private val body = Views.column(context)
-    private val captureContainer = LinearLayout(context).apply { orientation = VERTICAL }
-    private val focusStripLabel = TextView(context)
-    private val focusStripTrack = View(context)
+
+    // section-heading
+    private val sectionHeading = LinearLayout(context).apply {
+        orientation = HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+    }
+    private val sectionIcon = ImageView(context)
+    private val sectionTitle = TextView(context)
+    private val sectionCount = TextView(context)
+    private val collapseBtn = ImageView(context)
+
+    // section-content
+    private val captureSlot = LinearLayout(context).apply { orientation = VERTICAL }
     private val taskList = Views.column(context)
-    private val customLists = Views.column(context)
+    private val customListsContainer = Views.column(context)
     private val emptyState = TextView(context)
+    private val pinnedHeading = TextView(context)
+
+    private var collapsed = false
 
     init {
         orientation = VERTICAL
@@ -50,51 +66,98 @@ class TodayView(
         addView(scroll)
         scroll.addView(body)
         body.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
-        body.setPadding(dp(context, 14f), dp(context, 10f), dp(context, 14f), dp(context, 32f))
+        body.orientation = VERTICAL
 
-        body.addView(captureContainer)
-        body.addView(Views.spacer(context, 12))
+        // ── section-heading ───────────────────────────────────────────────
+        sectionIcon.setImageResource(R.drawable.ic_today)
+        sectionIcon.scaleType = ImageView.ScaleType.FIT_CENTER
+        val iconParams = LayoutParams(dp(context, 16f), dp(context, 16f))
+        iconParams.setMargins(0, 0, dp(context, 6f), 0)
+        sectionIcon.layoutParams = iconParams
 
-        val focusContainer = Views.column(context).apply {
-            setPadding(dp(context, 12f), dp(context, 10f), dp(context, 12f), dp(context, 12f))
+        sectionTitle.text = "Today"
+        sectionTitle.setTextSize(TypedValue.COMPLEX_UNIT_SP, 13f)
+        sectionTitle.typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+
+        sectionCount.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f)
+        sectionCount.typeface = Typeface.create("sans-serif", Typeface.ITALIC)
+        val countParams = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
+        countParams.setMargins(dp(context, 8f), 0, 0, 0)
+        sectionCount.layoutParams = countParams
+
+        collapseBtn.setImageResource(R.drawable.ic_chevron_down)
+        collapseBtn.scaleType = ImageView.ScaleType.FIT_CENTER
+        val collapseParams = LayoutParams(dp(context, 28f), dp(context, 28f))
+        collapseBtn.layoutParams = collapseParams
+        collapseBtn.setPadding(dp(context, 4f))
+        collapseBtn.setOnClickListener {
+            collapsed = !collapsed
+            collapseBtn.rotation = if (collapsed) -90f else 0f
+            updateCollapsedVisibility()
         }
-        focusStripLabel.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-        focusContainer.addView(focusStripLabel)
-        val trackParams = LayoutParams(LayoutParams.MATCH_PARENT, dp(context, 6f))
-        trackParams.setMargins(0, dp(context, 6f), 0, 0)
-        focusStripTrack.layoutParams = trackParams
-        focusContainer.addView(focusStripTrack)
-        body.addView(focusContainer)
-        body.addView(Views.spacer(context, 10))
 
+        sectionHeading.addView(sectionIcon)
+        sectionHeading.addView(sectionTitle)
+        sectionHeading.addView(sectionCount)
+        sectionHeading.addView(collapseBtn)
+        sectionHeading.setPadding(0, dp(context, 4f), 0, dp(context, 4f))
+        body.addView(sectionHeading)
+
+        // ── capture row ───────────────────────────────────────────────────
+        captureSlot.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+        body.addView(captureSlot)
+        body.addView(Views.spacer(context, 8))
+
+        // ── task list ─────────────────────────────────────────────────────
         body.addView(taskList)
-        body.addView(Views.spacer(context, 12))
-        body.addView(customLists)
-        emptyState.text = "Nothing scheduled. Capture a task to begin."
-        emptyState.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
+
+        emptyState.text = "No open tasks here."
+        emptyState.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f)
         emptyState.gravity = Gravity.CENTER
         emptyState.setPadding(dp(context, 16f))
         body.addView(emptyState)
 
+        body.addView(Views.spacer(context, 14))
+
+        // ── pinned lists heading ──────────────────────────────────────────
+        pinnedHeading.text = "Pinned lists"
+        pinnedHeading.setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+        pinnedHeading.typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+        pinnedHeading.setPadding(0, 0, 0, dp(context, 6f))
+        body.addView(pinnedHeading)
+        body.addView(customListsContainer)
+
         rebuildCapture()
     }
 
+    private fun updateCollapsedVisibility() {
+        val gone = if (collapsed) GONE else VISIBLE
+        captureSlot.visibility = gone
+        taskList.visibility = gone
+        emptyState.visibility = if (collapsed) GONE else (if (taskList.childCount == 0) VISIBLE else GONE)
+    }
+
     private fun rebuildCapture() {
-        captureContainer.removeAllViews()
+        captureSlot.removeAllViews()
         val capture = CaptureRow(context, palette) { title, reminderMs ->
             store.addTodayTask(title, reminderMs?.let { ReminderClock.format(it) })
         }
-        captureContainer.addView(capture)
+        captureSlot.addView(capture)
         capture.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     }
 
     override fun applyTheme(palette: Palette, settings: SidebarSettings) {
         this.palette = palette
         this.settings = settings
-        rebuildCapture()
-        focusStripLabel.setTextColor(palette.muted)
-        focusStripTrack.background = Drawables.roundedSurface(context, palette.controlBg, 999f)
+        sectionIcon.imageTintList = android.content.res.ColorStateList.valueOf(palette.ink)
+        sectionTitle.setTextColor(palette.ink)
+        sectionCount.setTextColor(palette.muted)
+        collapseBtn.imageTintList = android.content.res.ColorStateList.valueOf(palette.muted)
+        collapseBtn.background = Drawables.roundedSurface(context, palette.controlBg, 10f, palette.taskBorder)
         emptyState.setTextColor(palette.muted)
+        pinnedHeading.setTextColor(palette.muted)
+        body.setPadding(dp(context, 2f), dp(context, 2f), dp(context, 2f), dp(context, 32f))
+        rebuildCapture()
         refresh()
     }
 
@@ -105,24 +168,23 @@ class TodayView(
         val complete = tasks.count { it.done }
         val totalCount = tasks.size
 
-        focusStripLabel.text = "Today · $open open · $complete done"
-        val progress = if (totalCount == 0) 0f else complete / totalCount.toFloat()
-        focusStripTrack.background = makeProgressBar(progress)
+        sectionCount.text = "$complete done · $totalCount total"
 
         taskList.removeAllViews()
         visible.forEach { task ->
             taskList.addView(makeRow(task, TaskScope.Today))
-            val params = (taskList.getChildAt(taskList.childCount - 1).layoutParams as LayoutParams)
+            val row = taskList.getChildAt(taskList.childCount - 1)
+            val params = row.layoutParams as LayoutParams
             params.setMargins(0, 0, 0, dp(context, settings.taskGap.toFloat()))
-            taskList.getChildAt(taskList.childCount - 1).layoutParams = params
+            row.layoutParams = params
         }
 
-        emptyState.visibility = if (visible.isEmpty()) VISIBLE else GONE
+        emptyState.visibility = if (visible.isEmpty() && !collapsed) VISIBLE else GONE
 
-        // Pinned custom lists (showOnToday)
-        customLists.removeAllViews()
+        customListsContainer.removeAllViews()
         val pinned = store.customLists().filter { it.showOnToday }
-        pinned.forEach { list -> customLists.addView(buildPinnedList(list)) }
+        pinnedHeading.visibility = if (pinned.isEmpty()) GONE else VISIBLE
+        pinned.forEach { list -> customListsContainer.addView(buildPinnedList(list)) }
     }
 
     private fun makeRow(task: Task, scope: TaskScope): TaskRowView {
@@ -149,22 +211,29 @@ class TodayView(
         params.setMargins(0, 0, 0, dp(context, 10f))
         container.layoutParams = params
 
-        // Header row
         val header = Views.row(context, Gravity.CENTER_VERTICAL)
-        val titleView = Views.text(context, list.title, sizeSp = 12.5f, color = palette.ink, bold = true)
-        val titleParams = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
-        titleView.layoutParams = titleParams
-        header.addView(titleView)
+        val titleTv = TextView(context).apply {
+            text = list.title
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12.5f)
+            typeface = Typeface.create("sans-serif-medium", Typeface.BOLD)
+            setTextColor(palette.ink)
+            layoutParams = LayoutParams(0, LayoutParams.WRAP_CONTENT, 1f)
+        }
+        header.addView(titleTv)
 
-        val openCount = list.tasks.count { !it.done }
-        val totalCount = list.tasks.size
-        val countView = Views.text(context, "$openCount / $totalCount", sizeSp = 10.5f, color = palette.muted)
-        header.addView(countView)
+        val open = list.tasks.count { !it.done }
+        val total = list.tasks.size
+        val countTv = TextView(context).apply {
+            text = "$open / $total"
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, 10.5f)
+            setTextColor(palette.muted)
+        }
+        header.addView(countTv)
 
-        val collapseBtn = Views.iconButton(
-            context, Icon.CHEVRON_DOWN, palette.muted, sizeDp = 28,
-        ) { store.toggleListCollapsed(list.id) }
-        header.addView(collapseBtn)
+        val collapseListBtn = Views.iconButton(context, Icon.CHEVRON_DOWN, palette.muted, sizeDp = 28) {
+            store.toggleListCollapsed(list.id)
+        }
+        header.addView(collapseListBtn)
 
         container.addView(header)
 
@@ -173,7 +242,11 @@ class TodayView(
             val sorted = Store.sortTasks(list.tasks, settings.taskSortMode)
             val visible = if (settings.showCompleted) sorted else sorted.filterNot { it.done }
             if (visible.isEmpty()) {
-                val empty = Views.text(context, "No tasks in this list yet.", sizeSp = 11.5f, color = palette.muted)
+                val empty = TextView(context).apply {
+                    text = "No tasks in this list yet."
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 11.5f)
+                    setTextColor(palette.muted)
+                }
                 empty.setPadding(0, dp(context, 6f), 0, dp(context, 6f))
                 container.addView(empty)
             } else {
@@ -186,17 +259,6 @@ class TodayView(
                 }
             }
         }
-
         return container
-    }
-
-    private fun makeProgressBar(progress: Float): android.graphics.drawable.Drawable {
-        val track = Drawables.roundedSurface(context, palette.controlBg, 999f)
-        if (progress <= 0f) return track
-        val fill = Drawables.roundedSurface(context, palette.accent, 999f)
-        val layer = android.graphics.drawable.LayerDrawable(arrayOf(track, fill))
-        val width = (1f - progress.coerceIn(0f, 1f)) * 1000f
-        layer.setLayerInset(1, 0, 0, width.toInt(), 0)
-        return layer
     }
 }
