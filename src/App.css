@@ -3774,10 +3774,16 @@ kbd {
   inline-size: 28px;
   block-size: 28px;
   flex-basis: 28px;
-  border-radius: 9px;
+  border-radius: var(--radius-sm);
   border-color: transparent;
   background: transparent;
   box-shadow: none;
+  transition: background 160ms ease, color 160ms ease;
+}
+
+.calendar-nav button:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
 }
 
 .calendar-today-button {
