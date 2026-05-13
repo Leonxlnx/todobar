@@ -277,13 +277,15 @@ test('sidebar opens and completed-task visibility is configurable', async ({
     page.locator('.today-goal-list-title strong').filter({ hasText: 'Planner' }),
   ).toBeVisible()
   await expect(page.getByText('Pinned task', { exact: true })).toBeVisible()
+  // Pinned task list deliberately renders without an outer card so it
+  // doesn't nest a card-in-card inside the Today goal divider.
   await expect(page.locator('.pinned-task-list')).toHaveCSS(
     'border-top-style',
-    'solid',
+    'none',
   )
-  await expect(page.locator('.pinned-task-list')).toHaveCSS(
-    'border-top-left-radius',
-    '14px',
+  await expect(page.locator('.today-goal-list')).toHaveCSS(
+    'border-top-style',
+    'solid',
   )
 
   await page.getByRole('button', { name: 'Sidebar settings' }).click()
