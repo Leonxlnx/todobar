@@ -3,13 +3,15 @@
 [![CI](https://github.com/Leonxlnx/todobar/actions/workflows/ci.yml/badge.svg)](https://github.com/Leonxlnx/todobar/actions/workflows/ci.yml)
 [![Release](https://github.com/Leonxlnx/todobar/actions/workflows/release.yml/badge.svg)](https://github.com/Leonxlnx/todobar/actions/workflows/release.yml)
 
-Todobar is a native dockable todo sidebar for macOS and Windows. It stays out of
-the way as a small edge handle, opens into a clean task panel, and is built for
-fast capture while you work in other apps.
+Todobar is a native dockable todo sidebar for macOS and Windows, with an Android
+companion APK now building from the same product direction. It stays out of the
+way as a small edge handle, opens into a clean task panel, and is built for fast
+capture while you work in other apps.
 
 The app is early, but the foundation is real: Tauri v2, React, local persisted
 tasks, reminders, custom in-app reminder toasts, global shortcuts, autostart,
-single-instance behavior, and release automation for Windows and macOS.
+single-instance behavior, and release automation for Windows, macOS, and
+Android.
 
 ## Why
 
@@ -67,6 +69,8 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
   task text size, completed-task visibility, launch-at-login, notifications,
   and surface opacity
 - Responsive sizing for different monitor heights and widths
+- Native Android companion with a floating edge bubble, Today, Calendar, Lists,
+  Settings, local tasks, reminders, and matching English product language
 
 ## Platform Status
 
@@ -75,6 +79,7 @@ Most todo apps are full windows. Todobar is designed as a desktop utility:
 | Windows | Working | Built locally and in GitHub Actions. Release includes `.exe` and `.msi`. |
 | macOS Apple Silicon | Built in CI | Release includes `.dmg`. Unsigned until Apple signing is configured. |
 | macOS Intel | Built in CI | Release includes `.dmg`. Unsigned until Apple signing is configured. |
+| Android | Companion APK | Release includes an installable `.apk`. Overlay permission is required for the floating bubble. |
 
 ## Verification Status
 
@@ -90,6 +95,7 @@ What is verified:
 - Responsive sidebar layout checks for desktop, narrow, and short viewports
 - Rust check
 - Tauri no-bundle native build smoke test
+- Android release APK build
 
 What is not fully verified yet:
 
@@ -121,10 +127,10 @@ The detailed plan lives in [Product vision](docs/product-vision.md) and
 
 ## Install
 
-Download the latest Windows or macOS build from
+Download the latest Windows, macOS, or Android build from
 [GitHub Releases](https://github.com/Leonxlnx/todobar/releases).
 
-Current stable release: `v0.1.10`.
+Current stable release: `v0.1.11`.
 
 Windows:
 
@@ -139,6 +145,14 @@ macOS:
 macOS builds from public CI are currently unsigned until code signing and
 notarization certificates are configured. You may need to right-click the app and
 choose Open.
+
+Android:
+
+- Use `todobar-android-v<version>.apk`.
+- Android will ask for overlay permission so the floating sidebar bubble can
+  appear above other apps.
+- The Android app is a native companion and is being aligned with the desktop
+  experience over time.
 
 ## Usage
 
@@ -248,6 +262,13 @@ npm run test:native
 cargo check --manifest-path src-tauri/Cargo.toml
 ```
 
+Build the Android APK locally:
+
+```powershell
+cd android
+.\gradlew.bat assembleRelease
+```
+
 `npm run test:smoke` runs a browser smoke test against the Vite preview. If
 Chromium is missing locally, run `npx playwright install chromium` once.
 
@@ -264,6 +285,8 @@ The repository includes GitHub Actions workflows:
   - Windows
   - macOS Apple Silicon
   - macOS Intel
+- `android.yml` builds an Android release APK and attaches it to version
+  releases.
 
 Create a release by pushing a version tag:
 
@@ -273,8 +296,8 @@ git push origin vX.Y.Z
 ```
 
 Before tagging, bump the version in `package.json`, `package-lock.json`,
-`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, and
-`src-tauri/tauri.conf.json`.
+`src-tauri/Cargo.toml`, `src-tauri/Cargo.lock`, `src-tauri/tauri.conf.json`, and
+`android/app/build.gradle.kts`.
 
 The Tauri release workflow uploads the platform installers to GitHub Releases.
 
@@ -285,6 +308,7 @@ Current release workflow output:
 - macOS Apple Silicon `.dmg`
 - macOS Intel `.dmg`
 - macOS `.app.tar.gz` archives
+- Android `.apk`
 
 ## Architecture
 
@@ -341,7 +365,7 @@ Useful starting points:
 - [Product vision](docs/product-vision.md)
 - [UI direction](docs/ui-direction.md)
 - [Platform support](docs/platform-support.md)
-- [Release verification](docs/release-verification-v0.1.10.md)
+- [Release verification](docs/release-verification-v0.1.11.md)
 - [Roadmap](docs/roadmap.md)
 - [Native test matrix](docs/native-test-matrix.md)
 - [Security model](docs/security-model.md)

@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.1.11 - Android Companion
+
+### Added
+
+- Added a native Android companion APK to the release path.
+- Added Android documentation for local release builds and overlay permission.
+- Added Android release verification coverage alongside the desktop artifacts.
+
+### Changed
+
+- Aligned the Android companion version with the desktop app version.
+- Made the Android floating handle use the full configured visible tab width,
+  including better side and top dock sizing.
+- Matched Android task metadata to the desktop language for Today and custom
+  list capture.
+
+### Fixed
+
+- Fixed Android overlay service running-state reporting so the launcher screen
+  reflects the actual floating sidebar service.
+- Fixed Android open and close animation direction for right, left, and top
+  dock placement.
+- Fixed Android handle dragging so side docks move vertically and the top dock
+  moves horizontally.
+- Fixed Android reminder snooze routing so calendar and custom-list reminders
+  update the correct task instead of always targeting Today.
+
 ## 0.1.10 - Quality Pass
 
 ### Added
