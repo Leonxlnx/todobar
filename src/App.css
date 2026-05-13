@@ -986,23 +986,23 @@ kbd {
 
 .handle-badge {
   position: absolute;
-  top: 8px;
-  left: 6px;
+  top: 6px;
+  left: 5px;
   z-index: 2;
-  min-width: 15px;
-  height: 15px;
+  min-width: 16px;
+  height: 16px;
   display: grid;
   place-items: center;
-  padding: 0 4px;
+  padding: 0 5px;
   color: #fff;
   font-size: 9px;
   line-height: 1;
   font-weight: 800;
   border: 2px solid var(--dock-bg);
   border-radius: 999px;
-  background: #e3342f;
-  box-shadow: 0 5px 14px rgba(227, 52, 47, 0.32);
-  animation: badge-arrive 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  background: var(--accent);
+  box-shadow: 0 4px 10px color-mix(in srgb, var(--accent) 38%, transparent);
+  animation: badge-arrive 260ms var(--ease-out) both;
 }
 
 .workspace.dock-left .handle-badge {
