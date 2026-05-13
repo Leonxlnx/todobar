@@ -16,9 +16,9 @@
     <color name="amber">#F08C2F</color>
     <color name="scrim">#33000000</color>
 
-    <color name="handle_grad_top">#FFFFFF</color>
-    <color name="handle_grad_bot">#F6F6F5</color>
-    <color name="handle_stroke">#14181A20</color>
+    <color name="handle_grad_top">#FCFCFB</color>
+    <color name="handle_grad_bot">#F4F4F3</color>
+    <color name="handle_stroke">#1218181B</color>
 
     <color name="dot_focus">#F08C2F</color>
     <color name="dot_normal">#2563EB</color>
