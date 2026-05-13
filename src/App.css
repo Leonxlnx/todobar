@@ -2459,8 +2459,8 @@ kbd {
 .deferred-setting {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  align-items: stretch;
-  gap: 7px;
+  align-items: end;
+  gap: 8px;
 }
 
 .deferred-setting .slider-setting {
