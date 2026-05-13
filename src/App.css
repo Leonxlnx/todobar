@@ -3882,8 +3882,12 @@ kbd {
 
 .calendar-grid button.is-today {
   color: var(--accent-strong);
-  border-color: var(--accent-line);
-  background: color-mix(in srgb, var(--accent-soft) 60%, transparent);
+  border-color: transparent;
+  background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+}
+
+.calendar-grid button.is-today span {
+  font-weight: 800;
 }
 
 .calendar-grid button.is-today.is-selected,
@@ -3906,6 +3910,10 @@ kbd {
   border-radius: 999px;
   background: var(--accent);
   margin-top: -2px;
+}
+
+.calendar-grid button.is-today.has-event:not(.is-selected)::after {
+  background: var(--accent-strong);
 }
 
 .calendar-grid button span {
