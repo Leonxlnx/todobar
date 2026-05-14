@@ -591,6 +591,19 @@
     drop-shadow(0 2px 4px rgba(0, 0, 0, 0.32));
 }
 
+/* When the sidebar is closed, only the small edge tab is visible. The big
+   ambient drop-shadow above bleeds vertically above and below the tab and
+   shows as a faint gray stripe on the user's wallpaper. Reduce the cast to
+   a tight, edge-hugging shadow so the tab looks clean against the desktop. */
+.workspace.is-native .native-dock-surface.is-closed,
+.workspace.is-native.dock-left .native-dock-surface.is-closed,
+.workspace.is-native.dock-top .native-dock-surface.is-closed,
+.workspace.theme-dark.is-native .native-dock-surface.is-closed,
+.workspace.theme-dark.is-native.dock-left .native-dock-surface.is-closed,
+.workspace.theme-dark.is-native.dock-top .native-dock-surface.is-closed {
+  filter: none;
+}
+
 .native-dock-surface path {
   fill: var(--dock-bg);
   stroke: var(--dock-stroke);
