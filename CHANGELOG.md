@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.14 - Closed Tab Shadow Fix
+
+### Fixed
+
+- Fixed a faint gray stripe that appeared above and below the closed edge
+  tab on the user's wallpaper. The native dock surface kept the full 24-28
+  px ambient drop-shadow even when only the small tab was visible, so the
+  shadow bled vertically beyond the tab. The closed state now drops the
+  filter entirely; the ambient shadow returns the instant the panel opens.
+
 ## 0.1.13 - Premium UI Polish
 
 ### Added
