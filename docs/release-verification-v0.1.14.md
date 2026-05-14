@@ -6,8 +6,24 @@ This page records the checks for the `v0.1.14` closed tab shadow fix release.
 
 - Repository: `Leonxlnx/todobar`
 - Release: https://github.com/Leonxlnx/todobar/releases/tag/v0.1.14
-- Release workflow: triggered by tag push to `v0.1.14`
-- Android workflow: triggered by tag push to `v0.1.14`
+- Release workflow: https://github.com/Leonxlnx/todobar/actions/runs/25881217696 (success)
+- Android workflow: https://github.com/Leonxlnx/todobar/actions/runs/25881218074 (success)
+- Post-release main CI (Windows + macOS validate): https://github.com/Leonxlnx/todobar/actions/runs/25881204946 (success)
+
+Published assets:
+
+- `Todobar_0.1.14_x64-setup.exe` - 3,092,760 bytes
+- `Todobar_0.1.14_x64_en-US.msi` - 4,476,928 bytes
+- `Todobar_0.1.14_aarch64.dmg` - 5,057,727 bytes
+- `Todobar_0.1.14_x64.dmg` - 5,212,936 bytes
+- `Todobar_aarch64.app.tar.gz` - 4,789,380 bytes
+- `Todobar_x64.app.tar.gz` - 4,948,073 bytes
+- `todobar-android-v0.1.14.apk` - 4,416,158 bytes
+
+The rolling Android pre-release was refreshed at the same time:
+
+- `https://github.com/Leonxlnx/todobar/releases/tag/android-latest` →
+  `todobar-android-main.apk`
 
 ## Release Scope
 
