@@ -56,8 +56,10 @@ class CaptureRow(
         addView(reminderChip)
 
         addBtn.setImageResource(R.drawable.ic_plus)
-        addBtn.imageTintList = android.content.res.ColorStateList.valueOf(palette.sidebarBg)
-        addBtn.background = Drawables.roundedSurface(context, palette.accent, 12f)
+        addBtn.imageTintList = android.content.res.ColorStateList.valueOf(0xFFFFFFFF.toInt())
+        addBtn.background = Drawables.primaryButton(context, palette)
+        // Tiny lift so the accent +button reads as the primary action.
+        addBtn.elevation = dp(context, 1.5f).toFloat()
         val btnSize = dp(context, 34f)
         val btnParams = LayoutParams(btnSize, btnSize)
         addBtn.layoutParams = btnParams
