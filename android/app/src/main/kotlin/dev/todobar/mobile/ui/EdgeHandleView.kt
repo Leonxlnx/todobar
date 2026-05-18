@@ -4,23 +4,33 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.LinearGradient
+import android.graphics.Outline
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Shader
 import android.os.Build
 import android.view.View
+import android.view.ViewOutlineProvider
 import dev.todobar.mobile.R
 import dev.todobar.mobile.model.DockEdge
 import dev.todobar.mobile.model.SidebarSettings
 import kotlin.math.min
 
 /**
- * Native Android version of the desktop edge handle.
+ * Native Android version of the desktop edge handle. Renders a small docked
+ * surface, flat against the dock edge and rounded on the exposed side. The
+ * drawing path mirrors the desktop CSS so the visual feel matches across the
+ * whole `--handle-bg` gradient set.
  *
- * XML rounded rectangles look cheap here because the desktop handle is really
- * a small docked surface: flat on the screen edge, rounded on the exposed side,
- * with a controlled stroke and an icon that stays centered through resizing.
+ * Skeuomorphism layers (in stacking order):
+ *  1. Hardware soft shadow via `elevation` + `ViewOutlineProvider`
+ *  2. Faint outer drop shadow drawn by the canvas paint shadow layer
+ *  3. Body gradient (theme-driven `--handle-bg` 2-stop)
+ *  4. 1dp inner border using `--handle-stroke`
+ *  5. ~1dp inset highlight drawn as a top-edge line (the desktop's
+ *     `inset 0 1px 0 rgba(255,255,255,0.72)` shadow)
+ *  6. Centered "panel-right" icon (chevron pulling out of a rail)
  */
 class EdgeHandleView(context: Context) : View(context) {
 
@@ -30,6 +40,11 @@ class EdgeHandleView(context: Context) : View(context) {
     private val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
         strokeWidth = dp(1.1f)
+    }
+    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE
+        strokeWidth = dp(1f)
+        strokeCap = Paint.Cap.ROUND
     }
     private val iconPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         style = Paint.Style.STROKE
@@ -43,6 +58,17 @@ class EdgeHandleView(context: Context) : View(context) {
         isClickable = true
         isFocusable = false
         contentDescription = context.getString(R.string.bubble_card_title)
+        // Hardware soft shadow under the handle — matches the desktop
+        // `box-shadow: -8px 16px 28px rgba(15, 23, 42, 0.08)` glow.
+        elevation = dp(8f)
+        outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(view: View, outline: Outline) {
+                val w = view.width
+                val h = view.height
+                if (w <= 0 || h <= 0) return
+                outline.setRoundRect(0, 0, w, h, dp(14f))
+            }
+        }
     }
 
     fun applySettings(settings: SidebarSettings) {
@@ -67,14 +93,16 @@ class EdgeHandleView(context: Context) : View(context) {
 
         rebuildPath(w, h)
 
-        val shadowColor = if (isDark()) 0x7A000000 else 0x2A0F172A
+        // ── Soft drop shadow (in addition to elevation) ────────────────
+        val shadowColor = if (isDark()) 0x66000000 else 0x1F0F172A
         fillPaint.style = Paint.Style.FILL
         fillPaint.shader = null
         fillPaint.color = Color.TRANSPARENT
         fillPaint.setShadowLayer(dp(14f), shadowDx(), dp(4f), shadowColor)
         canvas.drawPath(path, fillPaint)
-
         fillPaint.clearShadowLayer()
+
+        // ── Body gradient ──────────────────────────────────────────────
         fillPaint.shader = LinearGradient(
             0f,
             0f,
@@ -86,8 +114,26 @@ class EdgeHandleView(context: Context) : View(context) {
         )
         canvas.drawPath(path, fillPaint)
 
+        // ── Inset top highlight (1dp white line just inside the curve) ─
+        highlightPaint.color = if (isDark()) 0x1FFFFFFF else 0xB8FFFFFF.toInt()
+        highlightPaint.strokeWidth = dp(1f)
+        canvas.save()
+        canvas.clipPath(path)
+        when (edge) {
+            DockEdge.RIGHT, DockEdge.LEFT -> canvas.drawLine(
+                if (edge == DockEdge.LEFT) dp(2f) else dp(2f),
+                dp(1f),
+                if (edge == DockEdge.LEFT) w - dp(2f) else w - dp(2f),
+                dp(1f),
+                highlightPaint,
+            )
+            DockEdge.TOP -> canvas.drawLine(dp(2f), dp(1f), w - dp(2f), dp(1f), highlightPaint)
+        }
+        canvas.restore()
+
+        // ── 1dp border ─────────────────────────────────────────────────
         strokePaint.color = getColorCompat(R.color.handle_stroke)
-        strokePaint.alpha = if (isDark()) 190 else 230
+        strokePaint.alpha = if (isDark()) 200 else 235
         canvas.drawPath(path, strokePaint)
 
         drawHandleIcon(canvas, w, h)
@@ -128,26 +174,39 @@ class EdgeHandleView(context: Context) : View(context) {
         }
     }
 
+    /**
+     * Renders the lucide `PanelRightOpen` glyph: a 13×16 outlined panel with
+     * a vertical rail on the left and a chevron pointing to the right. Matches
+     * the icon used on the desktop edge handle.
+     */
     private fun drawHandleIcon(canvas: Canvas, w: Float, h: Float) {
         val cx = w / 2f
         val cy = h / 2f
-        val boxW = dp(10f)
+        val boxW = dp(11f)
         val boxH = dp(15f)
         val rect = RectF(cx - boxW / 2f, cy - boxH / 2f, cx + boxW / 2f, cy + boxH / 2f)
 
-        iconPaint.color = if (isDark()) 0xFF97A6B8.toInt() else 0xFF647184.toInt()
-        iconPaint.alpha = 210
+        iconPaint.color = if (isDark()) 0xFFB6C3D6.toInt() else 0xFF566275.toInt()
+        iconPaint.alpha = 230
 
         canvas.save()
+        // Open chevron points toward where the panel will slide in from.
         when (edge) {
             DockEdge.LEFT -> canvas.rotate(180f, cx, cy)
             DockEdge.TOP -> canvas.rotate(90f, cx, cy)
             DockEdge.RIGHT -> Unit
         }
-        canvas.drawRoundRect(rect, dp(2.2f), dp(2.2f), iconPaint)
-        canvas.drawLine(rect.left + dp(3.1f), rect.top + dp(3.1f), rect.left + dp(3.1f), rect.bottom - dp(3.1f), iconPaint)
-        canvas.drawLine(cx + dp(0.7f), cy - dp(4f), cx + dp(4f), cy, iconPaint)
-        canvas.drawLine(cx + dp(0.7f), cy + dp(4f), cx + dp(4f), cy, iconPaint)
+        // Panel outline
+        canvas.drawRoundRect(rect, dp(2.4f), dp(2.4f), iconPaint)
+        // Rail
+        val railX = rect.left + dp(3.4f)
+        canvas.drawLine(railX, rect.top + dp(2.5f), railX, rect.bottom - dp(2.5f), iconPaint)
+        // Chevron (>)
+        val arrowX = cx + dp(0.6f)
+        val arrowReach = dp(3.8f)
+        val arrowSpread = dp(3.6f)
+        canvas.drawLine(arrowX, cy - arrowSpread, arrowX + arrowReach, cy, iconPaint)
+        canvas.drawLine(arrowX, cy + arrowSpread, arrowX + arrowReach, cy, iconPaint)
         canvas.restore()
     }
 
